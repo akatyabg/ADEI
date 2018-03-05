@@ -26,6 +26,14 @@ df<-df[sam,]
 save.image("Taxi5000_raw.RData")
 
 load("Taxi5000_raw.RData")
+table(df$Ehail_fee) ##Delete unnecessary row
+df$Ehail_fee<-NULL
+table(df$Passanger_count) ##Delete unnecessary row
+df$Passanger_count<-NULL
+
+# Now one by one describe vars
+names(df)
+
 #Converting numeric variables corresponding to qualitative concepts to factors:
 # VendorID
 sel<-which(df$VendorID==0.0);length(sel) #No missing Data
@@ -163,5 +171,53 @@ sel<-which(df$Total_amount==0.0);length(sel) #9 missings
 df[sel,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 
+#Count per Variable:
 
+## Number of missing values:
+countNA <- function(x) {
+  mis_x <- NULL
+  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
+  mis_x <- as.data.frame(mis_x)
+  rownames(mis_x) <- names(x)
+  mis_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
+  list(mis_col=mis_x,mis_ind=mis_i) }
+mis1<-countNA(df)
+
+attributes(mis1)
+mis1$mis_col
+df$mis_ind <- mis1$mis_ind # new attribute missing values
+summary(mis1$mis_ind)
+
+##Number of outliers ???
+outs<-rep(0,ncol(df))
+show(outs)
+
+
+### Multivariant Outlier Detection
+
+
+#...In process
+vars_con<-names(df)[c(6:9,11:18)] #Continuous variables
+#vars_dis<-names(df)[c(1,4,5,19,20:22,27:29)]
+#vars_res<-names(df)[c(18,29)]
+
+install.packages('mvoutlier')
+library(mvoutlier)
+names(df)
+vars_con # Problems c(5,8,9,10,11,12)
+summary(df[,vars_con])
+vars_con_out<-vars_con[c(1:4)]
+aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+
+# Use common sense, but technicalities might difficult the application of the procedure
+
+vars_con_out<-vars_con[c(1:4)]
+mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+
+# Use common sense
+vars_con
+vars_con_out<-vars_con[c(6,13,16)]
+aq.plot(df[,vars_con_out])  # Problems when missing data are present
+vars_con_out
 
