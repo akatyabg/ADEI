@@ -1,0 +1,305 @@
+---
+title: "CASE_STUDY "
+author: "Katerina Dimitrova, Jose Romero, Sergi .."
+date: "March 18, 2018"
+output: pdf_document
+---
+
+```{r,include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+```
+```{r,include=FALSE}
+setwd("/home2/users/alumnes/1228816/ADEI/ADEI") #Change 
+
+```
+#Introduction
+
+## Load requiered packages
+
+```{r,include=FALSE}
+# Load Required Packages: to be increased over the course
+
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2")
+missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
+
+if(length(missingPackages)) install.packages(missingPackages)
+lapply(requiredPackages, require, character.only = TRUE)
+```
+
+## Select 5000 samples
+```{r}
+#Load samples
+
+### Use birthday of 1 member of the group
+set.seed(28061963)
+nrow(df)
+sam<-sample(1:nrow(df),5000)
+sam<-as.vector(sort(sam))
+
+df<-df[sam,]
+#save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+```
+
+## Delete unnecessary attributes
+```{r}
+load("Taxi5000_raw.RData")
+table(df$Ehail_fee) ##Delete unnecessary row
+df$Ehail_fee<-NULL
+table(df$Passanger_count) ##Delete unnecessary row
+df$Passanger_count<-NULL
+
+# Now one by one describe vars
+names(df)
+```
+
+#Converting numeric variables corresponding to qualitative concepts to factors
+## VendorID
+```{r}
+sel<-which(df$VendorID==0.0);length(sel) #No missing Data
+df$VendorID<-factor(df$VendorID,labels=c("Creative Mobile Technologies, LLC","VeriFone Inc."))
+summary(df$VendorID)
+table(df$VendorID)
+barplot(prop.table(table(df$VendorID)))
+```
+
+## RateCodeID, there whas no group ride
+```{r}
+sel<-which(df$RateCodeID==0.0);length(sel) #No missing Data
+df$RateCodeID<-factor(df$RateCodeID,labels=c("Standard rate","JFK","Newark","Nassau or Westchester","Negotiated fare"))
+summary(df$RateCodeID)
+table(df$RateCodeID)
+barplot(prop.table(table(df$RateCodeID)))
+```
+
+## Store_and_fwd_flag 
+```{r}
+#//first the N and than Y
+sel<-which(df$Store_and_fwd_flag==0.0);length(sel) #No missing Data
+df$Store_and_fwd_flag<-factor(df$Store_and_fwd_flag,labels=c("not a store and forward trip","store and forward trip"))
+summary(df$Store_and_fwd_flag)
+table(df$Store_and_fwd_flag)
+barplot(prop.table(table(df$Store_and_fwd_flag)))
+```
+## Payment_type 
+```{r}
+sel<-which(df$Payment_type==0.0);length(sel) #No missing Data
+df$Payment_type<-factor(df$Payment_type,labels=c("Credit card","Cash", "No charge", "Dispute"))
+summary(df$Payment_type)
+table(df$Payment_type)
+barplot(prop.table(table(df$Payment_type)))
+```
+
+## Trip_type
+```{r}
+sel<-which(df$Trip_type==0.0);length(sel) #No missing Data
+df$Trip_type<-factor(df$Trip_type,labels=c("Street-hail","Dispatch"))
+summary(df$Trip_type)
+table(df$Trip_type)
+barplot(prop.table(table(df$Trip_type)))
+```
+
+# Creating additional factors as a discretization 
+## Factorize function:
+```{r}
+factorize<- function(x) {
+  quantile(x,seq(0,1,0.1))
+  pp<-quantile(x);pp
+  breaks<-c(unique(pp))
+  f.x<-factor(cut(x,breaks))
+  return(f.x);
+}
+```
+
+## Passenger_count
+```{r}
+df$f.passanger<-factorize(df$Passenger_count)
+summary(df$f.passanger)
+
+sel<-which(df$Passenger_count==0.0);length(sel) #2 missings
+df[sel,"Passanger_count"]<-NA
+boxplot(df$Passenger_count)
+hist(df$Passenger_count, col="pink")
+```
+
+## Trip_distance
+```{r}
+df$f.distance<-factorize(df$Trip_distance) # NO VA be
+summary(df$distance)
+sel<-which(df$Trip_distance==0.0);length(sel) #60 missings
+df[sel,"Trip_distance"]<-NA 
+boxplot(df$Trip_distance)
+hist(df$Trip_distance, col="pink")
+```
+
+## Pickup_longitude
+```{r}
+df$f.longtitude<-factorize(df$Pickup_longitude)
+summary(df$f.longtitude)
+#How to detect missing values? 0.0 is a possible value?
+#sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
+#df[sel,"Pickup_longitude"]<-NA 
+boxplot(df$Pickup_longitude)
+```
+
+## Pickup_latitude
+```{r}
+df$f.latitude<-factorize(df$Dropoff_latitude)
+summary(df$f.latitude) #11 NAs
+boxplot(df$Pickup_latitude)
+hist(df$Pickup_latitude, col="pink")
+```
+
+##Dropoff_longitude
+```{r}
+df$f.longtitudeDrop<-factorize(df$Dropoff_longitude)
+summary(df$f.longtitudeDrop) # 1 NAs
+boxplot(df$Dropoff_longitude)
+```
+
+## Dropoff_latitude
+```{r}
+quantile(df$Dropoff_latitude,seq(0,1,0.1))
+pp<-quantile(df$Dropoff_latitude);pp
+df$f.latitudeDrop<-factor(cut(df$Dropoff_latitude,pp))  # NO VA be
+summary(df$f.latitudeDrop) # 4 NAs ? Outlier
+boxplot(df$Pickup_latitude)
+hist(df$Pickup_latitude, col="pink")
+```
+
+## Fare_amount
+```{r}
+df$f.fare_amount<-factorize(df$Fare_amount)
+summary(df$f.fare_amount)
+
+sel<-which(df$Fare_amount==0.0);length(sel) #10 missings
+df[sel,"Fare_amount"]<-NA 
+boxplot(df$Fare_amount)
+hist(df$Fare_amount, col="pink")
+```
+## Extra 
+```{r}
+df$f.extra<-factorize(df$Extra)
+summary(df$f.extra) #1 NA's
+boxplot(df$Extra)
+hist(df$Extra, col="pink")
+```
+
+## MTA_tax
+```{r}
+df$f.MTA_tax<-factorize(df$MTA_tax)
+summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
+sel<-which(df$MTA_tax==0.0);length(sel) #103 missings
+df[sel,"MTA_tax"]<-NA
+boxplot(df$MTA_tax)
+hist(df$MTA_tax, col="pink")
+```
+
+## Improvement_surcharge
+```{r}
+df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
+summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
+
+sel<-which(df$improvement_surcharge==0.0);length(sel) #107 missings
+df[sel,"improvement_surcharge"]<-NA
+boxplot(df$improvement_surcharge)
+hist(df$improvement_surcharge, col="pink")
+```
+
+##Tip_amount
+```{r}
+df$f.tip_amount<-factorize(df$Tip_amount)
+summary(df$f.tip_amount) #2869 NA's
+boxplot(df$Tip_amount)
+hist(df$Tip_amount, col="pink")
+```
+
+##Tolls_amount
+```{r}
+df$f.toll<-factorize(df$Tolls_amount)
+summary(df$f.toll) #4907 NA's, not well factorized 
+hist(df$Tolls_amount, col="pink")
+```
+
+#Total_amount
+```{r}
+df$f.total<-factorize(df$Total_amount)  # NO VA be
+summary(df$f.total)
+
+sel<-which(df$Total_amount==0.0);length(sel) #9 missings
+df[sel,"Total_amount"]<-NA 
+boxplot(df$Total_amount)
+hist(df$Total_amount, col="pink")
+```
+#Count per Variable:
+
+## Number of missing values:
+```{r}
+countNA <- function(x) {
+  mis_x <- NULL
+  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
+  mis_x <- as.data.frame(mis_x)
+  rownames(mis_x) <- names(x)
+  mis_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
+  list(mis_col=mis_x,mis_ind=mis_i) }
+mis1<-countNA(df)
+
+attributes(mis1)
+mis1$mis_col
+df$mis_ind <- mis1$mis_ind # new attribute missing values
+summary(mis1$mis_ind)
+```
+
+##Number of outliers ???
+```{r}
+outs<-rep(0,ncol(df))
+show(outs)
+
+```
+### Multivariant Outlier Detection
+
+
+#...In process
+```{r}
+#vars_con<-names(df)[c(6:9,11:18)] #Continuous variables
+
+
+#install.packages('mvoutlier')
+#library(mvoutlier) #not found??
+#names(df)
+#vars_con # Problems c(5,8,9,10,11,12)
+#summary(df[,vars_con])
+#vars_con_out<-vars_con[c(1:4)]
+#aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+
+# Use common sense, but technicalities might difficult the application of the procedure
+
+#vars_con_out<-vars_con[c(1:4)]
+#mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+
+# Use common sense
+#vars_con
+#vars_con_out<-vars_con[c(6,13,16)]
+#aq.plot(df[,vars_con_out])  # Problems when missing data are present
+#vars_con_out
+
+```
+
+
+```{r}
+#install.packages("car")
+#library(car) #not found??
+#hist(df$Tip_amount, col="pink")
+#catdes(data, 1)
+```
+
+
+```{r,include=FALSE}
+library(rmarkdown)
+#Generating the report from the Rmd file
+#render("/home2/users/alumnes/1228816/ADEI/ADEI/Code_Doc.Rmd", "pdf_document") #execute this directly in the Rstuio console because here it will be recursive and will never end..
+```
+
+
+
