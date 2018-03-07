@@ -1,6 +1,6 @@
 ---
 title: "CASE_STUDY "
-author: "Katerina Dimitrova, Jose Romero, Sergi .."
+author: "Katerina Dimitrova, Jose Romero, Sergi Muñoz"
 date: "March 18, 2018"
 output: pdf_document
 ---
@@ -136,16 +136,18 @@ hist(df$Trip_distance, col="pink")
 ```{r}
 df$f.longtitude<-factorize(df$Pickup_longitude)
 summary(df$f.longtitude)
-#How to detect missing values? 0.0 is a possible value?
-#sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
-#df[sel,"Pickup_longitude"]<-NA 
+#How to detect missing values? 0.0 is a possible value? no 
+sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
+df[sel,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
 ```
 
 ## Pickup_latitude
 ```{r}
 df$f.latitude<-factorize(df$Dropoff_latitude)
-summary(df$f.latitude) #11 NAs
+summary(df$f.latitude) #4 NAs
+sel<-which(df$Pickup_latitude==0.0);length(sel) #11 missings
+df[sel,"Pickup_latitude"]<-NA 
 boxplot(df$Pickup_latitude)
 hist(df$Pickup_latitude, col="pink")
 ```
@@ -154,17 +156,25 @@ hist(df$Pickup_latitude, col="pink")
 ```{r}
 df$f.longtitudeDrop<-factorize(df$Dropoff_longitude)
 summary(df$f.longtitudeDrop) # 1 NAs
+sel<-which(df$Dropoff_longitude==0.0);length(sel) #11 missings
+df[sel,"Dropoff_longitude"]<-NA 
 boxplot(df$Dropoff_longitude)
 ```
 
 ## Dropoff_latitude
 ```{r}
-quantile(df$Dropoff_latitude,seq(0,1,0.1))
-pp<-quantile(df$Dropoff_latitude);pp
-df$f.latitudeDrop<-factor(cut(df$Dropoff_latitude,pp))  # NO VA be
-summary(df$f.latitudeDrop) # 4 NAs ? Outlier
-boxplot(df$Pickup_latitude)
-hist(df$Pickup_latitude, col="pink")
+#quantile(df$Dropoff_latitude,seq(0,1,0.1))
+#pp<-quantile(df$Dropoff_latitude);pp
+#df$f.latitudeDrop<-factor(cut(df$Dropoff_latitude,pp))  # NO VA be
+#summary(df$f.latitudeDrop) # 4 NAs ? Outlier
+#boxplot(df$Pickup_latitude)
+#hist(df$Pickup_latitude, col="pink")
+
+df$f.latitudedeDrop<-factorize(df$Dropoff_latitude)
+summary(df$f.latitudedeDrop) # 1 NAs
+sel<-which(df$Dropoff_latitude==0.0);length(sel) #11 missings
+df[sel,"Dropoff_latitude"]<-NA 
+boxplot(df$Dropoff_latitude)
 ```
 
 ## Fare_amount
@@ -172,7 +182,7 @@ hist(df$Pickup_latitude, col="pink")
 df$f.fare_amount<-factorize(df$Fare_amount)
 summary(df$f.fare_amount)
 
-sel<-which(df$Fare_amount==0.0);length(sel) #10 missings
+sel<-which(df$Fare_amount<=0.0);length(sel) #10 missings
 df[sel,"Fare_amount"]<-NA 
 boxplot(df$Fare_amount)
 hist(df$Fare_amount, col="pink")
@@ -181,6 +191,9 @@ hist(df$Fare_amount, col="pink")
 ```{r}
 df$f.extra<-factorize(df$Extra)
 summary(df$f.extra) #1 NA's
+
+sel<-which(df$Extra<0.0);length(sel) #10 missings
+df[sel,"Extra"]<-NA 
 boxplot(df$Extra)
 hist(df$Extra, col="pink")
 ```
@@ -189,7 +202,7 @@ hist(df$Extra, col="pink")
 ```{r}
 df$f.MTA_tax<-factorize(df$MTA_tax)
 summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
-sel<-which(df$MTA_tax==0.0);length(sel) #103 missings
+sel<-which(df$MTA_tax<0.0);length(sel) #103 missings
 df[sel,"MTA_tax"]<-NA
 boxplot(df$MTA_tax)
 hist(df$MTA_tax, col="pink")
@@ -200,7 +213,7 @@ hist(df$MTA_tax, col="pink")
 df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
 summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
 
-sel<-which(df$improvement_surcharge==0.0);length(sel) #107 missings
+sel<-which(df$improvement_surcharge<0.0);length(sel) #107 missings
 df[sel,"improvement_surcharge"]<-NA
 boxplot(df$improvement_surcharge)
 hist(df$improvement_surcharge, col="pink")
@@ -210,6 +223,8 @@ hist(df$improvement_surcharge, col="pink")
 ```{r}
 df$f.tip_amount<-factorize(df$Tip_amount)
 summary(df$f.tip_amount) #2869 NA's
+sel<-which(df$Tip_amount<0.0);length(sel) #107 missings
+df[sel,"Tip_amount"]<-NA
 boxplot(df$Tip_amount)
 hist(df$Tip_amount, col="pink")
 ```
@@ -218,6 +233,9 @@ hist(df$Tip_amount, col="pink")
 ```{r}
 df$f.toll<-factorize(df$Tolls_amount)
 summary(df$f.toll) #4907 NA's, not well factorized 
+sel<-which(df$Tolls_amount<0.0);length(sel) #0 missings
+df[sel,"Tolls_amount"]<-NA
+boxplot(df$Tolls_amount)
 hist(df$Tolls_amount, col="pink")
 ```
 
@@ -226,7 +244,7 @@ hist(df$Tolls_amount, col="pink")
 df$f.total<-factorize(df$Total_amount)  # NO VA be
 summary(df$f.total)
 
-sel<-which(df$Total_amount==0.0);length(sel) #9 missings
+sel<-which(df$Total_amount<=0.0);length(sel) #9 missings
 df[sel,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
