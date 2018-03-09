@@ -10,7 +10,7 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("/home2/users/alumnes/1228816/ADEI/ADEI") #Change 
+setwd("/home2/users/alumnes/1171633/Desktop/ADEI/ADEI") #Change 
 
 ```
 #Introduction
@@ -117,6 +117,7 @@ df$f.passanger<-factorize(df$Passenger_count)
 summary(df$f.passanger)
 
 sel<-which(df$Passenger_count==0.0);length(sel) #2 missings
+
 df[sel,"Passanger_count"]<-NA
 boxplot(df$Passenger_count)
 hist(df$Passenger_count, col="pink")
@@ -137,7 +138,7 @@ hist(df$Trip_distance, col="pink")
 df$f.longtitude<-factorize(df$Pickup_longitude)
 summary(df$f.longtitude)
 #How to detect missing values? 0.0 is a possible value? no 
-sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
+sel<-which(df$Pickup_longitude<0.0);length(sel) #11 missings
 df[sel,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
 ```
@@ -175,6 +176,7 @@ summary(df$f.latitudedeDrop) # 1 NAs
 sel<-which(df$Dropoff_latitude==0.0);length(sel) #11 missings
 df[sel,"Dropoff_latitude"]<-NA 
 boxplot(df$Dropoff_latitude)
+summary(df$Dropoff_latitude)
 ```
 
 ## Fare_amount
@@ -183,9 +185,13 @@ df$f.fare_amount<-factorize(df$Fare_amount)
 summary(df$f.fare_amount)
 
 sel<-which(df$Fare_amount<=0.0);length(sel) #10 missings
+outlier<-which(df$Fare_amount>100);length(outlier) #1 outlier
 df[sel,"Fare_amount"]<-NA 
+df[outlier,"Fare_amount"]<-NA 
 boxplot(df$Fare_amount)
 hist(df$Fare_amount, col="pink")
+summary(df$Fare_amount)
+
 ```
 ## Extra 
 ```{r}
@@ -221,9 +227,11 @@ hist(df$improvement_surcharge, col="pink")
 
 ##Tip_amount
 ```{r}
-df$f.tip_amount<-factorize(df$Tip_amount)
+df$f.tip_amount<-factor(df$Tip_amount)
 summary(df$f.tip_amount) #2869 NA's
 sel<-which(df$Tip_amount<0.0);length(sel) #107 missings
+outlier<-which(df$Tip_amount>60.0);length(outlier) #1 missings
+df[outlier,"Tip_amount"]<-NA
 df[sel,"Tip_amount"]<-NA
 boxplot(df$Tip_amount)
 hist(df$Tip_amount, col="pink")
@@ -318,6 +326,52 @@ library(rmarkdown)
 #Generating the report from the Rmd file
 #render("/home2/users/alumnes/1228816/ADEI/ADEI/Code_Doc.Rmd", "pdf_document") #execute this directly in the Rstuio console because here it will be recursive and will never end..
 ```
+
+# Imputation
+## Definition of binary outcome: AnyTip
+```{r}
+# Binary Target: Any Tip?
+
+df$AnyTip<-ifelse(df$Tip_amount<0.0001,0,1) 
+df$AnyTip<-factor(df$AnyTip,labels=paste("AnyTip",c("No","Yes")))
+
+# Now one by one describe vars
+names(df)
+vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,19)] 
+vars_dis<-names(df)[c(1,4,5,10,20,21)]
+vars_res<-names(df)[c(19,33)]
+vars_res
+
+
+```
+## Imputation of numeric variables
+```{r}
+library(missMDA)
+
+vars_con_mis<-vars_con;length(vars_con_mis)
+vars_con_mis
+summary(df[,vars_con_mis])
+```
+
+## Imputation of qualitative variables
+```{r}
+
+```
+## Remove observations with NA at targets
+
+```{r}
+ll<-which(is.na(df$Total_amount));ll
+if(length(ll)>0){
+  df<-df[-ll,]
+}
+
+ll<-which(is.na(df$AnyTip));ll
+if(length(ll)>0){
+  df<-df[-ll,]
+}
+```
+
+
 
 
 
