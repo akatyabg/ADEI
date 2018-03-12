@@ -25,6 +25,8 @@ missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()
 
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
+
+install.packages("FactoMineR")
 ```
 
 ## Select 5000 samples
@@ -46,8 +48,6 @@ df<-df[sam,]
 load("Taxi5000_raw.RData")
 table(df$Ehail_fee) ##Delete unnecessary row
 df$Ehail_fee<-NULL
-table(df$Passanger_count) ##Delete unnecessary row
-df$Passanger_count<-NULL
 
 # Now one by one describe vars
 names(df)
@@ -63,7 +63,7 @@ table(df$VendorID)
 barplot(prop.table(table(df$VendorID)))
 ```
 
-## RateCodeID, there whas no group ride
+## RateCodeID, there was no group ride
 ```{r}
 sel<-which(df$RateCodeID==0.0);length(sel) #No missing Data
 df$RateCodeID<-factor(df$RateCodeID,labels=c("Standard rate","JFK","Newark","Nassau or Westchester","Negotiated fare"))
@@ -113,12 +113,14 @@ factorize<- function(x) {
 
 ## Passenger_count
 ```{r}
-df$f.passanger<-factorize(df$Passenger_count)
+
+df$f.passanger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
 summary(df$f.passanger)
 
 sel<-which(df$Passenger_count==0.0);length(sel) #2 missings
-
-df[sel,"Passanger_count"]<-NA
+outlier<-which(df$Passenger_count>6.0);length(outlier)
+df[sel,"Passenger_count"]<-NA
+df[outlier,"Passenger_count"]<-NA
 boxplot(df$Passenger_count)
 hist(df$Passenger_count, col="pink")
 ```
@@ -138,7 +140,7 @@ hist(df$Trip_distance, col="pink")
 df$f.longtitude<-factorize(df$Pickup_longitude)
 summary(df$f.longtitude)
 #How to detect missing values? 0.0 is a possible value? no 
-sel<-which(df$Pickup_longitude<0.0);length(sel) #11 missings
+sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
 df[sel,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
 ```
@@ -239,8 +241,8 @@ hist(df$Tip_amount, col="pink")
 
 ##Tolls_amount
 ```{r}
-df$f.toll<-factorize(df$Tolls_amount)
-summary(df$f.toll) #4907 NA's, not well factorized 
+df$f.toll<-factor(cut(df$Tolls_amount,breaks=c(-1,1,50)))
+summary(df$f.toll)
 sel<-which(df$Tolls_amount<0.0);length(sel) #0 missings
 df[sel,"Tolls_amount"]<-NA
 boxplot(df$Tolls_amount)
@@ -249,11 +251,19 @@ hist(df$Tolls_amount, col="pink")
 
 #Total_amount
 ```{r}
-df$f.total<-factorize(df$Total_amount)  # NO VA be
+df$f.total<-factorize(df$Total_amount)
 summary(df$f.total)
 
-sel<-which(df$Total_amount<=0.0);length(sel) #9 missings
+ll<-which(is.na(df$Total_amount));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
+iqrvar<-IQR(dfaux$Total_amount)
+quantil3<-quantile(dfaux$Total_amount, .75) #get 3rd quartile
+sel<-which(df$Total_amount<=0.0);length(sel) #9 errors
 df[sel,"Total_amount"]<-NA 
+outlier<-which(df$Total_amount>(iqrvar*3)+quantil3);length(outlier) #X extreme outliers
+df[outlier,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
 ```
