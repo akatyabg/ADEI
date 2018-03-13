@@ -10,7 +10,7 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("/home2/users/alumnes/1171633/Desktop/ADEI/ADEI") #Change 
+setwd("/home/sergi/Desktop/ADEI") #Change 
 
 ```
 #Introduction
@@ -115,10 +115,9 @@ factorize<- function(x) {
 ```{r}
 
 df$f.passanger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
-summary(df$f.passanger)
-
-sel<-which(df$Passenger_count==0.0);length(sel) #2 missings
-outlier<-which(df$Passenger_count>6.0);length(outlier)
+summary(df$f.passanger) #3 missing values
+sel<-which(df$Passenger_count<=0.0);length(sel) #2 errors
+outlier<-which(df$Passenger_count>6.0);length(outlier) #1 outlier
 df[sel,"Passenger_count"]<-NA
 df[outlier,"Passenger_count"]<-NA
 boxplot(df$Passenger_count)
@@ -128,8 +127,18 @@ hist(df$Passenger_count, col="pink")
 ## Trip_distance
 ```{r}
 df$f.distance<-factorize(df$Trip_distance) # NO VA be
-summary(df$distance)
-sel<-which(df$Trip_distance==0.0);length(sel) #60 missings
+summary(df$f.distance) #60 missing values
+sel<-which(df$Trip_distance<=0.0);length(sel) #x errors
+
+ll<-which(is.na(df$Trip_distance));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
+iqrvar<-IQR(dfaux$Trip_distance)
+quantil3<-quantile(dfaux$Trip_distance, .75);quantil3 #get 3rd quartile
+outlier<-which(df$Trip_distance>(iqrvar*3)+quantil3);length(outlier) #101 extreme outliers
+
+df[outlier,"Trip_distance"]<-NA 
 df[sel,"Trip_distance"]<-NA 
 boxplot(df$Trip_distance)
 hist(df$Trip_distance, col="pink")
@@ -137,16 +146,39 @@ hist(df$Trip_distance, col="pink")
 
 ## Pickup_longitude
 ```{r}
+
+#we need to add here error control (what if longitude is out of scope?) and outlier management
+
+min_lat <- 40.5774
+max_lat <- 40.9176
+min_long <- -74.15
+max_long <- -73.7004
+
 df$f.longtitude<-factorize(df$Pickup_longitude)
-summary(df$f.longtitude)
-#How to detect missing values? 0.0 is a possible value? no 
-sel<-which(df$Pickup_longitude==0.0);length(sel) #11 missings
+summary(df$f.longtitude) #1 missing value <- this is not right
+
+iqrvar<-IQR(df$Pickup_longitude)
+quantil3<-quantile(df$Pickup_longitude, .75);quantil3 #get 3rd quartile
+quantil1<-quantile(df$Pickup_longitude, .25);quantil1 #get 1st quartile
+
+UpperOutlier<-which(df$Pickup_longitude>quantil3+(iqrvar*3));length(UpperOutlier) #20 extreme UpperOutliers
+LowerOutlier<-which(df$Pickup_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
+
+error<-which(df$Pickup_longitude< min_long);length(min_long) #1 error
+
+
+sel<-which(df$Pickup_longitude==0.0 add df$Pickup_longitude<min_long || df$Pickup_longitude>max_long);length(sel) #11 errors
 df[sel,"Pickup_longitude"]<-NA 
+df[UpperOutlier,"Pickup_longitude"]<-NA 
+df[LowerOutlier,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
+summary(df$Pickup_longitude)
 ```
 
 ## Pickup_latitude
 ```{r}
+#we need to add here error control (what if longitude is out of scope?) and outlier management
+
 df$f.latitude<-factorize(df$Dropoff_latitude)
 summary(df$f.latitude) #4 NAs
 sel<-which(df$Pickup_latitude==0.0);length(sel) #11 missings
@@ -157,6 +189,8 @@ hist(df$Pickup_latitude, col="pink")
 
 ##Dropoff_longitude
 ```{r}
+#we need to add here error control (what if longitude is out of scope?) and outlier management
+
 df$f.longtitudeDrop<-factorize(df$Dropoff_longitude)
 summary(df$f.longtitudeDrop) # 1 NAs
 sel<-which(df$Dropoff_longitude==0.0);length(sel) #11 missings
@@ -166,6 +200,8 @@ boxplot(df$Dropoff_longitude)
 
 ## Dropoff_latitude
 ```{r}
+#we need to add here error control (what if longitude is out of scope?) and outlier management
+
 #quantile(df$Dropoff_latitude,seq(0,1,0.1))
 #pp<-quantile(df$Dropoff_latitude);pp
 #df$f.latitudeDrop<-factor(cut(df$Dropoff_latitude,pp))  # NO VA be
@@ -174,7 +210,7 @@ boxplot(df$Dropoff_longitude)
 #hist(df$Pickup_latitude, col="pink")
 
 df$f.latitudedeDrop<-factorize(df$Dropoff_latitude)
-summary(df$f.latitudedeDrop) # 1 NAs
+summary(df$f.latitudedeDrop) # 4 NAs
 sel<-which(df$Dropoff_latitude==0.0);length(sel) #11 missings
 df[sel,"Dropoff_latitude"]<-NA 
 boxplot(df$Dropoff_latitude)
@@ -260,9 +296,9 @@ if(length(ll)>0){
 }
 iqrvar<-IQR(dfaux$Total_amount)
 quantil3<-quantile(dfaux$Total_amount, .75) #get 3rd quartile
-sel<-which(df$Total_amount<=0.0);length(sel) #9 errors
+sel<-which(df$Total_amount<=0.0);length(sel) #22 errors
 df[sel,"Total_amount"]<-NA 
-outlier<-which(df$Total_amount>(iqrvar*3)+quantil3);length(outlier) #X extreme outliers
+outlier<-which(df$Total_amount>(iqrvar*3)+quantil3);length(outlier) #72 extreme outliers
 df[outlier,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
@@ -282,7 +318,7 @@ countNA <- function(x) {
 mis1<-countNA(df)
 
 attributes(mis1)
-mis1$mis_col
+sort(mis1$mis_col)
 df$mis_ind <- mis1$mis_ind # new attribute missing values
 summary(mis1$mis_ind)
 ```
