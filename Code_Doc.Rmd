@@ -10,7 +10,8 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("/home/sergi/Desktop/ADEI") #Change 
+setwd("/Users/Sergi/Desktop/Sergi/ADEI") #Change 
+
 
 ```
 #Introduction
@@ -26,7 +27,6 @@ missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
 
-install.packages("FactoMineR")
 ```
 
 ## Select 5000 samples
@@ -34,12 +34,14 @@ install.packages("FactoMineR")
 #Load samples
 
 ### Use birthday of 1 member of the group
-set.seed(28061963)
+set.seed(03101994)
 nrow(df)
 sam<-sample(1:nrow(df),5000)
 sam<-as.vector(sort(sam))
 
 df<-df[sam,]
+#setwd("/Users/Sergi/Desktop/Sergi/CABS")
+#df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
 #save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
@@ -128,13 +130,13 @@ hist(df$Passenger_count, col="pink")
 ```{r}
 df$f.distance<-factorize(df$Trip_distance) # NO VA be
 summary(df$f.distance) #60 missing values
-sel<-which(df$Trip_distance<=0.0);length(sel) #x errors
+sel<-which(df$Trip_distance<=0.0);length(sel) #60 errors
 
 ll<-which(is.na(df$Trip_distance));ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
-iqrvar<-IQR(dfaux$Trip_distance)
+iqrvar<-IQR(df$Trip_distance)
 quantil3<-quantile(dfaux$Trip_distance, .75);quantil3 #get 3rd quartile
 outlier<-which(df$Trip_distance>(iqrvar*3)+quantil3);length(outlier) #101 extreme outliers
 
