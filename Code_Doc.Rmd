@@ -149,63 +149,6 @@ barplot(prop.table(table(df$Trip_type)))
 ```
 
 
-#Creating auxiliar variables
-## Trip length
-
-```{r}
-
-for (i in 1:nrow(df)){
-  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
-}
-
-```
-
-
-## Trip distance in km
-```{r}
-
-df$trip_distance_km<-df$Trip_distance*1.609344 # Miles to km
-
-```
-
-## Travel time in minutes
-```{r}
-
-b1<-as.POSIXlt(df$lpep_pickup_datetime)
-b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
-df$travel_time<-as.double(difftime(b2,b1,units='min'))
-
-```
-
-## Espeed (km/h)
-```{r}
-#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
-
-for (i in 1:nrow(df)){
-  df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
-}
-
-```
-
-## Pick_up_hour
-```{r}
-mydate <- as.POSIXlt(df$lpep_pickup_datetime)
-df$pick_up_hour <- mydate$hour
-
-```
-
-
-## Pick_up_period
-```{r}
-# night, morning, valley and afternoon
-
-df$pick_up_period= cut(df$pick_up_hour, breaks = c(-1, 5, 11, 17, 23), labels= c("night", "morning", "valley", "afternoon"))
-
-
-```
-
-
-
 # Creating additional factors as a discretization 
 ## Factorize function:
 ```{r}
@@ -257,7 +200,6 @@ hist(df$Trip_distance, col="pink")
 
 ## Pickup_longitude
 ```{r}
-
 #min and max longitudes for New York city boundaries
 min_long <- -74.15 
 max_long <- -73.7004
@@ -265,18 +207,24 @@ max_long <- -73.7004
 df$f.longtitude<-factorize(df$Pickup_longitude)
 summary(df$f.longtitude) #1 missing value <- this is not right
 
-iqrvar<-IQR(df$Pickup_longitude)
-quantil3<-quantile(df$Pickup_longitude, .75);quantil3 #get 3rd quartile
-quantil1<-quantile(df$Pickup_longitude, .25);quantil1 #get 1st quartile
+errors<-which(df$Pickup_longitude< min_long);length(errors)
+errors<-c(errors,which(df$Pickup_longitude> max_long));length(errors)
+errors<-c(errors,which(df$Pickup_longitude==0.0));length(errors)
+df[errors,"Pickup_longitude"]<-NA #12 errors
 
-UpperOutlier<-which(df$Pickup_longitude>quantil3+(iqrvar*3));length(UpperOutlier) #20 extreme UpperOutliers
-LowerOutlier<-which(df$Pickup_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
+ll<-which(is.na(df$Pickup_longitude));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
 
-error<-which(df$Pickup_longitude< min_long);length(min_long) #1 error
+iqrvar<-IQR(dfaux$Pickup_longitude)
+quantil3<-quantile(dfaux$Pickup_longitude, .75);quantil3 #get 3rd quartile
+quantil1<-quantile(dfaux$Pickup_longitude, .25);quantil1 #get 1st quartile
+
+UpperOutlier<-which(df$Pickup_longitude>quantil3+(iqrvar*3));length(UpperOutlier) #14 extreme UpperOutliers
+LowerOutlier<-which(df$Pickup_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #1 extreme LowerOutliers
 
 
-sel<-which(df$Pickup_longitude==0.0 add df$Pickup_longitude<min_long || df$Pickup_longitude>max_long);length(sel) #11 errors
-df[sel,"Pickup_longitude"]<-NA 
 df[UpperOutlier,"Pickup_longitude"]<-NA 
 df[LowerOutlier,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
@@ -287,50 +235,87 @@ summary(df$Pickup_longitude)
 ```{r}
 #we need to add here error control (what if longitude is out of scope?) and outlier management
 
+summary(df$Pickup_latitude)
+
+#min and max latitudes for New York city boundaries
 min_lat <- 40.5774
 max_lat <- 40.9176
 
 
-df$f.latitude<-factorize(df$Dropoff_latitude)
-summary(df$f.latitude) #4 NAs
-sel<-which(df$Pickup_latitude==0.0);length(sel) #11 missings
-df[sel,"Pickup_latitude"]<-NA 
+df$f.latitude<-factorize(df$Pickup_latitude)
+summary(df$f.latitude) #1 missing value <- this is not right
+
+errors<-which(df$Pickup_latitude< min_lat);length(errors)
+errors<-c(errors,which(df$Pickup_latitude> max_lat));length(errors)
+errors<-c(errors,which(df$Pickup_latitude==0.0));length(errors)
+df[errors,"Pickup_latitude"]<-NA #17 errors
+
+ll<-which(is.na(df$Pickup_latitude));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
+
+iqrvar<-IQR(dfaux$Pickup_latitude)
+quantil3<-quantile(dfaux$Pickup_latitude, .75);quantil3 #get 3rd quartile
+quantil1<-quantile(dfaux$Pickup_latitude, .25);quantil1 #get 1st quartile
+
+UpperOutlier<-which(df$Pickup_latitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
+LowerOutlier<-which(df$Pickup_latitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
+df[UpperOutlier,"Pickup_latitude"]<-NA 
+df[LowerOutlier,"Pickup_latitude"]<-NA 
 boxplot(df$Pickup_latitude)
-hist(df$Pickup_latitude, col="pink")
+summary(df$Pickup_latitude)
 ```
 
 ##Dropoff_longitude
 ```{r}
-#we need to add here error control (what if longitude is out of scope?) and outlier management
+
+errors<-c(errors,which(df$Dropoff_longitude==0.0));length(errors) #26 errors
+df[errors,"Dropoff_longitude"]<-NA
+
+ll<-which(is.na(df$Dropoff_longitude));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
+
+iqrvar<-IQR(dfaux$Dropoff_longitude)
+quantil3<-quantile(dfaux$Dropoff_longitude, .75);quantil3 #get 3rd quartile
+quantil1<-quantile(dfaux$Dropoff_longitude, .25);quantil1 #get 1st quartile
+
+UpperOutlier<-which(df$Dropoff_longitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
+LowerOutlier<-which(df$Dropoff_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
+df[UpperOutlier,"Dropoff_longitude"]<-NA 
+df[LowerOutlier,"Dropoff_longitude"]<-NA 
 
 df$f.longtitudeDrop<-factorize(df$Dropoff_longitude)
 summary(df$f.longtitudeDrop) # 1 NAs
-sel<-which(df$Dropoff_longitude==0.0);length(sel) #11 missings
-df[sel,"Dropoff_longitude"]<-NA 
+
 boxplot(df$Dropoff_longitude)
 ```
 
 ## Dropoff_latitude
 ```{r}
-#we need to add here error control (what if longitude is out of scope?) and outlier management
+errors<-c(errors,which(df$Dropoff_latitude==0.0));length(errors) #35 errors
+df[errors,"Dropoff_latitude"]<-NA
 
-#quantile(df$Dropoff_latitude,seq(0,1,0.1))
-#pp<-quantile(df$Dropoff_latitude);pp
-#df$f.latitudeDrop<-factor(cut(df$Dropoff_latitude,pp))  # NO VA be
-#summary(df$f.latitudeDrop) # 4 NAs ? Outlier
-#boxplot(df$Pickup_latitude)
-#hist(df$Pickup_latitude, col="pink")
+ll<-which(is.na(df$Dropoff_latitude));ll
+if(length(ll)>0){
+  dfaux<-df[-ll,]
+}
 
-min_lat <- 40.5774
-max_lat <- 40.9176
+iqrvar<-IQR(dfaux$Dropoff_latitude)
+quantil3<-quantile(dfaux$Dropoff_latitude, .75);quantil3 #get 3rd quartile
+quantil1<-quantile(dfaux$Dropoff_latitude, .25);quantil1 #get 1st quartile
 
+UpperOutlier<-which(df$Dropoff_latitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
+LowerOutlier<-which(df$Dropoff_latitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
+df[UpperOutlier,"Dropoff_latitude"]<-NA 
+df[LowerOutlier,"Dropoff_latitude"]<-NA 
 
-df$f.latitudedeDrop<-factorize(df$Dropoff_latitude)
-summary(df$f.latitudedeDrop) # 4 NAs
-sel<-which(df$Dropoff_latitude==0.0);length(sel) #11 missings
-df[sel,"Dropoff_latitude"]<-NA 
+df$f.longtitudeDrop<-factorize(df$Dropoff_latitude)
+summary(df$f.longtitudeDrop) # 1 NAs
+
 boxplot(df$Dropoff_latitude)
-summary(df$Dropoff_latitude)
 ```
 
 ## Fare_amount
@@ -419,6 +404,74 @@ df[outlier,"Total_amount"]<-NA
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
 ```
+
+
+#Creating auxiliar variables and doing their analysis
+
+## Trip length
+```{r}
+
+for (i in 1:nrow(df)){
+  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
+}
+
+summary(df$trip_length)
+boxplot(df$trip_length)
+
+```
+
+
+## Trip distance in km
+```{r}
+
+df$trip_distance_km<-df$Trip_distance*1.609344 # Miles to km
+
+summary(df$trip_distance_km)
+boxplot(df$trip_distance_km)
+```
+
+## Travel time in minutes
+```{r}
+
+b1<-as.POSIXlt(df$lpep_pickup_datetime)
+b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
+df$travel_time<-as.double(difftime(b2,b1,units='min'))
+
+summary(df$travel_time)
+boxplot(df$travel_time)
+```
+
+## Espeed (km/h)
+```{r}
+#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
+
+for (i in 1:nrow(df)){
+  df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
+}
+summary(df$espeed)
+boxplot(df$espeed)
+```
+
+## Pick_up_hour
+```{r}
+mydate <- as.POSIXlt(df$lpep_pickup_datetime)
+df$pick_up_hour <- mydate$hour
+
+summary(df$pick_up_hour)
+boxplot(df$pick_up_hour)
+```
+
+
+## Pick_up_period
+```{r}
+# night, morning, valley and afternoon
+
+df$pick_up_period= cut(df$pick_up_hour, breaks = c(-1, 5, 11, 17, 23), labels= c("night", "morning", "valley", "afternoon"))
+
+summary(df$pick_up_period)
+
+```
+
 #Count per Variable:
 
 ## Number of missing values:
@@ -438,7 +491,29 @@ outs<-rep(0,ncol(df))
 show(outs)
 
 ```
-### Multivariant Outlier Detection
+
+## Multivariant Outlier Detection
+```{r}
+library(mvoutlier)
+names(df)
+vars_con # Problems c(5,8,9,10,11,12)
+summary(df[,vars_con])
+vars_con_out<-vars_con[c(1:4)]
+aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+
+# Use common sense, but technicalities might difficult the application of the procedure
+
+vars_con_out<-vars_con[c(1:4)]
+mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+
+# Use common sense
+vars_con
+vars_con_out<-vars_con[c(6,13,16)]
+aq.plot(df[,vars_con_out])  # Problems when missing data are present
+vars_con_out
+```
+
+
 
 
 #...In process
