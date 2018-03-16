@@ -168,7 +168,7 @@ factorize<- function(x) {
 ``{r}
 
 df$f.passanger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
-summary(df$f.passanger) #2 NA
+summary(df$f.passanger)
 errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
 outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
 df[errors,"Passenger_count"]<-NA
@@ -180,7 +180,7 @@ hist(df$Passenger_count, col="pink")
 ## Trip_distance
 ```{r}
 df$f.distance<-factorize(df$Trip_distance) # NO VA be?
-summary(df$f.distance) #59 missing values
+summary(df$f.distance) 
 errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
 dfaux<-df
@@ -563,7 +563,7 @@ df$AnyTip<-factor(df$AnyTip,labels=paste("AnyTip",c("No","Yes")))
 #if you touch some "global" variables you  will modify this part
 # Now one by one describe vars
 names(df)
-vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,18)] 
+vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,17,18)] 
 vars_dis<-names(df)[c(1,4,10)]
 vars_res<-names(df)[c(19,35)]
 vars_res
