@@ -149,26 +149,13 @@ barplot(prop.table(table(df$Trip_type)))
 ```
 
 
-# Creating additional factors as a discretization 
-## Factorize function:
-```{r}
-factorize<- function(x) {
-  quantile(x,seq(0,1,0.1))
-  pp<-quantile(x);pp
-  breaks<-c(unique(pp))
-  f.x<-factor(cut(x,breaks))
-  return(f.x);
-}
-```
-
+# Univariant Descriptive Analysis 
 ## Passenger_count
 ```{r}
 
 ## Number of missing values:
 ``{r}
 
-df$f.passanger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
-summary(df$f.passanger)
 errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
 outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
 df[errors,"Passenger_count"]<-NA
@@ -178,9 +165,7 @@ hist(df$Passenger_count, col="pink")
 ```
 
 ## Trip_distance
-```{r}
-df$f.distance<-factorize(df$Trip_distance) # NO VA be?
-summary(df$f.distance) 
+```{r} 
 errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
 dfaux<-df
@@ -241,10 +226,6 @@ summary(df$Pickup_latitude)
 min_lat <- 40.5774
 max_lat <- 40.9176
 
-
-df$f.latitude<-factorize(df$Pickup_latitude)
-summary(df$f.latitude) #1 missing value <- this is not right
-
 errors<-which(df$Pickup_latitude< min_lat);length(errors)
 errors<-c(errors,which(df$Pickup_latitude> max_lat));length(errors)
 errors<-c(errors,which(df$Pickup_latitude==0.0));length(errors)
@@ -287,9 +268,6 @@ LowerOutlier<-which(df$Dropoff_longitude<quantil1-(iqrvar*3));length(LowerOutlie
 df[UpperOutlier,"Dropoff_longitude"]<-NA 
 df[LowerOutlier,"Dropoff_longitude"]<-NA 
 
-df$f.longtitudeDrop<-factorize(df$Dropoff_longitude)
-summary(df$f.longtitudeDrop) # 1 NAs
-
 boxplot(df$Dropoff_longitude)
 ```
 
@@ -312,16 +290,11 @@ LowerOutlier<-which(df$Dropoff_latitude<quantil1-(iqrvar*3));length(LowerOutlier
 df[UpperOutlier,"Dropoff_latitude"]<-NA 
 df[LowerOutlier,"Dropoff_latitude"]<-NA 
 
-df$f.longtitudeDrop<-factorize(df$Dropoff_latitude)
-summary(df$f.longtitudeDrop) # 1 NAs
-
 boxplot(df$Dropoff_latitude)
 ```
 
 ## Fare_amount
 ```{r}
-df$f.fare_amount<-factorize(df$Fare_amount)
-summary(df$f.fare_amount)
 
 sel<-which(df$Fare_amount<=0.0);length(sel) #10 missings
 outlier<-which(df$Fare_amount>100);length(outlier) #1 outlier
@@ -334,9 +307,6 @@ summary(df$Fare_amount)
 ```
 ## Extra 
 ```{r}
-df$f.extra<-factorize(df$Extra)
-summary(df$f.extra) #1 NA's
-
 sel<-which(df$Extra<0.0);length(sel) #10 missings
 df[sel,"Extra"]<-NA 
 boxplot(df$Extra)
@@ -345,8 +315,6 @@ hist(df$Extra, col="pink")
 
 ## MTA_tax
 ```{r}
-df$f.MTA_tax<-factorize(df$MTA_tax)
-summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
 sel<-which(df$MTA_tax<0.0);length(sel) #103 missings
 df[sel,"MTA_tax"]<-NA
 boxplot(df$MTA_tax)
@@ -355,10 +323,8 @@ hist(df$MTA_tax, col="pink")
 
 ## Improvement_surcharge
 ```{r}
-df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
-summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
 
-sel<-which(df$improvement_surcharge<0.0);length(sel) #107 missings
+sel<-which(df$improvement_surcharge<0.0);length(sel)
 df[sel,"improvement_surcharge"]<-NA
 boxplot(df$improvement_surcharge)
 hist(df$improvement_surcharge, col="pink")
@@ -366,8 +332,6 @@ hist(df$improvement_surcharge, col="pink")
 
 ##Tip_amount
 ```{r}
-df$f.tip_amount<-factor(df$Tip_amount)
-summary(df$f.tip_amount) #2869 NA's
 sel<-which(df$Tip_amount<0.0);length(sel) #107 missings
 outlier<-which(df$Tip_amount>60.0);length(outlier) #1 missings
 df[outlier,"Tip_amount"]<-NA
@@ -378,8 +342,6 @@ hist(df$Tip_amount, col="pink")
 
 ##Tolls_amount
 ```{r}
-df$f.toll<-factor(cut(df$Tolls_amount,breaks=c(-1,1,50)))
-summary(df$f.toll)
 sel<-which(df$Tolls_amount<0.0);length(sel) #0 missings
 df[sel,"Tolls_amount"]<-NA
 boxplot(df$Tolls_amount)
@@ -388,8 +350,6 @@ hist(df$Tolls_amount, col="pink")
 
 #Total_amount
 ```{r}
-df$f.total<-factorize(df$Total_amount)
-summary(df$f.total)
 
 ll<-which(is.na(df$Total_amount));ll
 if(length(ll)>0){
@@ -513,45 +473,23 @@ aq.plot(df[,vars_con_out])  # Problems when missing data are present
 vars_con_out
 ```
 
-
-
-
-#...In process
-```{r}
-#vars_con<-names(df)[c(6:9,11:18)] #Continuous variables
-
-
-#install.packages('mvoutlier')
-#library(mvoutlier) #not found??
-#names(df)
-#vars_con # Problems c(5,8,9,10,11,12)
-#summary(df[,vars_con])
-#vars_con_out<-vars_con[c(1:4)]
-#aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
-
-# Use common sense, but technicalities might difficult the application of the procedure
-
-#vars_con_out<-vars_con[c(1:4)]
-#mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
-
-# Use common sense
-#vars_con
-#vars_con_out<-vars_con[c(6,13,16)]
-#aq.plot(df[,vars_con_out])  # Problems when missing data are present
-#vars_con_out
-
-```
-
-
-```{r}
-#install.packages("car")
-#library(car) #not found??
-#hist(df$Tip_amount, col="pink")
-#catdes(data, 1)
-```
-
-
 # Imputation
+
+## Remove observations with NA at targets
+
+```{r}
+ll<-which(is.na(df$Total_amount));ll
+if(length(ll)>0){
+  df<-df[-ll,]
+}
+
+ll<-which(is.na(df$AnyTip));ll
+if(length(ll)>0){
+  df<-df[-ll,]
+}
+
+```
+
 ## Definition of binary outcome: AnyTip
 ```{r}
 # Binary Target: Any Tip?
@@ -601,19 +539,103 @@ res.impute
 df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
 #...necessaries variables
 ```
-## Remove observations with NA at targets
 
+# Creating factors
+
+## Factorize function:
 ```{r}
-ll<-which(is.na(df$Total_amount));ll
-if(length(ll)>0){
-  df<-df[-ll,]
+factorize<- function(x) {
+  quantile(x,seq(0,1,0.1))
+  pp<-quantile(x);pp
+  breaks<-c(unique(pp))
+  f.x<-factor(cut(x,breaks))
+  return(f.x);
 }
+```
 
-ll<-which(is.na(df$AnyTip));ll
-if(length(ll)>0){
-  df<-df[-ll,]
-}
+## f.passenger
+```{r}
 
+df$f.passenger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
+summary(df$f.passenger)
+
+```
+
+## f.distance
+```{r}
+df$f.distance<-factorize(df$Trip_distance) # NO VA be?
+summary(df$f.distance) 
+```
+
+## f.pickup_longitude
+```{r}
+
+df$f.pickup_longitude<-factorize(df$Pickup_longitude)
+summary(df$f.pickup_longitude)
+```
+
+## f.pickup_latitude
+```{r}
+df$f.pickup_latitude<-factorize(df$Pickup_latitude)
+summary(df$f.pickup_latitude)
+```
+
+## f.dropoff_longitude
+```{r}
+
+df$f.dropoff_longitude<-factorize(df$Dropoff_longitude)
+summary(df$f.dropoff_longitude)
+
+```
+
+## f.dropoff_latitude
+```{r}
+df$f.dropoff_latitude<-factorize(df$Pickup_latitude)
+summary(df$f.dropoff_latitude) 
+```
+
+## f.fare_amount
+```{r}
+df$f.fare_amount<-factorize(df$Fare_amount)
+summary(df$f.fare_amount)
+```
+
+## f.extra
+```{r}
+df$f.extra<-factorize(df$Extra)
+summary(df$f.extra)
+```
+
+## f.MTA_tax
+```{r}
+
+df$f.MTA_tax<-factorize(df$MTA_tax)
+summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
+
+```
+
+## f.Improvement_surcharge
+```{r}
+df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
+summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
+```
+
+## f.tip_amount
+```{r}
+df$f.tip_amount<-factor(df$Tip_amount)
+summary(df$f.tip_amount) #2869 NA's
+```
+
+## f.tolls_amount
+```{r}
+df$f.toll<-factor(cut(df$Tolls_amount,breaks=c(-1,1,50)))
+summary(df$f.toll)
+```
+
+## f.total_amount
+```{r}
+df$f.total<-factorize(df$Total_amount)
+summary(df$f.total)
 ```
 
 # Profiling
