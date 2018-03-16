@@ -45,9 +45,56 @@ df<-df[sam,]
 #save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
+##Load functions
+
+```{r}
+countX <- function(x,X) {
+  n_x <- NULL
+  for (j in 1:ncol(x)) {n_x[j] <- sum(x[,j]==X) }
+  n_x <- as.data.frame(n_x)
+  rownames(n_x) <- names(x)
+  nx_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {nx_i <- nx_i + as.numeric(x[,j]==X) }
+  list(nx_col=n_x,nx_ind=nx_i) }
+
+countNA <- function(x) {
+  mis_x <- NULL
+  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
+  mis_x <- as.data.frame(mis_x)
+  rownames(mis_x) <- names(x)
+  mis_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
+  list(mis_col=mis_x,mis_ind=mis_i) }
+
+man.dist.manual <- function(p1Lat, p1Lon, p2Lat, p2Lon) {
+  #return(abs(pointDistance(c(p1$lon, p1$lat), c(p1$lon, p2$lat), longlat=TRUE)) + abs(pointDistance(c(p2$lon, p1$lat), c(p2$lon, p2$lat), longlat=TRUE)))
+  R = 6371
+  lat1 = degrees.to.radians(p1Lat)
+  lon1 = degrees.to.radians(p1Lon)
+  lat2 = degrees.to.radians(p2Lat)
+  lon2 = degrees.to.radians(p2Lon)
+  A_lat = lat2 - lat1
+  A_lon = lon2 - lon1
+  a = sin(A_lat/2)^2
+  c = 2 * atan2(sqrt(a), sqrt(1-a))
+  dist_lat = R * c
+  a = sin(A_lon/2)^2
+  c = 2 * atan2(sqrt(a), sqrt(1-a))
+  dist_lon = R * c
+  abs(dist_lat) + abs(dist_lon)
+  return(abs(dist_lat) + abs(dist_lon))
+}
+
+degrees.to.radians<-function(value) {
+  return(value*0.0174532925)
+}
+
+```
+
+
 ## Delete unnecessary attributes
 ```{r}
-load("Taxi5000_raw.RData")
+load("Taxi5000_raw2.RData")
 table(df$Ehail_fee) ##Delete unnecessary row
 df$Ehail_fee<-NULL
 
@@ -101,6 +148,64 @@ table(df$Trip_type)
 barplot(prop.table(table(df$Trip_type)))
 ```
 
+
+#Creating auxiliar variables
+## Trip length
+
+```{r}
+
+for (i in 1:nrow(df)){
+  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
+}
+
+```
+
+
+## Trip distance in km
+```{r}
+
+df$trip_distance_km<-df$Trip_distance*1.609344 # Miles to km
+
+```
+
+## Travel time in minutes
+```{r}
+
+b1<-as.POSIXlt(df$lpep_pickup_datetime)
+b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
+df$travel_time<-as.double(difftime(b2,b1,units='min'))
+
+```
+
+## Espeed (km/h)
+```{r}
+#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
+
+for (i in 1:nrow(df)){
+  df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
+}
+
+```
+
+## Pick_up_hour
+```{r}
+mydate <- as.POSIXlt(df$lpep_pickup_datetime)
+df$pick_up_hour <- mydate$hour
+
+```
+
+
+## Pick_up_period
+```{r}
+# night, morning, valley and afternoon
+
+df$pick_up_period= cut(df$pick_up_hour, breaks = c(-1, 5, 11, 17, 23), labels= c("night", "morning", "valley", "afternoon"))
+
+
+```
+
+
+
 # Creating additional factors as a discretization 
 ## Factorize function:
 ```{r}
@@ -116,32 +221,36 @@ factorize<- function(x) {
 ## Passenger_count
 ```{r}
 
+## Number of missing values:
+``{r}
+
 df$f.passanger<-factor(cut(df$Passenger_count,breaks=c(0,1,6)))
-summary(df$f.passanger) #3 missing values
-sel<-which(df$Passenger_count<=0.0);length(sel) #2 errors
-outlier<-which(df$Passenger_count>6.0);length(outlier) #1 outlier
-df[sel,"Passenger_count"]<-NA
-df[outlier,"Passenger_count"]<-NA
+summary(df$f.passanger) #2 NA
+errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
+outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
+df[errors,"Passenger_count"]<-NA
+df[outliers,"Passenger_count"]<-NA
 boxplot(df$Passenger_count)
 hist(df$Passenger_count, col="pink")
 ```
 
 ## Trip_distance
 ```{r}
-df$f.distance<-factorize(df$Trip_distance) # NO VA be
-summary(df$f.distance) #60 missing values
-sel<-which(df$Trip_distance<=0.0);length(sel) #60 errors
+df$f.distance<-factorize(df$Trip_distance) # NO VA be?
+summary(df$f.distance) #59 missing values
+errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
+dfaux<-df
 ll<-which(is.na(df$Trip_distance));ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
-iqrvar<-IQR(df$Trip_distance)
+iqrvar<-IQR(dfaux$Trip_distance)
 quantil3<-quantile(dfaux$Trip_distance, .75);quantil3 #get 3rd quartile
-outlier<-which(df$Trip_distance>(iqrvar*3)+quantil3);length(outlier) #101 extreme outliers
+outliers<-which(df$Trip_distance>(iqrvar*3)+quantil3);length(outliers) #138 extreme outliers
 
-df[outlier,"Trip_distance"]<-NA 
-df[sel,"Trip_distance"]<-NA 
+df[outliers,"Trip_distance"]<-NA 
+df[errors,"Trip_distance"]<-NA 
 boxplot(df$Trip_distance)
 hist(df$Trip_distance, col="pink")
 ```
@@ -149,11 +258,8 @@ hist(df$Trip_distance, col="pink")
 ## Pickup_longitude
 ```{r}
 
-#we need to add here error control (what if longitude is out of scope?) and outlier management
-
-min_lat <- 40.5774
-max_lat <- 40.9176
-min_long <- -74.15
+#min and max longitudes for New York city boundaries
+min_long <- -74.15 
 max_long <- -73.7004
 
 df$f.longtitude<-factorize(df$Pickup_longitude)
@@ -180,6 +286,10 @@ summary(df$Pickup_longitude)
 ## Pickup_latitude
 ```{r}
 #we need to add here error control (what if longitude is out of scope?) and outlier management
+
+min_lat <- 40.5774
+max_lat <- 40.9176
+
 
 df$f.latitude<-factorize(df$Dropoff_latitude)
 summary(df$f.latitude) #4 NAs
@@ -210,6 +320,10 @@ boxplot(df$Dropoff_longitude)
 #summary(df$f.latitudeDrop) # 4 NAs ? Outlier
 #boxplot(df$Pickup_latitude)
 #hist(df$Pickup_latitude, col="pink")
+
+min_lat <- 40.5774
+max_lat <- 40.9176
+
 
 df$f.latitudedeDrop<-factorize(df$Dropoff_latitude)
 summary(df$f.latitudedeDrop) # 4 NAs
@@ -309,14 +423,7 @@ hist(df$Total_amount, col="pink")
 
 ## Number of missing values:
 ```{r}
-countNA <- function(x) {
-  mis_x <- NULL
-  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
-  mis_x <- as.data.frame(mis_x)
-  rownames(mis_x) <- names(x)
-  mis_i <- rep(0,nrow(x))
-  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
-  list(mis_col=mis_x,mis_ind=mis_i) }
+
 mis1<-countNA(df)
 
 attributes(mis1)
@@ -369,41 +476,55 @@ show(outs)
 ```
 
 
-```{r,include=FALSE}
-library(rmarkdown)
-#Generating the report from the Rmd file
-#render("/home2/users/alumnes/1228816/ADEI/ADEI/Code_Doc.Rmd", "pdf_document") #execute this directly in the Rstuio console because here it will be recursive and will never end..
-```
-
 # Imputation
 ## Definition of binary outcome: AnyTip
 ```{r}
 # Binary Target: Any Tip?
 
+
 df$AnyTip<-ifelse(df$Tip_amount<0.0001,0,1) 
 df$AnyTip<-factor(df$AnyTip,labels=paste("AnyTip",c("No","Yes")))
-
+#IMPORTANT
+#if you touch some "global" variables you  will modify this part
 # Now one by one describe vars
 names(df)
-vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,19)] 
-vars_dis<-names(df)[c(1,4,5,10,20,21)]
-vars_res<-names(df)[c(19,33)]
+vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,18)] 
+vars_dis<-names(df)[c(1,4,10)]
+vars_res<-names(df)[c(19,35)]
 vars_res
-
-
+vars_dis
 ```
 ## Imputation of numeric variables
 ```{r}
 library(missMDA)
-
+names(df)
 vars_con_mis<-vars_con;length(vars_con_mis)
 vars_con_mis
 summary(df[,vars_con_mis])
+
+res.comp <- imputePCA(df[,vars_con], ncp=4)
+attributes(res.comp$completeObs)
+summary(res.comp$completeObs)
+df[,"Pickup_longitude"]<-res.comp$completeObs[,"Pickup_longitude"]
+df[,"Pickup_latitude"]<-res.comp$completeObs[,"Pickup_latitude"]
+df[,"Dropoff_longitude"]<-res.comp$completeObs[,"Dropoff_longitude"]
+df[,"Dropoff_latitude"]<-res.comp$completeObs[,"Dropoff_latitude"]
+df[,"Trip_distance"]<-res.comp$completeObs[,"Trip_distance"]
+df[,"Fare_amount"]<-res.comp$completeObs[,"Fare_amount"]
+df[,"Extra"]<-res.comp$completeObs[,"Extra"]
+df[,"MTA_tax"]<-res.comp$completeObs[,"MTA_tax"]
+df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
+df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
+df[,"Total_amount"]<-res.comp$completeObs[,"Total_amount"]
 ```
 
 ## Imputation of qualitative variables
 ```{r}
-
+library(missMDA)
+res.impute = imputeMCA(df[,vars_dis],ncp = 3)
+res.impute
+df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
+#...necessaries variables
 ```
 ## Remove observations with NA at targets
 
@@ -417,6 +538,35 @@ ll<-which(is.na(df$AnyTip));ll
 if(length(ll)>0){
   df<-df[-ll,]
 }
+
+```
+
+# Profiling
+```{r}
+#save(df,miss,vars_con,vars_dis,vars_res,file="MyTaxi5000_Clean.RData")
+summary(df)
+
+# Numeric Target Total_Amount
+vars_con;vars_dis
+names(df)
+
+# condes(df[,c(vars_con,vars_dis)],1)
+library(FactoMineR)
+condes(df,15)
+
+# Binary Target AnyTip
+vars_con;vars_dis
+names(df)
+
+#catdes(df[,c(vars_dis,vars_con)],5)
+catdes(df,which(names(df)=="AnyTip"))
+```
+
+
+```{r,include=FALSE}
+library(rmarkdown)
+#Generating the report from the Rmd file
+#render("/home2/users/alumnes/1228816/ADEI/ADEI/Code_Doc.Rmd", "pdf_document") #execute this directly in the Rstuio console because here it will be recursive and will never end..
 ```
 
 
