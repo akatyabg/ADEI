@@ -381,10 +381,7 @@ boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
 ```
 
-
-#Count per Variable:
-
-## Number of missing values:
+# Number of missing values:
 ```{r}
 
 mis1<-countNA(df)
@@ -395,14 +392,7 @@ df$mis_ind <- mis1$mis_ind # new attribute missing values
 mis1$mis_col
 ```
 
-##Number of outliers ???
-```{r}
-outs<-rep(0,ncol(df))
-show(outs)
-
-```
-
-## Declare vectors of data
+# Declaring vectors of data
 ```{r}
 names(df)
 vars_con<-names(df)[c(6:9,11:18)]
@@ -437,6 +427,14 @@ vars_con
 vars_con_out<-vars_con[c(6,9,12)]
 aq.plot(df[,vars_con_out])  # Problems when missing data are present
 vars_con_out
+```
+
+# Correlations error variable
+```{r}
+names (df)
+summary(mis1$mis_col)
+catdes(mis1$mis_col)
+
 ```
 
 # Imputation
@@ -677,11 +675,6 @@ df$f.total<-factorize(df$Total_amount)
 summary(df$f.total)
 ```
 
-# Correlations error variable
-```{r}
-
-```
-
 
 # Profiling
 ```{r}
@@ -705,11 +698,6 @@ catdes(df,which(names(df)=="AnyTip"))
 ```
 
 
-```{r,include=FALSE}
-library(rmarkdown)
-#Generating the report from the Rmd file
-#render("/home2/users/alumnes/1228816/ADEI/ADEI/Code_Doc.Rmd", "pdf_document") #execute this directly in the Rstuio console because here it will be recursive and will never end..
-```
 
 
 
