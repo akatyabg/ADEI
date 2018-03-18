@@ -416,11 +416,10 @@ library(mvoutlier)
 
 vars_con # Problems c(5,8,9,10,11,12)
 summary(df[,vars_con])
-vars_con_out<-vars_con2[c(1:4)]
-vars_con2<-names(df)[c(6,8)] 
+vars_con_out<-vars_con[c(1:4)]
+
 dim(vars_con2)
-aq.plot(df[,6-7],delta=qchisq(0.95,
-df=ncol(x)),alpha=0.05) # Problems when few numeric values are present in one variable
+aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
 
 # Use common sense, but technicalities might difficult the application of the procedure
 
@@ -436,7 +435,8 @@ vars_con_out
 
 # Correlations error variable
 ```{r}
-
+install.packages("polycor")
+library(polycor)
 library(FactoMineR)
 names (df)
 summary(df$mis_ind)
@@ -444,6 +444,7 @@ corV <- cor(df[,vars_con], df$mis_ind,  use = "complete.obs")
 corV 
  # rank 
 rank(corV) 
+
 
 ```
 
