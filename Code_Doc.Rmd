@@ -382,71 +382,6 @@ hist(df$Total_amount, col="pink")
 ```
 
 
-#Creating auxiliar variables and doing their analysis
-
-## Trip length
-```{r}
-for (i in 1:nrow(df)){
-  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
-}
-
-summary(df$trip_length)
-boxplot(df$trip_length)
-
-```
-
-
-## Trip distance in km
-```{r}
-
-df$trip_distance_km<-df$Trip_distance*1.609344 # Miles to km
-
-summary(df$trip_distance_km)
-boxplot(df$trip_distance_km)
-```
-
-## Travel time in minutes
-```{r}
-
-b1<-as.POSIXlt(df$lpep_pickup_datetime)
-b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
-df$travel_time<-as.double(difftime(b2,b1,units='min'))
-
-summary(df$travel_time)
-boxplot(df$travel_time)
-```
-
-## Espeed (km/h)
-```{r}
-#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
-
-for (i in 1:nrow(df)){
-  df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
-}
-summary(df$espeed)
-boxplot(df$espeed)
-```
-
-## Pick_up_hour
-```{r}
-mydate <- as.POSIXlt(df$lpep_pickup_datetime)
-df$pick_up_hour <- mydate$hour
-
-summary(df$pick_up_hour)
-boxplot(df$pick_up_hour)
-```
-
-
-## Pick_up_period
-```{r}
-# night, morning, valley and afternoon
-
-df$pick_up_period= cut(df$pick_up_hour, breaks = c(-1, 5, 11, 17, 23), labels= c("night", "morning", "valley", "afternoon"))
-
-summary(df$pick_up_period)
-
-```
-
 #Count per Variable:
 
 ## Number of missing values:
@@ -575,6 +510,72 @@ df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
 df[,"Passenger_count"]<-res.impute$completeObs[,"Passenger_count"]
 df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
 df[,"Trp_type"]<-res.impute$completeObs[,"Trp_type"]
+
+```
+
+
+#Creating auxiliar variables and doing their analysis
+
+## Trip length
+```{r}
+for (i in 1:nrow(df)){
+  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
+}
+
+summary(df$trip_length)
+boxplot(df$trip_length)
+
+```
+
+
+## Trip distance in km
+```{r}
+
+df$trip_distance_km<-df$Trip_distance*1.609344 # Miles to km
+
+summary(df$trip_distance_km)
+boxplot(df$trip_distance_km)
+```
+
+## Travel time in minutes
+```{r}
+
+b1<-as.POSIXlt(df$lpep_pickup_datetime)
+b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
+df$travel_time<-as.double(difftime(b2,b1,units='min'))
+
+summary(df$travel_time)
+boxplot(df$travel_time)
+```
+
+## Espeed (km/h)
+```{r}
+#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
+
+for (i in 1:nrow(df)){
+  df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
+}
+summary(df$espeed)
+boxplot(df$espeed)
+```
+
+## Pick_up_hour
+```{r}
+mydate <- as.POSIXlt(df$lpep_pickup_datetime)
+df$pick_up_hour <- mydate$hour
+
+summary(df$pick_up_hour)
+boxplot(df$pick_up_hour)
+```
+
+
+## Pick_up_period
+```{r}
+# night, morning, valley and afternoon
+
+df$pick_up_period= cut(df$pick_up_hour, breaks = c(-1, 5, 11, 17, 23), labels= c("night", "morning", "valley", "afternoon"))
+
+summary(df$pick_up_period)
 
 ```
 
