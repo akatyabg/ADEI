@@ -105,45 +105,45 @@ names(df)
 #Converting numeric variables corresponding to qualitative concepts to factors
 ## VendorID
 ```{r}
-sel<-which(df$VendorID==0.0);length(sel) #No missing Data
+missingData<-which(is.na(df$VendorID));length(missingData) #No missing Data
+errors<-which(df$VendorID==0.0);length(errors) #No errors
 df$VendorID<-factor(df$VendorID,labels=c("Creative Mobile Technologies, LLC","VeriFone Inc."))
-summary(df$VendorID)
 table(df$VendorID)
 barplot(prop.table(table(df$VendorID)))
 ```
 
-## RateCodeID, there was no group ride
+## RateCodeID
 ```{r}
-sel<-which(df$RateCodeID==0.0);length(sel) #No missing Data
+missingData<-which(is.na(df$RateCodeID));length(missingData) #No missing Data
+errors<-which(df$RateCodeID==0.0);length(errors) #No errors
 df$RateCodeID<-factor(df$RateCodeID,labels=c("Standard rate","JFK","Newark","Nassau or Westchester","Negotiated fare"))
-summary(df$RateCodeID)
-table(df$RateCodeID)
+table(df$RateCodeID) 
 barplot(prop.table(table(df$RateCodeID)))
 ```
 
 ## Store_and_fwd_flag 
 ```{r}
 #//first the N and than Y
-sel<-which(df$Store_and_fwd_flag==0.0);length(sel) #No missing Data
+missingData<-which(is.na(df$Store_and_fwd_flag));length(missingData) #No missing Data
+erors<-which(df$Store_and_fwd_flag==0.0);length(errors) #No errors
 df$Store_and_fwd_flag<-factor(df$Store_and_fwd_flag,labels=c("not a store and forward trip","store and forward trip"))
-summary(df$Store_and_fwd_flag)
 table(df$Store_and_fwd_flag)
 barplot(prop.table(table(df$Store_and_fwd_flag)))
 ```
 ## Payment_type 
 ```{r}
-sel<-which(df$Payment_type==0.0);length(sel) #No missing Data
+missingData<-which(is.na(df$Trip_type));length(missingData) #No missing Data
+errors<-which(df$Payment_type==0.0);length(errors) #No errors
 df$Payment_type<-factor(df$Payment_type,labels=c("Credit card","Cash", "No charge", "Dispute"))
-summary(df$Payment_type)
 table(df$Payment_type)
 barplot(prop.table(table(df$Payment_type)))
 ```
 
 ## Trip_type
 ```{r}
-sel<-which(df$Trip_type==0.0);length(sel) #No missing Data
+missingData<-which(is.na(df$Trip_type));length(missingData) #No missing Data
+errors<-which(df$Trip_type==0.0);length(errors) #No errors
 df$Trip_type<-factor(df$Trip_type,labels=c("Street-hail","Dispatch"))
-summary(df$Trip_type)
 table(df$Trip_type)
 barplot(prop.table(table(df$Trip_type)))
 ```
@@ -155,7 +155,7 @@ barplot(prop.table(table(df$Trip_type)))
 
 ## Number of missing values:
 ``{r}
-
+missingData<-which(is.na(df$Passenger_count));length(missingData) #No missing Data
 errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
 outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
 df[errors,"Passenger_count"]<-NA
@@ -166,6 +166,7 @@ hist(df$Passenger_count, col="pink")
 
 ## Trip_distance
 ```{r} 
+missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
 errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
 dfaux<-df
@@ -185,12 +186,11 @@ hist(df$Trip_distance, col="pink")
 
 ## Pickup_longitude
 ```{r}
+missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
+
 #min and max longitudes for New York city boundaries
 min_long <- -74.15 
 max_long <- -73.7004
-
-df$f.longtitude<-factorize(df$Pickup_longitude)
-summary(df$f.longtitude) #1 missing value <- this is not right
 
 errors<-which(df$Pickup_longitude< min_long);length(errors)
 errors<-c(errors,which(df$Pickup_longitude> max_long));length(errors)
@@ -218,6 +218,8 @@ summary(df$Pickup_longitude)
 
 ## Pickup_latitude
 ```{r}
+missingData<-which(is.na(df$Pickup_latitude));length(missingData) #No missing Data
+
 #we need to add here error control (what if longitude is out of scope?) and outlier management
 
 summary(df$Pickup_latitude)
@@ -250,6 +252,7 @@ summary(df$Pickup_latitude)
 
 ##Dropoff_longitude
 ```{r}
+missingData<-which(is.na(df$Dropoff_longitude));length(missingData) #No missing Data
 
 errors<-c(errors,which(df$Dropoff_longitude==0.0));length(errors) #26 errors
 df[errors,"Dropoff_longitude"]<-NA
@@ -273,6 +276,8 @@ boxplot(df$Dropoff_longitude)
 
 ## Dropoff_latitude
 ```{r}
+missingData<-which(is.na(df$Dropoff_latitude));length(missingData) #No missing Data
+
 errors<-c(errors,which(df$Dropoff_latitude==0.0));length(errors) #35 errors
 df[errors,"Dropoff_latitude"]<-NA
 
@@ -295,6 +300,7 @@ boxplot(df$Dropoff_latitude)
 
 ## Fare_amount
 ```{r}
+missingData<-which(is.na(df$Fare_amount));length(missingData) #No missing Data
 
 sel<-which(df$Fare_amount<=0.0);length(sel) #10 missings
 outlier<-which(df$Fare_amount>100);length(outlier) #1 outlier
@@ -307,6 +313,8 @@ summary(df$Fare_amount)
 ```
 ## Extra 
 ```{r}
+missingData<-which(is.na(df$Extra));length(missingData) #No missing Data
+
 sel<-which(df$Extra<0.0);length(sel) #10 missings
 df[sel,"Extra"]<-NA 
 boxplot(df$Extra)
@@ -315,6 +323,8 @@ hist(df$Extra, col="pink")
 
 ## MTA_tax
 ```{r}
+missingData<-which(is.na(df$MTA_tax));length(missingData) #No missing Data
+
 sel<-which(df$MTA_tax<0.0);length(sel) #103 missings
 df[sel,"MTA_tax"]<-NA
 boxplot(df$MTA_tax)
@@ -323,6 +333,7 @@ hist(df$MTA_tax, col="pink")
 
 ## Improvement_surcharge
 ```{r}
+missingData<-which(is.na(df$Improvement_surcharge));length(missingData) #No missing Data
 
 sel<-which(df$improvement_surcharge<0.0);length(sel)
 df[sel,"improvement_surcharge"]<-NA
@@ -332,6 +343,8 @@ hist(df$improvement_surcharge, col="pink")
 
 ##Tip_amount
 ```{r}
+missingData<-which(is.na(df$Tip_amount));length(missingData) #No missing Data
+
 sel<-which(df$Tip_amount<0.0);length(sel) #107 missings
 outlier<-which(df$Tip_amount>60.0);length(outlier) #1 missings
 df[outlier,"Tip_amount"]<-NA
@@ -342,6 +355,8 @@ hist(df$Tip_amount, col="pink")
 
 ##Tolls_amount
 ```{r}
+missingData<-which(is.na(df$Tolls_amount));length(missingData) #No missing Data
+
 sel<-which(df$Tolls_amount<0.0);length(sel) #0 missings
 df[sel,"Tolls_amount"]<-NA
 boxplot(df$Tolls_amount)
@@ -350,6 +365,7 @@ hist(df$Tolls_amount, col="pink")
 
 #Total_amount
 ```{r}
+missingData<-which(is.na(df$Total_amount));length(missingData) #No missing Data
 
 ll<-which(is.na(df$Total_amount));ll
 if(length(ll)>0){
@@ -370,7 +386,6 @@ hist(df$Total_amount, col="pink")
 
 ## Trip length
 ```{r}
-
 for (i in 1:nrow(df)){
   df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
 }
@@ -440,9 +455,9 @@ summary(df$pick_up_period)
 mis1<-countNA(df)
 
 attributes(mis1)
-sort(mis1$mis_col)
+# sort(mis1$mis_col)
 df$mis_ind <- mis1$mis_ind # new attribute missing values
-summary(mis1$mis_ind)
+mis1$mis_col
 ```
 
 ##Number of outliers ???
@@ -452,10 +467,26 @@ show(outs)
 
 ```
 
+## Declare vectors of data
+```{r}
+names(df)
+vars_con<-names(df)[c(6:9,11:18)]
+vars_dis<-names(df)[c(1,4,5,19,20:23)]
+vars_res<-names(df)[c(18,23)]
+
+names(df)
+vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,18)] 
+vars_dis<-names(df)[c(1,5,10,20,21)]
+vars_res<-names(df)[c(19,22)]
+vars_res
+vars_dis
+vars_con
+```
+
+
 ## Multivariant Outlier Detection
 ```{r}
 library(mvoutlier)
-names(df)
 vars_con # Problems c(5,8,9,10,11,12)
 summary(df[,vars_con])
 vars_con_out<-vars_con[c(1:4)]
@@ -468,7 +499,7 @@ mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
 
 # Use common sense
 vars_con
-vars_con_out<-vars_con[c(6,13,16)]
+vars_con_out<-vars_con[c(6,9,12)]
 aq.plot(df[,vars_con_out])  # Problems when missing data are present
 vars_con_out
 ```
@@ -501,14 +532,17 @@ df$AnyTip<-factor(df$AnyTip,labels=paste("AnyTip",c("No","Yes")))
 #if you touch some "global" variables you  will modify this part
 # Now one by one describe vars
 names(df)
-vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,17,18)] 
-vars_dis<-names(df)[c(1,4,10)]
-vars_res<-names(df)[c(19,35)]
+vars_con<-names(df)[c(6,7,8,9,11,12,13,14,15,16,18)] 
+vars_dis<-names(df)[c(1,5,10,20,21)]
+vars_res<-names(df)[c(19,22)]
 vars_res
 vars_dis
+vars_con
 ```
+
 ## Imputation of numeric variables
 ```{r}
+FactoMineR
 library(missMDA)
 names(df)
 vars_con_mis<-vars_con;length(vars_con_mis)
@@ -528,7 +562,7 @@ df[,"Extra"]<-res.comp$completeObs[,"Extra"]
 df[,"MTA_tax"]<-res.comp$completeObs[,"MTA_tax"]
 df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
 df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
-df[,"Total_amount"]<-res.comp$completeObs[,"Total_amount"]
+df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
 ```
 
 ## Imputation of qualitative variables
@@ -537,7 +571,11 @@ library(missMDA)
 res.impute = imputeMCA(df[,vars_dis],ncp = 3)
 res.impute
 df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
-#...necessaries variables
+df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
+df[,"Passenger_count"]<-res.impute$completeObs[,"Passenger_count"]
+df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
+df[,"Trp_type"]<-res.impute$completeObs[,"Trp_type"]
+
 ```
 
 # Creating factors
@@ -637,6 +675,12 @@ summary(df$f.toll)
 df$f.total<-factorize(df$Total_amount)
 summary(df$f.total)
 ```
+
+# Correlations error variable
+```{r}
+
+```
+
 
 # Profiling
 ```{r}
