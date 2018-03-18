@@ -10,7 +10,7 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("/Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change 
 
 
 ```
@@ -20,13 +20,11 @@ setwd("/Users/Sergi/Desktop/Sergi/ADEI") #Change
 
 ```{r,include=FALSE}
 # Load Required Packages: to be increased over the course
-
 requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
-
 ```
 
 ## Select 5000 samples
@@ -385,11 +383,11 @@ hist(df$Total_amount, col="pink")
 ```{r}
 
 mis1<-countNA(df)
-
 attributes(mis1)
-# sort(mis1$mis_col)
+#sort(mis1$mis_col)
 df$mis_ind <- mis1$mis_ind # new attribute missing values
 mis1$mis_col
+
 ```
 
 # Declaring vectors of data
@@ -411,11 +409,18 @@ vars_con
 
 ## Multivariant Outlier Detection
 ```{r}
+
+install.packages("mvoutlier")
+library(sgeostat)
 library(mvoutlier)
+
 vars_con # Problems c(5,8,9,10,11,12)
 summary(df[,vars_con])
-vars_con_out<-vars_con[c(1:4)]
-aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+vars_con_out<-vars_con2[c(1:4)]
+vars_con2<-names(df)[c(6,8)] 
+dim(vars_con2)
+aq.plot(df[,6-7],delta=qchisq(0.95,
+df=ncol(x)),alpha=0.05) # Problems when few numeric values are present in one variable
 
 # Use common sense, but technicalities might difficult the application of the procedure
 
@@ -431,9 +436,14 @@ vars_con_out
 
 # Correlations error variable
 ```{r}
+
+library(FactoMineR)
 names (df)
-summary(mis1$mis_col)
-catdes(mis1$mis_col)
+summary(df$mis_ind)
+corV <- cor(df[,vars_con], df$mis_ind,  use = "complete.obs")
+corV 
+ # rank 
+rank(corV) 
 
 ```
 
@@ -475,7 +485,7 @@ vars_con
 
 ## Imputation of numeric variables
 ```{r}
-FactoMineR
+
 library(missMDA)
 names(df)
 vars_con_mis<-vars_con;length(vars_con_mis)
