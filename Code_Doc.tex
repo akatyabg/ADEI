@@ -1,0 +1,2683 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={CASE\_STUDY},
+            pdfauthor={Katerina Dimitrova, Jose Romero, Sergi MuГ±oz},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{CASE\_STUDY}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Katerina Dimitrova, Jose Romero, Sergi MuГ±oz}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{March 18, 2018}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{introduction}
+
+\subsection{Load requiered packages}\label{load-requiered-packages}
+
+\subsection{Select 5000 samples}\label{select-5000-samples}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Load samples}
+
+\NormalTok{### Use birthday of 1 member of the group}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{03101994}\NormalTok{)}
+\KeywordTok{nrow}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4866
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#sam<-sample(1:nrow(df),5000)}
+\CommentTok{#sam<-as.vector(sort(sam))}
+
+\CommentTok{#df<-df[sam,]}
+\CommentTok{#setwd("/Users/Sergi/Desktop/Sergi/CABS")}
+\CommentTok{#df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")}
+\CommentTok{#save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Load functions}\label{load-functions}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{countX <-}\StringTok{ }\NormalTok{function(x,X) \{}
+  \NormalTok{n_x <-}\StringTok{ }\OtherTok{NULL}
+  \NormalTok{for (j in }\DecValTok{1}\NormalTok{:}\KeywordTok{ncol}\NormalTok{(x)) \{n_x[j] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(x[,j]==X) \}}
+  \NormalTok{n_x <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(n_x)}
+  \KeywordTok{rownames}\NormalTok{(n_x) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(x)}
+  \NormalTok{nx_i <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,}\KeywordTok{nrow}\NormalTok{(x))}
+  \NormalTok{for (j in }\DecValTok{1}\NormalTok{:}\KeywordTok{ncol}\NormalTok{(x)) \{nx_i <-}\StringTok{ }\NormalTok{nx_i +}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(x[,j]==X) \}}
+  \KeywordTok{list}\NormalTok{(}\DataTypeTok{nx_col=}\NormalTok{n_x,}\DataTypeTok{nx_ind=}\NormalTok{nx_i) \}}
+
+\NormalTok{countNA <-}\StringTok{ }\NormalTok{function(x) \{}
+  \NormalTok{mis_x <-}\StringTok{ }\OtherTok{NULL}
+  \NormalTok{for (j in }\DecValTok{1}\NormalTok{:}\KeywordTok{ncol}\NormalTok{(x)) \{mis_x[j] <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x[,j])) \}}
+  \NormalTok{mis_x <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(mis_x)}
+  \KeywordTok{rownames}\NormalTok{(mis_x) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(x)}
+  \NormalTok{mis_i <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,}\KeywordTok{nrow}\NormalTok{(x))}
+  \NormalTok{for (j in }\DecValTok{1}\NormalTok{:}\KeywordTok{ncol}\NormalTok{(x)) \{mis_i <-}\StringTok{ }\NormalTok{mis_i +}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x[,j])) \}}
+  \KeywordTok{list}\NormalTok{(}\DataTypeTok{mis_col=}\NormalTok{mis_x,}\DataTypeTok{mis_ind=}\NormalTok{mis_i) \}}
+
+\NormalTok{man.dist.manual <-}\StringTok{ }\NormalTok{function(p1Lat, p1Lon, p2Lat, p2Lon) \{}
+  \CommentTok{#return(abs(pointDistance(c(p1$lon, p1$lat), c(p1$lon, p2$lat), longlat=TRUE)) + abs(pointDistance(c(p2$lon, p1$lat), c(p2$lon, p2$lat), longlat=TRUE)))}
+  \NormalTok{R =}\StringTok{ }\DecValTok{6371}
+  \NormalTok{lat1 =}\StringTok{ }\KeywordTok{degrees.to.radians}\NormalTok{(p1Lat)}
+  \NormalTok{lon1 =}\StringTok{ }\KeywordTok{degrees.to.radians}\NormalTok{(p1Lon)}
+  \NormalTok{lat2 =}\StringTok{ }\KeywordTok{degrees.to.radians}\NormalTok{(p2Lat)}
+  \NormalTok{lon2 =}\StringTok{ }\KeywordTok{degrees.to.radians}\NormalTok{(p2Lon)}
+  \NormalTok{A_lat =}\StringTok{ }\NormalTok{lat2 -}\StringTok{ }\NormalTok{lat1}
+  \NormalTok{A_lon =}\StringTok{ }\NormalTok{lon2 -}\StringTok{ }\NormalTok{lon1}
+  \NormalTok{a =}\StringTok{ }\KeywordTok{sin}\NormalTok{(A_lat/}\DecValTok{2}\NormalTok{)^}\DecValTok{2}
+  \NormalTok{c =}\StringTok{ }\DecValTok{2} \NormalTok{*}\StringTok{ }\KeywordTok{atan2}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(a), }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{1}\NormalTok{-a))}
+  \NormalTok{dist_lat =}\StringTok{ }\NormalTok{R *}\StringTok{ }\NormalTok{c}
+  \NormalTok{a =}\StringTok{ }\KeywordTok{sin}\NormalTok{(A_lon/}\DecValTok{2}\NormalTok{)^}\DecValTok{2}
+  \NormalTok{c =}\StringTok{ }\DecValTok{2} \NormalTok{*}\StringTok{ }\KeywordTok{atan2}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(a), }\KeywordTok{sqrt}\NormalTok{(}\DecValTok{1}\NormalTok{-a))}
+  \NormalTok{dist_lon =}\StringTok{ }\NormalTok{R *}\StringTok{ }\NormalTok{c}
+  \KeywordTok{abs}\NormalTok{(dist_lat) +}\StringTok{ }\KeywordTok{abs}\NormalTok{(dist_lon)}
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{abs}\NormalTok{(dist_lat) +}\StringTok{ }\KeywordTok{abs}\NormalTok{(dist_lon))}
+\NormalTok{\}}
+
+\NormalTok{degrees.to.radians<-function(value) \{}
+  \KeywordTok{return}\NormalTok{(value*}\FloatTok{0.0174532925}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Delete unnecessary
+attributes}\label{delete-unnecessary-attributes}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{load}\NormalTok{(}\StringTok{"Taxi5000_raw2.RData"}\NormalTok{)}
+\KeywordTok{table}\NormalTok{(df$Ehail_fee) ##Delete unnecessary row}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## < table of extent 0 >
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$Ehail_fee<-}\OtherTok{NULL}
+
+\CommentTok{# Now one by one describe vars}
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"
+\end{verbatim}
+
+\section{Converting numeric variables corresponding to qualitative
+concepts to
+factors}\label{converting-numeric-variables-corresponding-to-qualitative-concepts-to-factors}
+
+\subsection{VendorID}\label{vendorid}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$VendorID));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$VendorID==}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#No errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$VendorID<-}\KeywordTok{factor}\NormalTok{(df$VendorID,}\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Creative Mobile Technologies, LLC"}\NormalTok{,}\StringTok{"VeriFone Inc."}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(df$VendorID)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Creative Mobile Technologies, LLC                     VeriFone Inc. 
+##                              1084                              3916
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(df$VendorID)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\subsection{RateCodeID}\label{ratecodeid}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$RateCodeID));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$RateCodeID==}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#No errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$RateCodeID<-}\KeywordTok{factor}\NormalTok{(df$RateCodeID,}\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Standard rate"}\NormalTok{,}\StringTok{"JFK"}\NormalTok{,}\StringTok{"Newark"}\NormalTok{,}\StringTok{"Nassau or Westchester"}\NormalTok{,}\StringTok{"Negotiated fare"}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(df$RateCodeID) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##         Standard rate                   JFK                Newark 
+##                  4874                    14                     6 
+## Nassau or Westchester       Negotiated fare 
+##                     4                   102
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(df$RateCodeID)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\subsection{Store\_and\_fwd\_flag}\label{store_and_fwd_flag}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#//first the N and than Y}
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Store_and_fwd_flag));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{erors<-}\KeywordTok{which}\NormalTok{(df$Store_and_fwd_flag==}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#No errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$Store_and_fwd_flag<-}\KeywordTok{factor}\NormalTok{(df$Store_and_fwd_flag,}\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"not a store and forward trip"}\NormalTok{,}\StringTok{"store and forward trip"}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(df$Store_and_fwd_flag)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## not a store and forward trip       store and forward trip 
+##                         4982                           18
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(df$Store_and_fwd_flag)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-9-1.pdf} \#\#
+Payment\_type
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Trip_type));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Payment_type==}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#No errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$Payment_type<-}\KeywordTok{factor}\NormalTok{(df$Payment_type,}\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Credit card"}\NormalTok{,}\StringTok{"Cash"}\NormalTok{, }\StringTok{"No charge"}\NormalTok{, }\StringTok{"Dispute"}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(df$Payment_type)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Credit card        Cash   No charge     Dispute 
+##        2469        2485          23          23
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(df$Payment_type)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\subsection{Trip\_type}\label{trip_type}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Trip_type));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Trip_type==}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#No errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$Trip_type<-}\KeywordTok{factor}\NormalTok{(df$Trip_type,}\DataTypeTok{labels=}\KeywordTok{c}\NormalTok{(}\StringTok{"Street-hail"}\NormalTok{,}\StringTok{"Dispatch"}\NormalTok{))}
+\KeywordTok{table}\NormalTok{(df$Trip_type)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Street-hail    Dispatch 
+##        4899         101
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(df$Trip_type)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\section{Univariant Descriptive
+Analysis}\label{univariant-descriptive-analysis}
+
+\subsection{Passenger\_count}\label{passenger_count}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{## Number of missing values:}
+
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Passenger_count));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Passenger_count<=}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#2 errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{outliers<-}\KeywordTok{which}\NormalTok{(df$Passenger_count>}\FloatTok{6.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(outliers) }\CommentTok{#0 outlier}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[errors,}\StringTok{"Passenger_count"}\NormalTok{]<-}\OtherTok{NA}
+\NormalTok{df[outliers,}\StringTok{"Passenger_count"}\NormalTok{]<-}\OtherTok{NA}
+\KeywordTok{boxplot}\NormalTok{(df$Passenger_count)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Passenger_count, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-12-2.pdf}
+
+\subsection{Trip\_distance}\label{trip_distance}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Trip_distance));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Trip_distance<=}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#59 errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 59
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dfaux<-df}
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Trip_distance));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Trip_distance)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Trip_distance, .}\DecValTok{75}\NormalTok{);quantil3 }\CommentTok{#get 3rd quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    75% 
+## 3.4125
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{outliers<-}\KeywordTok{which}\NormalTok{(df$Trip_distance>(iqrvar*}\DecValTok{3}\NormalTok{)+quantil3);}\KeywordTok{length}\NormalTok{(outliers) }\CommentTok{#138 extreme outliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 138
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[outliers,}\StringTok{"Trip_distance"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[errors,}\StringTok{"Trip_distance"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Trip_distance)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Trip_distance, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-13-2.pdf}
+
+\subsection{Pickup\_longitude}\label{pickup_longitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Trip_distance));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 197
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#min and max longitudes for New York city boundaries}
+\NormalTok{min_long <-}\StringTok{ }\NormalTok{-}\FloatTok{74.15} 
+\NormalTok{max_long <-}\StringTok{ }\NormalTok{-}\FloatTok{73.7004}
+
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Pickup_longitude<}\StringTok{ }\NormalTok{min_long);}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Pickup_longitude>}\StringTok{ }\NormalTok{max_long));}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Pickup_longitude==}\FloatTok{0.0}\NormalTok{));}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[errors,}\StringTok{"Pickup_longitude"}\NormalTok{]<-}\OtherTok{NA} \CommentTok{#12 errors}
+
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Pickup_longitude));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1580 1652 2639 3197 3221 4305 4639
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Pickup_longitude)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Pickup_longitude, .}\DecValTok{75}\NormalTok{);quantil3 }\CommentTok{#get 3rd quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       75% 
+## -73.91782
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quantil1<-}\KeywordTok{quantile}\NormalTok{(dfaux$Pickup_longitude, .}\DecValTok{25}\NormalTok{);quantil1 }\CommentTok{#get 1st quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       25% 
+## -73.96023
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UpperOutlier<-}\KeywordTok{which}\NormalTok{(df$Pickup_longitude>quantil3+(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(UpperOutlier) }\CommentTok{#14 extreme UpperOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 14
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LowerOutlier<-}\KeywordTok{which}\NormalTok{(df$Pickup_longitude<quantil1-(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(LowerOutlier) }\CommentTok{#1 extreme LowerOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[UpperOutlier,}\StringTok{"Pickup_longitude"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[LowerOutlier,}\StringTok{"Pickup_longitude"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Pickup_longitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df$Pickup_longitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##  -74.04  -73.96  -73.95  -73.94  -73.92  -73.79      22
+\end{verbatim}
+
+\subsection{Pickup\_latitude}\label{pickup_latitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Pickup_latitude));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#we need to add here error control (what if longitude is out of scope?) and outlier management}
+
+\KeywordTok{summary}\NormalTok{(df$Pickup_latitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   40.69   40.75   40.70   40.80   40.92
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#min and max latitudes for New York city boundaries}
+\NormalTok{min_lat <-}\StringTok{ }\FloatTok{40.5774}
+\NormalTok{max_lat <-}\StringTok{ }\FloatTok{40.9176}
+
+\NormalTok{errors<-}\KeywordTok{which}\NormalTok{(df$Pickup_latitude<}\StringTok{ }\NormalTok{min_lat);}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Pickup_latitude>}\StringTok{ }\NormalTok{max_lat));}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Pickup_latitude==}\FloatTok{0.0}\NormalTok{));}\KeywordTok{length}\NormalTok{(errors)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 17
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[errors,}\StringTok{"Pickup_latitude"}\NormalTok{]<-}\OtherTok{NA} \CommentTok{#17 errors}
+
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Pickup_latitude));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  179 1580 2110 2241 2354 2639 2971 3197 3221 4305 4635 4639
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Pickup_latitude)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Pickup_latitude, .}\DecValTok{75}\NormalTok{);quantil3 }\CommentTok{#get 3rd quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      75% 
+## 40.79892
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quantil1<-}\KeywordTok{quantile}\NormalTok{(dfaux$Pickup_latitude, .}\DecValTok{25}\NormalTok{);quantil1 }\CommentTok{#get 1st quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      25% 
+## 40.69458
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UpperOutlier<-}\KeywordTok{which}\NormalTok{(df$Pickup_latitude>quantil3+(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(UpperOutlier) }\CommentTok{#0 extreme UpperOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LowerOutlier<-}\KeywordTok{which}\NormalTok{(df$Pickup_latitude<quantil1-(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(LowerOutlier) }\CommentTok{#0 extreme LowerOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[UpperOutlier,}\StringTok{"Pickup_latitude"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[LowerOutlier,}\StringTok{"Pickup_latitude"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Pickup_latitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df$Pickup_latitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##   40.58   40.69   40.75   40.75   40.80   40.91      12
+\end{verbatim}
+
+\subsection{Dropoff\_longitude}\label{dropoff_longitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Dropoff_longitude));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Dropoff_longitude==}\FloatTok{0.0}\NormalTok{));}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#26 errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 26
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[errors,}\StringTok{"Dropoff_longitude"}\NormalTok{]<-}\OtherTok{NA}
+
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Dropoff_longitude));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  179  638 1580 1713 1986 2026 2110 2241 2354 2639 2698 2971 3109 3197
+## [15] 3221 4097 4285 4305 4635 4639
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Dropoff_longitude)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Dropoff_longitude, .}\DecValTok{75}\NormalTok{);quantil3 }\CommentTok{#get 3rd quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       75% 
+## -73.91151
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quantil1<-}\KeywordTok{quantile}\NormalTok{(dfaux$Dropoff_longitude, .}\DecValTok{25}\NormalTok{);quantil1 }\CommentTok{#get 1st quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      25% 
+## -73.9675
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UpperOutlier<-}\KeywordTok{which}\NormalTok{(df$Dropoff_longitude>quantil3+(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(UpperOutlier) }\CommentTok{#0 extreme UpperOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LowerOutlier<-}\KeywordTok{which}\NormalTok{(df$Dropoff_longitude<quantil1-(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(LowerOutlier) }\CommentTok{#0 extreme LowerOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[UpperOutlier,}\StringTok{"Dropoff_longitude"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[LowerOutlier,}\StringTok{"Dropoff_longitude"}\NormalTok{]<-}\OtherTok{NA} 
+
+\KeywordTok{boxplot}\NormalTok{(df$Dropoff_longitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+\subsection{Dropoff\_latitude}\label{dropoff_latitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Dropoff_latitude));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{errors<-}\KeywordTok{c}\NormalTok{(errors,}\KeywordTok{which}\NormalTok{(df$Dropoff_latitude==}\FloatTok{0.0}\NormalTok{));}\KeywordTok{length}\NormalTok{(errors) }\CommentTok{#35 errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 35
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[errors,}\StringTok{"Dropoff_latitude"}\NormalTok{]<-}\OtherTok{NA}
+
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Dropoff_latitude));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  179  638 1580 1713 1986 2026 2110 2241 2354 2639 2698 2971 3109 3197
+## [15] 3221 4097 4285 4305 4635 4639
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Dropoff_latitude)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Dropoff_latitude, .}\DecValTok{75}\NormalTok{);quantil3 }\CommentTok{#get 3rd quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      75% 
+## 40.78581
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quantil1<-}\KeywordTok{quantile}\NormalTok{(dfaux$Dropoff_latitude, .}\DecValTok{25}\NormalTok{);quantil1 }\CommentTok{#get 1st quartile}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      25% 
+## 40.69629
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UpperOutlier<-}\KeywordTok{which}\NormalTok{(df$Dropoff_latitude>quantil3+(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(UpperOutlier) }\CommentTok{#0 extreme UpperOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LowerOutlier<-}\KeywordTok{which}\NormalTok{(df$Dropoff_latitude<quantil1-(iqrvar*}\DecValTok{3}\NormalTok{));}\KeywordTok{length}\NormalTok{(LowerOutlier) }\CommentTok{#0 extreme LowerOutliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[UpperOutlier,}\StringTok{"Dropoff_latitude"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[LowerOutlier,}\StringTok{"Dropoff_latitude"}\NormalTok{]<-}\OtherTok{NA} 
+
+\KeywordTok{boxplot}\NormalTok{(df$Dropoff_latitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+\subsection{Fare\_amount}\label{fare_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Fare_amount));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$Fare_amount<=}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#10 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 23
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{outlier<-}\KeywordTok{which}\NormalTok{(df$Fare_amount>}\DecValTok{100}\NormalTok{);}\KeywordTok{length}\NormalTok{(outlier) }\CommentTok{#1 outlier}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"Fare_amount"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{df[outlier,}\StringTok{"Fare_amount"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Fare_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Fare_amount, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-18-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df$Fare_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##     0.1     6.0     9.0    12.0    14.5    95.5      26
+\end{verbatim}
+
+\subsection{Extra}\label{extra}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Extra));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$Extra<}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#10 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"Extra"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Extra)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Extra, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-19-2.pdf}
+
+\subsection{MTA\_tax}\label{mta_tax}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$MTA_tax));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$MTA_tax<}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#103 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"MTA_tax"}\NormalTok{]<-}\OtherTok{NA}
+\KeywordTok{boxplot}\NormalTok{(df$MTA_tax)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$MTA_tax, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-20-2.pdf}
+
+\subsection{Improvement\_surcharge}\label{improvement_surcharge}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Improvement_surcharge));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$improvement_surcharge<}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"improvement_surcharge"}\NormalTok{]<-}\OtherTok{NA}
+\KeywordTok{boxplot}\NormalTok{(df$improvement_surcharge)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$improvement_surcharge, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-21-2.pdf}
+
+\subsection{Tip\_amount}\label{tip_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Tip_amount));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$Tip_amount<}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#107 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{outlier<-}\KeywordTok{which}\NormalTok{(df$Tip_amount>}\FloatTok{60.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(outlier) }\CommentTok{#1 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[outlier,}\StringTok{"Tip_amount"}\NormalTok{]<-}\OtherTok{NA}
+\NormalTok{df[sel,}\StringTok{"Tip_amount"}\NormalTok{]<-}\OtherTok{NA}
+\KeywordTok{boxplot}\NormalTok{(df$Tip_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Tip_amount, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-22-2.pdf}
+
+\subsection{Tolls\_amount}\label{tolls_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Tolls_amount));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$Tolls_amount<}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#0 missings}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"Tolls_amount"}\NormalTok{]<-}\OtherTok{NA}
+\KeywordTok{boxplot}\NormalTok{(df$Tolls_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Tolls_amount, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-23-2.pdf}
+
+\section{Total\_amount}\label{total_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{missingData<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Total_amount));}\KeywordTok{length}\NormalTok{(missingData) }\CommentTok{#No missing Data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Total_amount));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{dfaux<-df[-ll,]}
+\NormalTok{\}}
+\NormalTok{iqrvar<-}\KeywordTok{IQR}\NormalTok{(dfaux$Total_amount)}
+\NormalTok{quantil3<-}\KeywordTok{quantile}\NormalTok{(dfaux$Total_amount, .}\DecValTok{75}\NormalTok{) }\CommentTok{#get 3rd quartile}
+\NormalTok{sel<-}\KeywordTok{which}\NormalTok{(df$Total_amount<=}\FloatTok{0.0}\NormalTok{);}\KeywordTok{length}\NormalTok{(sel) }\CommentTok{#22 errors}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 23
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[sel,}\StringTok{"Total_amount"}\NormalTok{]<-}\OtherTok{NA} 
+\NormalTok{outlier<-}\KeywordTok{which}\NormalTok{(df$Total_amount>(iqrvar*}\DecValTok{3}\NormalTok{)+quantil3);}\KeywordTok{length}\NormalTok{(outlier) }\CommentTok{#72 extreme outliers}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 111
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[outlier,}\StringTok{"Total_amount"}\NormalTok{]<-}\OtherTok{NA} 
+\KeywordTok{boxplot}\NormalTok{(df$Total_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-24-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(df$Total_amount, }\DataTypeTok{col=}\StringTok{"pink"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-24-2.pdf}
+
+\section{Number of missing values:}\label{number-of-missing-values}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mis1<-}\KeywordTok{countNA}\NormalTok{(df)}
+\KeywordTok{attributes}\NormalTok{(mis1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $names
+## [1] "mis_col" "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#sort(mis1$mis_col)}
+\NormalTok{df$mis_ind <-}\StringTok{ }\NormalTok{mis1$mis_ind }\CommentTok{# new attribute missing values}
+\NormalTok{mis1$mis_col}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                       mis_x
+## VendorID                  0
+## lpep_pickup_datetime      0
+## Lpep_dropoff_datetime     0
+## Store_and_fwd_flag        0
+## RateCodeID                0
+## Pickup_longitude         22
+## Pickup_latitude          12
+## Dropoff_longitude        32
+## Dropoff_latitude         20
+## Passenger_count           2
+## Trip_distance           197
+## Fare_amount              26
+## Extra                     4
+## MTA_tax                  10
+## Tip_amount                4
+## Tolls_amount              0
+## improvement_surcharge    10
+## Total_amount            134
+## Payment_type              0
+## Trip_type                 0
+\end{verbatim}
+
+\section{Declaring vectors of data}\label{declaring-vectors-of-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"            
+## [21] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{:}\DecValTok{9}\NormalTok{,}\DecValTok{11}\NormalTok{:}\DecValTok{18}\NormalTok{)]}
+\NormalTok{vars_dis<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{19}\NormalTok{,}\DecValTok{20}\NormalTok{:}\DecValTok{23}\NormalTok{)]}
+\NormalTok{vars_res<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{18}\NormalTok{,}\DecValTok{23}\NormalTok{)]}
+
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"            
+## [21] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{8}\NormalTok{,}\DecValTok{9}\NormalTok{,}\DecValTok{11}\NormalTok{,}\DecValTok{12}\NormalTok{,}\DecValTok{13}\NormalTok{,}\DecValTok{14}\NormalTok{,}\DecValTok{15}\NormalTok{,}\DecValTok{16}\NormalTok{,}\DecValTok{18}\NormalTok{)] }
+\NormalTok{vars_dis<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{20}\NormalTok{,}\DecValTok{21}\NormalTok{)]}
+\NormalTok{vars_res<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{19}\NormalTok{,}\DecValTok{22}\NormalTok{)]}
+\NormalTok{vars_res}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Payment_type" NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_dis}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "VendorID"        "RateCodeID"      "Passenger_count" "Trip_type"      
+## [5] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\subsection{Multivariant Outlier
+Detection}\label{multivariant-outlier-detection}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("mvoutlier")}
+\KeywordTok{library}\NormalTok{(sgeostat)}
+\KeywordTok{library}\NormalTok{(mvoutlier)}
+
+\NormalTok{vars_con }\CommentTok{# Problems c(5,8,9,10,11,12)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df[,vars_con])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Pickup_longitude Pickup_latitude Dropoff_longitude Dropoff_latitude
+##  Min.   :-74.04   Min.   :40.58   Min.   :-74.05    Min.   :40.57   
+##  1st Qu.:-73.96   1st Qu.:40.69   1st Qu.:-73.97    1st Qu.:40.70   
+##  Median :-73.95   Median :40.75   Median :-73.95    Median :40.75   
+##  Mean   :-73.94   Mean   :40.75   Mean   :-73.94    Mean   :40.74   
+##  3rd Qu.:-73.92   3rd Qu.:40.80   3rd Qu.:-73.91    3rd Qu.:40.79   
+##  Max.   :-73.79   Max.   :40.91   Max.   :-73.75    Max.   :41.02   
+##  NA's   :22       NA's   :12      NA's   :32        NA's   :20      
+##  Trip_distance     Fare_amount       Extra           MTA_tax      
+##  Min.   : 0.010   Min.   : 0.1   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.: 1.010   1st Qu.: 6.0   1st Qu.:0.0000   1st Qu.:0.5000  
+##  Median : 1.790   Median : 9.0   Median :0.5000   Median :0.5000  
+##  Mean   : 2.482   Mean   :12.0   Mean   :0.3461   Mean   :0.4889  
+##  3rd Qu.: 3.285   3rd Qu.:14.5   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :10.610   Max.   :95.5   Max.   :2.0000   Max.   :0.5000  
+##  NA's   :197      NA's   :26     NA's   :4        NA's   :10      
+##    Tip_amount      Tolls_amount      Total_amount  
+##  Min.   : 0.000   Min.   : 0.0000   Min.   : 0.10  
+##  1st Qu.: 0.000   1st Qu.: 0.0000   1st Qu.: 7.80  
+##  Median : 0.000   Median : 0.0000   Median :11.00  
+##  Mean   : 1.277   Mean   : 0.1141   Mean   :13.49  
+##  3rd Qu.: 2.000   3rd Qu.: 0.0000   3rd Qu.:16.62  
+##  Max.   :60.000   Max.   :12.5000   Max.   :45.42  
+##  NA's   :4                          NA's   :134
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con_out<-vars_con[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{:}\DecValTok{4}\NormalTok{)]}
+
+\KeywordTok{dim}\NormalTok{(vars_con2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## NULL
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable}
+
+\CommentTok{# Use common sense, but technicalities might difficult the application of the procedure}
+
+\NormalTok{vars_con_out<-vars_con[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{:}\DecValTok{4}\NormalTok{)]}
+\CommentTok{#mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present}
+
+\CommentTok{# Use common sense}
+\NormalTok{vars_con}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con_out<-vars_con[}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{,}\DecValTok{9}\NormalTok{,}\DecValTok{12}\NormalTok{)]}
+\CommentTok{#aq.plot(df[,vars_con_out])  # Problems when missing data are present}
+\NormalTok{vars_con_out}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Fare_amount" "Tip_amount"  NA
+\end{verbatim}
+
+\section{Correlations error variable}\label{correlations-error-variable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("polycor")}
+\KeywordTok{library}\NormalTok{(polycor)}
+\KeywordTok{library}\NormalTok{(FactoMineR)}
+\KeywordTok{names} \NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"            
+## [21] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df$mis_ind)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.0000  0.0946  0.0000 10.0000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{corV <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(df[,vars_con], df$mis_ind,  }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\NormalTok{corV }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                           [,1]
+## Pickup_longitude   0.001458769
+## Pickup_latitude    0.014443265
+## Dropoff_longitude  0.026321051
+## Dropoff_latitude   0.019551876
+## Trip_distance      0.019762846
+## Fare_amount        0.002546080
+## Extra             -0.014100839
+## MTA_tax           -0.127222906
+## Tip_amount        -0.009256682
+## Tolls_amount      -0.001667617
+## Total_amount      -0.002372345
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+ \CommentTok{# rank }
+\KeywordTok{rank}\NormalTok{(corV) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  6  8 11  9 10  7  2  1  3  5  4
+\end{verbatim}
+
+\section{Imputation}\label{imputation}
+
+\subsection{Remove observations with NA at
+targets}\label{remove-observations-with-na-at-targets}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$Total_amount));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   [1]   57   74   82  145  176  247  323  333  351  404  454  460  468  472
+##  [15]  526  553  609  637  690  734  745  825  831  883  907 1001 1022 1059
+##  [29] 1062 1078 1082 1100 1105 1130 1159 1331 1361 1367 1368 1395 1421 1657
+##  [43] 1689 1697 1723 1759 1761 1780 1854 1867 1905 2004 2069 2106 2140 2187
+##  [57] 2249 2257 2334 2335 2411 2413 2428 2490 2506 2575 2634 2698 2722 2744
+##  [71] 2840 2842 2845 2866 2874 2919 2971 2981 3005 3054 3067 3101 3181 3197
+##  [85] 3293 3295 3346 3412 3484 3541 3705 3742 3759 3787 3788 3802 3803 3813
+##  [99] 3874 3894 3933 3936 3947 3953 3988 4063 4075 4164 4206 4222 4252 4294
+## [113] 4328 4348 4370 4391 4418 4431 4524 4574 4576 4597 4605 4659 4687 4700
+## [127] 4714 4733 4778 4817 4890 4920 4923 4968
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{df<-df[-ll,]}
+\NormalTok{\}}
+
+\NormalTok{ll<-}\KeywordTok{which}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(df$AnyTip));ll}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{if(}\KeywordTok{length}\NormalTok{(ll)>}\DecValTok{0}\NormalTok{)\{}
+  \NormalTok{df<-df[-ll,]}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Definition of binary outcome:
+AnyTip}\label{definition-of-binary-outcome-anytip}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Binary Target: Any Tip?}
+
+
+\NormalTok{df$AnyTip<-}\KeywordTok{ifelse}\NormalTok{(df$Tip_amount<}\FloatTok{0.0001}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) }
+\NormalTok{df$AnyTip<-}\KeywordTok{factor}\NormalTok{(df$AnyTip,}\DataTypeTok{labels=}\KeywordTok{paste}\NormalTok{(}\StringTok{"AnyTip"}\NormalTok{,}\KeywordTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{,}\StringTok{"Yes"}\NormalTok{)))}
+\CommentTok{#IMPORTANT}
+\CommentTok{#if you touch some "global" variables you  will modify this part}
+\CommentTok{# Now one by one describe vars}
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"            
+## [21] "mis_ind"               "AnyTip"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{8}\NormalTok{,}\DecValTok{9}\NormalTok{,}\DecValTok{11}\NormalTok{,}\DecValTok{12}\NormalTok{,}\DecValTok{13}\NormalTok{,}\DecValTok{14}\NormalTok{,}\DecValTok{15}\NormalTok{,}\DecValTok{16}\NormalTok{,}\DecValTok{18}\NormalTok{)] }
+\NormalTok{vars_dis<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{20}\NormalTok{,}\DecValTok{21}\NormalTok{)]}
+\NormalTok{vars_res<-}\KeywordTok{names}\NormalTok{(df)[}\KeywordTok{c}\NormalTok{(}\DecValTok{19}\NormalTok{,}\DecValTok{22}\NormalTok{)]}
+\NormalTok{vars_res}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Payment_type" "AnyTip"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_dis}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "VendorID"        "RateCodeID"      "Passenger_count" "Trip_type"      
+## [5] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\subsection{Imputation of numeric
+variables}\label{imputation-of-numeric-variables}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#install.packages("missMDA")}
+\KeywordTok{library}\NormalTok{(missMDA)}
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"              "lpep_pickup_datetime" 
+##  [3] "Lpep_dropoff_datetime" "Store_and_fwd_flag"   
+##  [5] "RateCodeID"            "Pickup_longitude"     
+##  [7] "Pickup_latitude"       "Dropoff_longitude"    
+##  [9] "Dropoff_latitude"      "Passenger_count"      
+## [11] "Trip_distance"         "Fare_amount"          
+## [13] "Extra"                 "MTA_tax"              
+## [15] "Tip_amount"            "Tolls_amount"         
+## [17] "improvement_surcharge" "Total_amount"         
+## [19] "Payment_type"          "Trip_type"            
+## [21] "mis_ind"               "AnyTip"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con_mis<-vars_con;}\KeywordTok{length}\NormalTok{(vars_con_mis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vars_con_mis}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(df[,vars_con_mis])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Pickup_longitude Pickup_latitude Dropoff_longitude Dropoff_latitude
+##  Min.   :-74.03   Min.   :40.58   Min.   :-74.03    Min.   :40.57   
+##  1st Qu.:-73.96   1st Qu.:40.69   1st Qu.:-73.97    1st Qu.:40.70   
+##  Median :-73.95   Median :40.75   Median :-73.95    Median :40.75   
+##  Mean   :-73.94   Mean   :40.75   Mean   :-73.94    Mean   :40.74   
+##  3rd Qu.:-73.92   3rd Qu.:40.80   3rd Qu.:-73.91    3rd Qu.:40.79   
+##  Max.   :-73.79   Max.   :40.91   Max.   :-73.75    Max.   :40.91   
+##  NA's   :19       NA's   :10      NA's   :23        NA's   :17      
+##  Trip_distance     Fare_amount        Extra           MTA_tax      
+##  Min.   : 0.010   Min.   : 0.10   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.: 1.010   1st Qu.: 6.00   1st Qu.:0.0000   1st Qu.:0.5000  
+##  Median : 1.790   Median : 9.00   Median :0.5000   Median :0.5000  
+##  Mean   : 2.467   Mean   :11.15   Mean   :0.3497   Mean   :0.4915  
+##  3rd Qu.: 3.260   3rd Qu.:14.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :10.610   Max.   :42.50   Max.   :2.0000   Max.   :0.5000  
+##  NA's   :108                                                       
+##    Tip_amount      Tolls_amount       Total_amount  
+##  Min.   : 0.000   Min.   : 0.00000   Min.   : 0.10  
+##  1st Qu.: 0.000   1st Qu.: 0.00000   1st Qu.: 7.80  
+##  Median : 0.000   Median : 0.00000   Median :11.00  
+##  Mean   : 1.124   Mean   : 0.07864   Mean   :13.49  
+##  3rd Qu.: 2.000   3rd Qu.: 0.00000   3rd Qu.:16.62  
+##  Max.   :22.000   Max.   :12.50000   Max.   :45.42  
+## 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{res.comp <-}\StringTok{ }\KeywordTok{imputePCA}\NormalTok{(df[,vars_con], }\DataTypeTok{ncp=}\DecValTok{4}\NormalTok{)}
+\KeywordTok{attributes}\NormalTok{(res.comp$completeObs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $dim
+## [1] 4866   11
+## 
+## $dimnames
+## $dimnames[[1]]
+##    [1] "285"    "307"    "401"    "593"    "636"    "886"    "904"   
+##    [8] "978"    "1135"   "1282"   "1409"   "1475"   "1495"   "1905"  
+##   [15] "2126"   "2151"   "2201"   "2271"   "2747"   "3065"   "3089"  
+##   [22] "3130"   "3221"   "3420"   "3679"   "4310"   "4754"   "5241"  
+##   [29] "5277"   "5649"   "6353"   "6364"   "6755"   "6869"   "7079"  
+##   [36] "7211"   "7342"   "7802"   "8138"   "8443"   "8619"   "8891"  
+##   [43] "8960"   "9207"   "9503"   "9747"   "9765"   "9984"   "10034" 
+##   [50] "10199"  "10951"  "10955"  "10974"  "11189"  "11506"  "11713" 
+##   [57] "12492"  "12792"  "13043"  "13274"  "13332"  "13875"  "13927" 
+##   [64] "14874"  "14916"  "15407"  "15830"  "16080"  "16166"  "16345" 
+##   [71] "16391"  "17136"  "17355"  "18278"  "18596"  "18734"  "19101" 
+##   [78] "19344"  "19408"  "19991"  "20004"  "20009"  "20044"  "20077" 
+##   [85] "20271"  "20342"  "20361"  "20543"  "20621"  "20733"  "20917" 
+##   [92] "21425"  "21439"  "21539"  "21559"  "21735"  "22197"  "22332" 
+##   [99] "22825"  "22946"  "23091"  "23132"  "23811"  "24338"  "24863" 
+##  [106] "25262"  "25356"  "26062"  "26832"  "27216"  "27482"  "27495" 
+##  [113] "27594"  "27984"  "28083"  "28512"  "29375"  "29522"  "30659" 
+##  [120] "30856"  "31236"  "31456"  "31571"  "31583"  "31617"  "31726" 
+##  [127] "32873"  "32952"  "33882"  "34250"  "34280"  "34374"  "34390" 
+##  [134] "34922"  "35039"  "35207"  "35386"  "36076"  "36428"  "36540" 
+##  [141] "36696"  "36863"  "36933"  "37035"  "37273"  "37506"  "37517" 
+##  [148] "37561"  "37764"  "37821"  "37877"  "38445"  "38480"  "39213" 
+##  [155] "39623"  "39723"  "39943"  "40226"  "40245"  "40497"  "40560" 
+##  [162] "40802"  "40941"  "40943"  "40953"  "40969"  "42048"  "42779" 
+##  [169] "43577"  "43958"  "44992"  "46311"  "46572"  "46653"  "46790" 
+##  [176] "47428"  "47471"  "48166"  "48518"  "48796"  "48903"  "48915" 
+##  [183] "49242"  "49244"  "49383"  "49421"  "49783"  "49849"  "50027" 
+##  [190] "50328"  "50542"  "50979"  "50996"  "51868"  "51965"  "52728" 
+##  [197] "52825"  "52931"  "53452"  "53536"  "53680"  "54025"  "54342" 
+##  [204] "54359"  "54794"  "54843"  "54958"  "54994"  "55030"  "55082" 
+##  [211] "55144"  "55353"  "55479"  "55718"  "56090"  "56696"  "56726" 
+##  [218] "56914"  "56920"  "57200"  "57278"  "57590"  "58422"  "58631" 
+##  [225] "59389"  "59449"  "59578"  "59938"  "60074"  "60146"  "60728" 
+##  [232] "61110"  "61236"  "61265"  "61370"  "61424"  "61547"  "61650" 
+##  [239] "61948"  "61959"  "62009"  "62273"  "62544"  "62605"  "62911" 
+##  [246] "62949"  "63123"  "63251"  "63256"  "63814"  "64004"  "64740" 
+##  [253] "64772"  "64773"  "65262"  "65285"  "65688"  "65815"  "65878" 
+##  [260] "66075"  "66344"  "66764"  "66777"  "66868"  "66995"  "67087" 
+##  [267] "67205"  "67465"  "67583"  "67752"  "67849"  "68112"  "69030" 
+##  [274] "69045"  "69361"  "69625"  "69718"  "70070"  "70657"  "71033" 
+##  [281] "71191"  "71590"  "71898"  "72223"  "72871"  "73135"  "73254" 
+##  [288] "73256"  "73529"  "73585"  "73593"  "73666"  "73710"  "74043" 
+##  [295] "74216"  "74784"  "75165"  "75448"  "75715"  "75730"  "76378" 
+##  [302] "76595"  "77764"  "77948"  "77969"  "78118"  "78368"  "78598" 
+##  [309] "78646"  "79148"  "79658"  "79861"  "80074"  "80093"  "80326" 
+##  [316] "80599"  "80754"  "81034"  "81302"  "81813"  "82015"  "82045" 
+##  [323] "82439"  "83356"  "83371"  "84398"  "84735"  "84843"  "85100" 
+##  [330] "85254"  "85340"  "85766"  "86980"  "87246"  "87458"  "87900" 
+##  [337] "89079"  "89243"  "89853"  "90225"  "90238"  "90794"  "91078" 
+##  [344] "91083"  "91243"  "91511"  "91550"  "92387"  "92587"  "92598" 
+##  [351] "93699"  "93809"  "94247"  "94305"  "94495"  "95014"  "95226" 
+##  [358] "95241"  "95530"  "96119"  "96194"  "96298"  "96544"  "96980" 
+##  [365] "97571"  "98401"  "98688"  "98906"  "98945"  "98956"  "98966" 
+##  [372] "98981"  "99572"  "99893"  "99988"  "100096" "100198" "100571"
+##  [379] "100795" "101048" "101193" "101216" "101421" "101664" "101790"
+##  [386] "102224" "102368" "102932" "103000" "103682" "103858" "104389"
+##  [393] "104792" "105704" "106216" "106842" "106937" "107062" "107417"
+##  [400] "107932" "108185" "108201" "108206" "108304" "108334" "108479"
+##  [407] "108515" "108606" "108839" "108929" "109040" "109260" "109333"
+##  [414] "109734" "110047" "110199" "110565" "110673" "110873" "110913"
+##  [421] "110937" "111064" "111150" "111223" "111543" "112353" "112893"
+##  [428] "112901" "113083" "113597" "113753" "113964" "114436" "115174"
+##  [435] "115978" "116095" "116206" "116369" "116640" "117031" "117517"
+##  [442] "118785" "119035" "119554" "120535" "120802" "121010" "121184"
+##  [449] "121442" "121485" "121530" "122037" "122299" "122910" "123241"
+##  [456] "124259" "124620" "124715" "126173" "126470" "126481" "126587"
+##  [463] "126592" "126715" "127134" "127652" "127683" "127966" "128224"
+##  [470] "128390" "128587" "128926" "128937" "129264" "129479" "129660"
+##  [477] "129793" "129938" "129958" "129974" "130639" "131180" "131369"
+##  [484] "131482" "131592" "131736" "132350" "132383" "132433" "132534"
+##  [491] "132670" "132761" "133262" "133422" "133475" "134419" "135413"
+##  [498] "135495" "135800" "135935" "136039" "136229" "136265" "136309"
+##  [505] "136416" "136544" "136888" "137150" "137172" "137527" "138047"
+##  [512] "139374" "139883" "140233" "140567" "141027" "141534" "141835"
+##  [519] "141905" "141983" "142214" "142290" "142398" "142615" "142824"
+##  [526] "143558" "144638" "144756" "145268" "145938" "147177" "147246"
+##  [533] "147283" "147486" "147510" "147625" "147678" "148258" "148591"
+##  [540] "149155" "149218" "149842" "149887" "149898" "150136" "151342"
+##  [547] "151412" "151661" "151767" "151963" "152346" "152470" "152513"
+##  [554] "152725" "152828" "153560" "153673" "153796" "153878" "154253"
+##  [561] "154323" "154578" "154581" "154751" "155031" "155155" "155371"
+##  [568] "155384" "155441" "155551" "155566" "155950" "156244" "156250"
+##  [575] "156393" "156707" "156954" "157064" "157195" "157324" "158033"
+##  [582] "158490" "158962" "159223" "159480" "159725" "159831" "160040"
+##  [589] "160092" "160337" "160606" "160748" "161313" "161421" "161481"
+##  [596] "161512" "162070" "162131" "162954" "163032" "163237" "163255"
+##  [603] "163666" "163693" "164248" "164387" "165000" "165535" "165920"
+##  [610] "166238" "167445" "167876" "169257" "169467" "169526" "169710"
+##  [617] "169822" "169826" "169833" "170195" "170331" "170391" "171098"
+##  [624] "171131" "171189" "171559" "171702" "172037" "172208" "172245"
+##  [631] "172772" "172876" "172903" "173364" "173415" "173788" "173824"
+##  [638] "173854" "174720" "174998" "175544" "175695" "175809" "175857"
+##  [645] "176099" "176276" "176434" "176666" "177236" "177344" "177354"
+##  [652] "177374" "177448" "177526" "177870" "177916" "178368" "178672"
+##  [659] "179677" "179782" "180180" "180797" "180853" "181044" "181235"
+##  [666] "182265" "182609" "182666" "183517" "183591" "183684" "184157"
+##  [673] "185409" "185603" "186082" "186192" "186363" "186546" "186713"
+##  [680] "186748" "187874" "188151" "188163" "188195" "188514" "188904"
+##  [687] "189301" "189474" "189845" "190000" "190068" "190073" "190658"
+##  [694] "190709" "190844" "191673" "191838" "192112" "192276" "192478"
+##  [701] "192654" "193397" "193682" "193690" "194697" "195428" "195550"
+##  [708] "195748" "196375" "196873" "197836" "198562" "198780" "198895"
+##  [715] "199161" "199326" "199973" "200506" "200522" "201276" "201411"
+##  [722] "201548" "201646" "201970" "202639" "203359" "204377" "205293"
+##  [729] "205522" "205842" "205885" "206032" "206062" "206324" "206917"
+##  [736] "207260" "207320" "207328" "207378" "207802" "207851" "208109"
+##  [743] "208269" "208378" "208517" "209135" "209271" "209395" "209436"
+##  [750] "209639" "209705" "210246" "210669" "210976" "211159" "211184"
+##  [757] "211461" "211659" "211709" "211761" "211788" "211829" "211844"
+##  [764] "211869" "211981" "212174" "212803" "212885" "213114" "213363"
+##  [771] "214466" "214549" "214603" "214791" "215091" "215122" "215378"
+##  [778] "215943" "216301" "216346" "216844" "217437" "217502" "217888"
+##  [785] "218240" "218849" "218901" "219337" "219716" "219899" "219915"
+##  [792] "220165" "220482" "220771" "221147" "221841" "222117" "222326"
+##  [799] "222512" "222532" "223057" "223380" "223816" "223895" "223913"
+##  [806] "224258" "226368" "226489" "226956" "227217" "227913" "227943"
+##  [813] "229968" "230460" "231340" "231370" "231515" "231737" "232196"
+##  [820] "232252" "232483" "233616" "233632" "233723" "233970" "234369"
+##  [827] "234503" "234526" "234673" "234872" "235081" "235882" "236757"
+##  [834] "236865" "237072" "237279" "237409" "237435" "237814" "237965"
+##  [841] "238052" "238235" "239055" "239215" "239225" "239528" "239602"
+##  [848] "239736" "239876" "240252" "240675" "241255" "241276" "241388"
+##  [855] "241584" "242154" "242161" "242239" "242437" "243189" "243433"
+##  [862] "243661" "244399" "244494" "244739" "244877" "245087" "245281"
+##  [869] "246099" "246217" "246340" "246419" "246460" "246634" "246786"
+##  [876] "246945" "247100" "247552" "247708" "247838" "247994" "248421"
+##  [883] "249032" "249075" "249129" "249205" "250064" "250526" "250637"
+##  [890] "251118" "251311" "251334" "251357" "251616" "251851" "251999"
+##  [897] "252342" "253448" "253799" "253862" "254014" "254346" "254467"
+##  [904] "254627" "254712" "254740" "254986" "255175" "255492" "256140"
+##  [911] "256536" "256597" "256631" "256760" "256818" "257408" "258499"
+##  [918] "259005" "260317" "260670" "260784" "261100" "261448" "261686"
+##  [925] "261907" "262144" "262320" "262413" "262434" "262746" "262772"
+##  [932] "263319" "263342" "263388" "263485" "264214" "264624" "264743"
+##  [939] "264770" "264845" "265453" "265881" "266621" "266722" "266875"
+##  [946] "267414" "267415" "267517" "267728" "267868" "268622" "269130"
+##  [953] "269201" "269391" "269793" "270412" "270431" "270465" "270792"
+##  [960] "270897" "270951" "271545" "271635" "272072" "272448" "272451"
+##  [967] "272766" "272929" "273093" "274245" "274842" "274998" "275072"
+##  [974] "275525" "275582" "276163" "276264" "276876" "277459" "277578"
+##  [981] "277871" "278060" "278068" "279353" "279553" "279563" "280282"
+##  [988] "280326" "280521" "280727" "280735" "281116" "281558" "281956"
+##  [995] "282382" "283662" "283914" "283974" "284313" "284717"
+##  [ reached getOption("max.print") -- omitted 3866 entries ]
+## 
+## $dimnames[[2]]
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(res.comp$completeObs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Pickup_longitude Pickup_latitude Dropoff_longitude Dropoff_latitude
+##  Min.   :-74.03   Min.   :40.58   Min.   :-74.03    Min.   :40.57   
+##  1st Qu.:-73.96   1st Qu.:40.69   1st Qu.:-73.97    1st Qu.:40.70   
+##  Median :-73.95   Median :40.75   Median :-73.95    Median :40.75   
+##  Mean   :-73.94   Mean   :40.75   Mean   :-73.94    Mean   :40.74   
+##  3rd Qu.:-73.92   3rd Qu.:40.80   3rd Qu.:-73.91    3rd Qu.:40.79   
+##  Max.   :-73.79   Max.   :40.91   Max.   :-73.75    Max.   :40.91   
+##  Trip_distance     Fare_amount        Extra           MTA_tax      
+##  Min.   : 0.010   Min.   : 0.10   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.: 1.010   1st Qu.: 6.00   1st Qu.:0.0000   1st Qu.:0.5000  
+##  Median : 1.800   Median : 9.00   Median :0.5000   Median :0.5000  
+##  Mean   : 2.524   Mean   :11.15   Mean   :0.3497   Mean   :0.4915  
+##  3rd Qu.: 3.320   3rd Qu.:14.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :10.610   Max.   :42.50   Max.   :2.0000   Max.   :0.5000  
+##    Tip_amount      Tolls_amount       Total_amount  
+##  Min.   : 0.000   Min.   : 0.00000   Min.   : 0.10  
+##  1st Qu.: 0.000   1st Qu.: 0.00000   1st Qu.: 7.80  
+##  Median : 0.000   Median : 0.00000   Median :11.00  
+##  Mean   : 1.124   Mean   : 0.07864   Mean   :13.49  
+##  3rd Qu.: 2.000   3rd Qu.: 0.00000   3rd Qu.:16.62  
+##  Max.   :22.000   Max.   :12.50000   Max.   :45.42
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df[,}\StringTok{"Pickup_longitude"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Pickup_longitude"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Pickup_latitude"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Pickup_latitude"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Dropoff_longitude"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Dropoff_longitude"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Dropoff_latitude"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Dropoff_latitude"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Trip_distance"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Trip_distance"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Fare_amount"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Fare_amount"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Extra"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Extra"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"MTA_tax"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"MTA_tax"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Tip_amount"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Tip_amount"}\NormalTok{]}
+\NormalTok{df[,}\StringTok{"Tolls_amount"}\NormalTok{]<-res.comp$completeObs[,}\StringTok{"Tolls_amount"}\NormalTok{]}
+\CommentTok{#df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Imputation of qualitative
+variables}\label{imputation-of-qualitative-variables}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(missMDA)}
+\CommentTok{#res.impute = imputeMCA(df[,vars_dis],ncp = 3)}
+\CommentTok{#res.impute}
+\CommentTok{#df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]}
+\CommentTok{#df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]}
+\CommentTok{#df[,"Passenger_count"]<-res.impute$completeObs[,"Passenger_count"]}
+\CommentTok{#df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]}
+\CommentTok{#df[,"Trp_type"]<-res.impute$completeObs[,"Trp_type"]}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Creating auxiliar variables and doing their
+analysis}\label{creating-auxiliar-variables-and-doing-their-analysis}
+
+\subsection{Trip length}\label{trip-length}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{nrow}\NormalTok{(df))\{}
+  \NormalTok{df$trip_length[i] <-}\KeywordTok{man.dist.manual}\NormalTok{(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])}
+\NormalTok{\}}
+
+\KeywordTok{summary}\NormalTok{(df$trip_length)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   1.792   3.123   4.301   5.522  29.880
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df$trip_length)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+\subsection{Trip distance in km}\label{trip-distance-in-km}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$trip_distance_km<-df$Trip_distance*}\FloatTok{1.609344} \CommentTok{# Miles to km}
+
+\KeywordTok{summary}\NormalTok{(df$trip_distance_km)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##  0.01609  1.62544  2.89682  4.06140  5.34302 17.07514
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df$trip_distance_km)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-34-1.pdf}
+
+\subsection{Travel time in minutes}\label{travel-time-in-minutes}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{b1<-}\KeywordTok{as.POSIXlt}\NormalTok{(df$lpep_pickup_datetime)}
+\NormalTok{b2<-}\KeywordTok{as.POSIXlt}\NormalTok{(df$Lpep_dropoff_datetime)}
+\NormalTok{df$travel_time<-}\KeywordTok{as.double}\NormalTok{(}\KeywordTok{difftime}\NormalTok{(b2,b1,}\DataTypeTok{units=}\StringTok{'min'}\NormalTok{))}
+
+\KeywordTok{summary}\NormalTok{(df$travel_time)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+##    0.000    5.871    9.733   18.916   15.750 1438.317
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df$travel_time)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-35-1.pdf}
+
+\subsection{Espeed (km/h)}\label{espeed-kmh}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#efective speed : trigonometric distance between pickup point and dropoff point divided by travel time }
+
+\NormalTok{for (i in }\DecValTok{1}\NormalTok{:}\KeywordTok{nrow}\NormalTok{(df))\{}
+  \NormalTok{df$espeed[i] <-}\StringTok{ }\NormalTok{df$trip_length[i]/(df$travel_time[i]/}\DecValTok{60}\NormalTok{)}
+\NormalTok{\}}
+\KeywordTok{summary}\NormalTok{(df$espeed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   15.24   20.34     Inf   27.19     Inf
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df$espeed)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-36-1.pdf}
+
+\subsection{Pick\_up\_hour}\label{pick_up_hour}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mydate <-}\StringTok{ }\KeywordTok{as.POSIXlt}\NormalTok{(df$lpep_pickup_datetime)}
+\NormalTok{df$pick_up_hour <-}\StringTok{ }\NormalTok{mydate$hour}
+
+\KeywordTok{summary}\NormalTok{(df$pick_up_hour)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00    9.00   15.00   13.48   19.00   23.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(df$pick_up_hour)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Code_Doc_files/figure-latex/unnamed-chunk-37-1.pdf}
+
+\subsection{Pick\_up\_period}\label{pick_up_period}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# night, morning, valley and afternoon}
+
+\NormalTok{df$pick_up_period=}\StringTok{ }\KeywordTok{cut}\NormalTok{(df$pick_up_hour, }\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(-}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{23}\NormalTok{), }\DataTypeTok{labels=} \KeywordTok{c}\NormalTok{(}\StringTok{"night"}\NormalTok{, }\StringTok{"morning"}\NormalTok{, }\StringTok{"valley"}\NormalTok{, }\StringTok{"afternoon"}\NormalTok{))}
+
+\KeywordTok{summary}\NormalTok{(df$pick_up_period)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     night   morning    valley afternoon 
+##       787       977      1367      1735
+\end{verbatim}
+
+\section{Creating factors}\label{creating-factors}
+
+\subsection{Factorize function:}\label{factorize-function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorize<-}\StringTok{ }\NormalTok{function(x) \{}
+  \KeywordTok{quantile}\NormalTok{(x,}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\FloatTok{0.1}\NormalTok{))}
+  \NormalTok{pp<-}\KeywordTok{quantile}\NormalTok{(x);pp}
+  \NormalTok{breaks<-}\KeywordTok{c}\NormalTok{(}\KeywordTok{unique}\NormalTok{(pp))}
+  \NormalTok{f.x<-}\KeywordTok{factor}\NormalTok{(}\KeywordTok{cut}\NormalTok{(x,breaks))}
+  \KeywordTok{return}\NormalTok{(f.x);}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{f.passenger}\label{f.passenger}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.passenger<-}\KeywordTok{factor}\NormalTok{(}\KeywordTok{cut}\NormalTok{(df$Passenger_count,}\DataTypeTok{breaks=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{6}\NormalTok{)))}
+\KeywordTok{summary}\NormalTok{(df$f.passenger)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (0,1] (1,6]  NA's 
+##  4122   743     1
+\end{verbatim}
+
+\subsection{f.distance}\label{f.distance}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.distance<-}\KeywordTok{factorize}\NormalTok{(df$Trip_distance) }\CommentTok{# NO VA be?}
+\KeywordTok{summary}\NormalTok{(df$f.distance) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (0.01,1.01]  (1.01,1.8]  (1.8,3.32] (3.32,10.6]        NA's 
+##        1223        1221        1206        1215           1
+\end{verbatim}
+
+\subsection{f.pickup\_longitude}\label{f.pickup_longitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.pickup_longitude<-}\KeywordTok{factorize}\NormalTok{(df$Pickup_longitude)}
+\KeywordTok{summary}\NormalTok{(df$f.pickup_longitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (-74.03,-73.96] (-73.96,-73.95] (-73.95,-73.92] (-73.92,-73.79] 
+##            1216            1216            1217            1216 
+##            NA's 
+##               1
+\end{verbatim}
+
+\subsection{f.pickup\_latitude}\label{f.pickup_latitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.pickup_latitude<-}\KeywordTok{factorize}\NormalTok{(df$Pickup_latitude)}
+\KeywordTok{summary}\NormalTok{(df$f.pickup_latitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (40.58,40.69] (40.69,40.75]  (40.75,40.8]  (40.8,40.91]          NA's 
+##          1217          1215          1216          1217             1
+\end{verbatim}
+
+\subsection{f.dropoff\_longitude}\label{f.dropoff_longitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.dropoff_longitude<-}\KeywordTok{factorize}\NormalTok{(df$Dropoff_longitude)}
+\KeywordTok{summary}\NormalTok{(df$f.dropoff_longitude)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (-74.03,-73.97] (-73.97,-73.95] (-73.95,-73.91] (-73.91,-73.75] 
+##            1216            1216            1216            1217 
+##            NA's 
+##               1
+\end{verbatim}
+
+\subsection{f.dropoff\_latitude}\label{f.dropoff_latitude}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.dropoff_latitude<-}\KeywordTok{factorize}\NormalTok{(df$Pickup_latitude)}
+\KeywordTok{summary}\NormalTok{(df$f.dropoff_latitude) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (40.58,40.69] (40.69,40.75]  (40.75,40.8]  (40.8,40.91]          NA's 
+##          1217          1215          1216          1217             1
+\end{verbatim}
+
+\subsection{f.fare\_amount}\label{f.fare_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.fare_amount<-}\KeywordTok{factorize}\NormalTok{(df$Fare_amount)}
+\KeywordTok{summary}\NormalTok{(df$f.fare_amount)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   (0.1,6]     (6,9]    (9,14] (14,42.5]      NA's 
+##      1250      1254      1203      1158         1
+\end{verbatim}
+
+\subsection{f.extra}\label{f.extra}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.extra<-}\KeywordTok{factorize}\NormalTok{(df$Extra)}
+\KeywordTok{summary}\NormalTok{(df$f.extra)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (0,0.5] (0.5,2]    NA's 
+##    1879     761    2226
+\end{verbatim}
+
+\subsection{f.MTA\_tax}\label{f.mta_tax}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.MTA_tax<-}\KeywordTok{factorize}\NormalTok{(df$MTA_tax)}
+\KeywordTok{summary}\NormalTok{(df$f.MTA_tax) }\CommentTok{#11 NA's -> values of -0.5 => Outliers?}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (0,0.5]    NA's 
+##    4783      83
+\end{verbatim}
+
+\subsection{f.Improvement\_surcharge}\label{f.improvement_surcharge}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.Improvement_surcharge<-}\KeywordTok{factorize}\NormalTok{(df$improvement_surcharge)}
+\KeywordTok{summary}\NormalTok{(df$f.Improvement_surcharge) }\CommentTok{#11 NA's -> values of -0.3 => Outliers?}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    (0,0.3] (0.3,0.77]       NA's 
+##       4783          1         82
+\end{verbatim}
+
+\subsection{f.tip\_amount}\label{f.tip_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.tip_amount<-}\KeywordTok{factor}\NormalTok{(df$Tip_amount)}
+\KeywordTok{summary}\NormalTok{(df$f.tip_amount) }\CommentTok{#2869 NA's}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       0       1       2    1.46    1.56       3    1.36    1.66    1.96 
+##    2839     152     148      45      43      42      38      38      35 
+##     1.7    1.76    2.16    2.26    2.06     1.5    2.36    1.86     2.7 
+##      31      31      30      29      28      26      26      25      25 
+##     1.2    1.26    2.46    2.66    1.16    1.45    1.95       4    1.06 
+##      22      22      21      21      20      20      20      20      19 
+##     2.2    2.45       5    2.86    1.55    2.96    1.85    2.76    2.32 
+##      19      19      19      18      17      17      16      16      15 
+##    2.56    2.95    3.06    3.36    3.46    1.82     3.2    2.08    2.58 
+##      15      15      15      15      15      14      14      13      13 
+##    3.16    1.25    2.05    3.32     0.7    3.56    3.86    4.06    1.32 
+##      13      12      12      12      11      11      11      11      10 
+##    3.26    3.58     3.7    3.96     0.5    0.96    1.35    1.58    1.65 
+##      10      10      10      10       9       9       9       9       9 
+##    1.75    2.19    1.15    1.89    2.15     2.5    3.76    4.26    1.74 
+##       9       9       8       8       8       8       8       8       7 
+##    3.05    3.15    3.95    4.16    2.25    2.34    2.55    3.45    3.66 
+##       7       7       7       7       6       6       6       6       6 
+##    4.08     5.2    5.66    5.76    1.59    2.04    2.35    2.75     3.8 
+##       6       6       6       6       5       5       5       5       5 
+##    4.32    4.36    4.45    4.55    4.56    4.76    4.86    6.46    0.86 
+##       5       5       5       5       5       5       5       5       4 
+## (Other) 
+##     353
+\end{verbatim}
+
+\subsection{f.tolls\_amount}\label{f.tolls_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.toll<-}\KeywordTok{factor}\NormalTok{(}\KeywordTok{cut}\NormalTok{(df$Tolls_amount,}\DataTypeTok{breaks=}\KeywordTok{c}\NormalTok{(-}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{50}\NormalTok{)))}
+\KeywordTok{summary}\NormalTok{(df$f.toll)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (-1,1] (1,50] 
+##   4799     67
+\end{verbatim}
+
+\subsection{f.total\_amount}\label{f.total_amount}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df$f.total<-}\KeywordTok{factorize}\NormalTok{(df$Total_amount)}
+\KeywordTok{summary}\NormalTok{(df$f.total)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   (0.1,7.8]    (7.8,11]   (11,16.6] (16.6,45.4]        NA's 
+##        1252        1187        1216        1210           1
+\end{verbatim}
+
+\section{Profiling}\label{profiling}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#save(df,miss,vars_con,vars_dis,vars_res,file="MyTaxi5000_Clean.RData")}
+\KeywordTok{summary}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                               VendorID             lpep_pickup_datetime
+##  Creative Mobile Technologies, LLC:1049   2016-01-01 03:00:54:   2     
+##  VeriFone Inc.                    :3817   2016-01-22 09:48:21:   2     
+##                                           2016-01-22 19:49:32:   2     
+##                                           2016-01-22 20:58:19:   2     
+##                                           2016-01-27 20:37:18:   2     
+##                                           2016-01-28 18:05:51:   2     
+##                                           (Other)            :4854     
+##          Lpep_dropoff_datetime                    Store_and_fwd_flag
+##  2016-01-01 02:50:32:   2      not a store and forward trip:4848    
+##  2016-01-01 05:49:43:   2      store and forward trip      :  18    
+##  2016-01-19 19:02:43:   2                                           
+##  2016-01-19 21:51:05:   2                                           
+##  2016-01-21 14:52:58:   2                                           
+##  2016-01-29 16:08:23:   2                                           
+##  (Other)            :4854                                           
+##                  RateCodeID   Pickup_longitude Pickup_latitude
+##  Standard rate        :4783   Min.   :-74.03   Min.   :40.58  
+##  JFK                  :   0   1st Qu.:-73.96   1st Qu.:40.69  
+##  Newark               :   1   Median :-73.95   Median :40.75  
+##  Nassau or Westchester:   1   Mean   :-73.94   Mean   :40.75  
+##  Negotiated fare      :  81   3rd Qu.:-73.92   3rd Qu.:40.80  
+##                               Max.   :-73.79   Max.   :40.91  
+##                                                               
+##  Dropoff_longitude Dropoff_latitude Passenger_count Trip_distance   
+##  Min.   :-74.03    Min.   :40.57    Min.   :1.000   Min.   : 0.010  
+##  1st Qu.:-73.97    1st Qu.:40.70    1st Qu.:1.000   1st Qu.: 1.010  
+##  Median :-73.95    Median :40.75    Median :1.000   Median : 1.800  
+##  Mean   :-73.94    Mean   :40.74    Mean   :1.349   Mean   : 2.524  
+##  3rd Qu.:-73.91    3rd Qu.:40.79    3rd Qu.:1.000   3rd Qu.: 3.320  
+##  Max.   :-73.75    Max.   :40.91    Max.   :6.000   Max.   :10.610  
+##                                     NA's   :1                       
+##   Fare_amount        Extra           MTA_tax         Tip_amount    
+##  Min.   : 0.10   Min.   :0.0000   Min.   :0.0000   Min.   : 0.000  
+##  1st Qu.: 6.00   1st Qu.:0.0000   1st Qu.:0.5000   1st Qu.: 0.000  
+##  Median : 9.00   Median :0.5000   Median :0.5000   Median : 0.000  
+##  Mean   :11.15   Mean   :0.3497   Mean   :0.4915   Mean   : 1.124  
+##  3rd Qu.:14.00   3rd Qu.:0.5000   3rd Qu.:0.5000   3rd Qu.: 2.000  
+##  Max.   :42.50   Max.   :2.0000   Max.   :0.5000   Max.   :22.000  
+##                                                                    
+##   Tolls_amount      improvement_surcharge  Total_amount  
+##  Min.   : 0.00000   Min.   :0.000         Min.   : 0.10  
+##  1st Qu.: 0.00000   1st Qu.:0.300         1st Qu.: 7.80  
+##  Median : 0.00000   Median :0.300         Median :11.00  
+##  Mean   : 0.07864   Mean   :0.295         Mean   :13.49  
+##  3rd Qu.: 0.00000   3rd Qu.:0.300         3rd Qu.:16.62  
+##  Max.   :12.50000   Max.   :0.770         Max.   :45.42  
+##                                                          
+##       Payment_type        Trip_type       mis_ind               AnyTip    
+##  Credit card:2384   Street-hail:4786   Min.   :0.00000   AnyTip No :2839  
+##  Cash       :2448   Dispatch   :  80   1st Qu.:0.00000   AnyTip Yes:2027  
+##  No charge  :  16                      Median :0.00000                    
+##  Dispute    :  18                      Mean   :0.03658                    
+##                                        3rd Qu.:0.00000                    
+##                                        Max.   :5.00000                    
+##                                                                           
+##   trip_length     trip_distance_km    travel_time           espeed     
+##  Min.   : 0.000   Min.   : 0.01609   Min.   :   0.000   Min.   : 0.00  
+##  1st Qu.: 1.792   1st Qu.: 1.62544   1st Qu.:   5.871   1st Qu.:15.24  
+##  Median : 3.123   Median : 2.89682   Median :   9.733   Median :20.34  
+##  Mean   : 4.301   Mean   : 4.06140   Mean   :  18.916   Mean   :  Inf  
+##  3rd Qu.: 5.522   3rd Qu.: 5.34302   3rd Qu.:  15.750   3rd Qu.:27.19  
+##  Max.   :29.880   Max.   :17.07514   Max.   :1438.317   Max.   :  Inf  
+##                                                                        
+##   pick_up_hour     pick_up_period f.passenger        f.distance  
+##  Min.   : 0.00   night    : 787   (0,1]:4122   (0.01,1.01]:1223  
+##  1st Qu.: 9.00   morning  : 977   (1,6]: 743   (1.01,1.8] :1221  
+##  Median :15.00   valley   :1367   NA's :   1   (1.8,3.32] :1206  
+##  Mean   :13.48   afternoon:1735                (3.32,10.6]:1215  
+##  3rd Qu.:19.00                                 NA's       :   1  
+##  Max.   :23.00                                                   
+##                                                                  
+##        f.pickup_longitude     f.pickup_latitude      f.dropoff_longitude
+##  (-74.03,-73.96]:1216     (40.58,40.69]:1217    (-74.03,-73.97]:1216    
+##  (-73.96,-73.95]:1216     (40.69,40.75]:1215    (-73.97,-73.95]:1216    
+##  (-73.95,-73.92]:1217     (40.75,40.8] :1216    (-73.95,-73.91]:1216    
+##  (-73.92,-73.79]:1216     (40.8,40.91] :1217    (-73.91,-73.75]:1217    
+##  NA's           :   1     NA's         :   1    NA's           :   1    
+##                                                                         
+##                                                                         
+##      f.dropoff_latitude   f.fare_amount     f.extra       f.MTA_tax   
+##  (40.58,40.69]:1217     (0.1,6]  :1250   (0,0.5]:1879   (0,0.5]:4783  
+##  (40.69,40.75]:1215     (6,9]    :1254   (0.5,2]: 761   NA's   :  83  
+##  (40.75,40.8] :1216     (9,14]   :1203   NA's   :2226                 
+##  (40.8,40.91] :1217     (14,42.5]:1158                                
+##  NA's         :   1     NA's     :   1                                
+##                                                                       
+##                                                                       
+##  f.Improvement_surcharge  f.tip_amount     f.toll            f.total    
+##  (0,0.3]   :4783         0      :2839   (-1,1]:4799   (0.1,7.8]  :1252  
+##  (0.3,0.77]:   1         1      : 152   (1,50]:  67   (7.8,11]   :1187  
+##  NA's      :  82         2      : 148                 (11,16.6]  :1216  
+##                          1.46   :  45                 (16.6,45.4]:1210  
+##                          1.56   :  43                 NA's       :   1  
+##                          3      :  42                                   
+##                          (Other):1597
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Numeric Target Total_Amount}
+\NormalTok{vars_con;vars_dis}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{verbatim}
+## [1] "VendorID"        "RateCodeID"      "Passenger_count" "Trip_type"      
+## [5] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"                "lpep_pickup_datetime"   
+##  [3] "Lpep_dropoff_datetime"   "Store_and_fwd_flag"     
+##  [5] "RateCodeID"              "Pickup_longitude"       
+##  [7] "Pickup_latitude"         "Dropoff_longitude"      
+##  [9] "Dropoff_latitude"        "Passenger_count"        
+## [11] "Trip_distance"           "Fare_amount"            
+## [13] "Extra"                   "MTA_tax"                
+## [15] "Tip_amount"              "Tolls_amount"           
+## [17] "improvement_surcharge"   "Total_amount"           
+## [19] "Payment_type"            "Trip_type"              
+## [21] "mis_ind"                 "AnyTip"                 
+## [23] "trip_length"             "trip_distance_km"       
+## [25] "travel_time"             "espeed"                 
+## [27] "pick_up_hour"            "pick_up_period"         
+## [29] "f.passenger"             "f.distance"             
+## [31] "f.pickup_longitude"      "f.pickup_latitude"      
+## [33] "f.dropoff_longitude"     "f.dropoff_latitude"     
+## [35] "f.fare_amount"           "f.extra"                
+## [37] "f.MTA_tax"               "f.Improvement_surcharge"
+## [39] "f.tip_amount"            "f.toll"                 
+## [41] "f.total"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# condes(df[,c(vars_con,vars_dis)],1)}
+\KeywordTok{library}\NormalTok{(FactoMineR)}
+\CommentTok{#condes(df,15)}
+
+\CommentTok{# Binary Target AnyTip}
+\NormalTok{vars_con;vars_dis}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "Pickup_longitude"  "Pickup_latitude"   "Dropoff_longitude"
+##  [4] "Dropoff_latitude"  "Trip_distance"     "Fare_amount"      
+##  [7] "Extra"             "MTA_tax"           "Tip_amount"       
+## [10] "Tolls_amount"      "Total_amount"
+\end{verbatim}
+
+\begin{verbatim}
+## [1] "VendorID"        "RateCodeID"      "Passenger_count" "Trip_type"      
+## [5] "mis_ind"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "VendorID"                "lpep_pickup_datetime"   
+##  [3] "Lpep_dropoff_datetime"   "Store_and_fwd_flag"     
+##  [5] "RateCodeID"              "Pickup_longitude"       
+##  [7] "Pickup_latitude"         "Dropoff_longitude"      
+##  [9] "Dropoff_latitude"        "Passenger_count"        
+## [11] "Trip_distance"           "Fare_amount"            
+## [13] "Extra"                   "MTA_tax"                
+## [15] "Tip_amount"              "Tolls_amount"           
+## [17] "improvement_surcharge"   "Total_amount"           
+## [19] "Payment_type"            "Trip_type"              
+## [21] "mis_ind"                 "AnyTip"                 
+## [23] "trip_length"             "trip_distance_km"       
+## [25] "travel_time"             "espeed"                 
+## [27] "pick_up_hour"            "pick_up_period"         
+## [29] "f.passenger"             "f.distance"             
+## [31] "f.pickup_longitude"      "f.pickup_latitude"      
+## [33] "f.dropoff_longitude"     "f.dropoff_latitude"     
+## [35] "f.fare_amount"           "f.extra"                
+## [37] "f.MTA_tax"               "f.Improvement_surcharge"
+## [39] "f.tip_amount"            "f.toll"                 
+## [41] "f.total"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#catdes(df[,c(vars_dis,vars_con)],5)}
+\CommentTok{#catdes(df,which(names(df)=="AnyTip"))}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

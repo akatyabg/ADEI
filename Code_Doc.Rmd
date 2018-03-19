@@ -34,10 +34,10 @@ lapply(requiredPackages, require, character.only = TRUE)
 ### Use birthday of 1 member of the group
 set.seed(03101994)
 nrow(df)
-sam<-sample(1:nrow(df),5000)
-sam<-as.vector(sort(sam))
+#sam<-sample(1:nrow(df),5000)
+#sam<-as.vector(sort(sam))
 
-df<-df[sam,]
+#df<-df[sam,]
 #setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
 #save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
@@ -152,7 +152,7 @@ barplot(prop.table(table(df$Trip_type)))
 ```{r}
 
 ## Number of missing values:
-``{r}
+
 missingData<-which(is.na(df$Passenger_count));length(missingData) #No missing Data
 errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
 outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
@@ -409,8 +409,7 @@ vars_con
 
 ## Multivariant Outlier Detection
 ```{r}
-
-install.packages("mvoutlier")
+#install.packages("mvoutlier")
 library(sgeostat)
 library(mvoutlier)
 
@@ -419,23 +418,23 @@ summary(df[,vars_con])
 vars_con_out<-vars_con[c(1:4)]
 
 dim(vars_con2)
-aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+#aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
 
 # Use common sense, but technicalities might difficult the application of the procedure
 
 vars_con_out<-vars_con[c(1:4)]
-mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+#mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
 
 # Use common sense
 vars_con
 vars_con_out<-vars_con[c(6,9,12)]
-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+#aq.plot(df[,vars_con_out])  # Problems when missing data are present
 vars_con_out
 ```
 
 # Correlations error variable
 ```{r}
-install.packages("polycor")
+#install.packages("polycor")
 library(polycor)
 library(FactoMineR)
 names (df)
@@ -486,7 +485,7 @@ vars_con
 
 ## Imputation of numeric variables
 ```{r}
-
+#install.packages("missMDA")
 library(missMDA)
 names(df)
 vars_con_mis<-vars_con;length(vars_con_mis)
@@ -506,19 +505,19 @@ df[,"Extra"]<-res.comp$completeObs[,"Extra"]
 df[,"MTA_tax"]<-res.comp$completeObs[,"MTA_tax"]
 df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
 df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
-df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
+#df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
 ```
 
 ## Imputation of qualitative variables
 ```{r}
 library(missMDA)
-res.impute = imputeMCA(df[,vars_dis],ncp = 3)
-res.impute
-df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
-df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
-df[,"Passenger_count"]<-res.impute$completeObs[,"Passenger_count"]
-df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
-df[,"Trp_type"]<-res.impute$completeObs[,"Trp_type"]
+#res.impute = imputeMCA(df[,vars_dis],ncp = 3)
+#res.impute
+#df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
+#df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
+#df[,"Passenger_count"]<-res.impute$completeObs[,"Passenger_count"]
+#df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
+#df[,"Trp_type"]<-res.impute$completeObs[,"Trp_type"]
 
 ```
 
@@ -698,14 +697,14 @@ names(df)
 
 # condes(df[,c(vars_con,vars_dis)],1)
 library(FactoMineR)
-condes(df,15)
+#condes(df,15)
 
 # Binary Target AnyTip
 vars_con;vars_dis
 names(df)
 
 #catdes(df[,c(vars_dis,vars_con)],5)
-catdes(df,which(names(df)=="AnyTip"))
+#catdes(df,which(names(df)=="AnyTip"))
 ```
 
 
