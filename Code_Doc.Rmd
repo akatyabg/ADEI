@@ -496,7 +496,7 @@ rank(corV)
 ## Remove observations with NA at targets
 
 ```{r}
-ll<-which(is.na(df$Total_amount));ll
+ll<-which(is.na(df$Total_amount));
 if(length(ll)>0){
   df<-df[-ll,]
 }
@@ -513,9 +513,7 @@ if(length(ll)>0){
 ```{r}
 
 library(missMDA)
-names(df)
 res.comp <- imputePCA(df[,vars_con], ncp=4)
-attributes(res.comp$completeObs)
 summary(res.comp$completeObs)
 df[,"Pickup_longitude"]<-res.comp$completeObs[,"Pickup_longitude"]
 df[,"Pickup_latitude"]<-res.comp$completeObs[,"Pickup_latitude"]
@@ -536,18 +534,12 @@ df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
 ```{r}
 #efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
 
-summary(df$travel_time)
-
 for (i in 1:nrow(df)){
   df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
 }
-names(df)
 vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,23,24,25,26,28)] 
-vars_con
 
 res.comp <- imputePCA(df[,vars_con], ncp=4)
-attributes(res.comp$completeObs)
-summary(res.comp$completeObs)
 df[,"espeed"]<-res.comp$completeObs[,"espeed"]
 
 summary(df$espeed)
@@ -559,9 +551,7 @@ boxplot(df$espeed)
 ```{r}
 library(missMDA)
 vars_dis_qual <-vars_dis[c(1,2,3,5,6)]
-summary(df$Passenger_count)
 res.impute = imputeMCA(df[,vars_dis_qual],ncp = 3)
-res.impute
 df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
 df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
 df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
@@ -639,20 +629,20 @@ summary(df$f.extra)
 ```{r}
 
 df$f.MTA_tax<-factorize(df$MTA_tax)
-summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
+summary(df$f.MTA_tax)
 
 ```
 
 ## f.Improvement_surcharge
 ```{r}
 df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
-summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
+summary(df$f.Improvement_surcharge)
 ```
 
 ## f.tip_amount
 ```{r}
 df$f.tip_amount<-factor(df$Tip_amount)
-summary(df$f.tip_amount) #2869 NA's
+summary(df$f.tip_amount)
 ```
 
 ## f.tolls_amount
@@ -672,15 +662,15 @@ summary(df$f.total)
 ```{r}
 library(FactoMineR)
 # Numeric Target Total_Amount
-vars_con;vars_dis
-names(df)
+#vars_con;vars_dis
+#names(df)
 
 #condes(df,1)
 #condes(df, num.var=18)
 
 # Binary Target AnyTip
-vars_con;vars_dis
-names(df)
+#vars_con;vars_dis
+#names(df)
 
 #catdes(df[,c(vars_dis,vars_con)],5)
 ```
