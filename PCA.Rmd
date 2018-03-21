@@ -1,0 +1,33 @@
+---
+title: "PCA analysis of NYCABS datase"
+author: "Katerina Dimitrova, Jose Romero, Sergi Munoz"
+date: "March 18, 2018"
+output: pdf_document
+---
+
+```{r,include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+```
+```{r,include=FALSE}
+setwd("D:/ADEI/ADEI.git/trunk") #Change 
+
+
+```
+
+#JAJA
+```{r}
+load("Taxi5000_raw.RData")
+
+names (df)
+actives<-names(df[c(10,12,15,18,23,24,25,28)])
+qualsup<-names(df[c(19,20,22)])
+quantsup<-names(df[c(27)])
+res<-PCA(df[,actives])
+
+```
+
+#
+
+
+

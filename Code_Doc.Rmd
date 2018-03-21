@@ -22,7 +22,6 @@ setwd("D:/ADEI/ADEI.git/trunk") #Change
 # Load Required Packages: to be increased over the course
 requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
-
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
 ```
