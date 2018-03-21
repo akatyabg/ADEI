@@ -682,10 +682,31 @@ summary(df$espeed)
 vars_con;vars_dis
 names(df)
 vars_con_and_dis <- names(df)[c(1,4,5,10,19,20,22,27,6,7,8,9,11,12,13,14,15,16,17,23,24,25,26)] 
+#if p.value is under 0.5 then we have to reject the hipothesis of no relation between variable and target
 catdes(df[,vars_con_and_dis],num.var=7)
 ```
 
 
+#Multivariant Outlier Detection
+```{r}
+library(mvoutlier)
+names(df)
+vars_con # Problems c(5,8,9,10,11,12)
+summary(df[,vars_con])
+vars_con_out<-vars_con[c(1:4)]
+aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
+
+# Use common sense, but technicalities might difficult the application of the procedure
+
+vars_con_out<-vars_con[c(1:4)]
+mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+
+# Use common sense
+vars_con
+vars_con_out<-vars_con[c(6,13,16)]
+aq.plot(df[,vars_con_out])  # Problems when missing data are present
+vars_con_out
+```
 
 
 
