@@ -522,6 +522,8 @@ df[,"Pickup_latitude"]<-res.comp$completeObs[,"Pickup_latitude"]
 df[,"Dropoff_longitude"]<-res.comp$completeObs[,"Dropoff_longitude"]
 df[,"Dropoff_latitude"]<-res.comp$completeObs[,"Dropoff_latitude"]
 df[,"Trip_distance"]<-res.comp$completeObs[,"Trip_distance"]
+df[,"trip_distance_km"]<-res.comp$completeObs[,"trip_distance_km"]
+df[,"trip_length"]<-res.comp$completeObs[,"trip_length"]
 df[,"Passenger_count"]<-res.comp$completeObs[,"Passenger_count"]
 df[,"Fare_amount"]<-res.comp$completeObs[,"Fare_amount"]
 df[,"Extra"]<-res.comp$completeObs[,"Extra"]
@@ -544,11 +546,6 @@ for (i in 1:nrow(df)){
 names(df)
 vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,23,24,25,26,28)] 
 vars_con
-
-res.comp <- imputePCA(df[,vars_con], ncp=4)
-attributes(res.comp$completeObs)
-summary(res.comp$completeObs)
-df[,"espeed"]<-res.comp$completeObs[,"espeed"]
 
 summary(df$espeed)
 boxplot(df$espeed)
@@ -672,7 +669,7 @@ summary(df$f.total)
 ```{r}
 library(FactoMineR)
 # Numeric Target Total_Amount
-summary(df$travel_time);
+summary(df$trip_length);
 summary(df$espeed)
 vars_dis
 names(df)
@@ -684,8 +681,8 @@ summary(df$espeed)
 # Binary Target AnyTip
 vars_con;vars_dis
 names(df)
-vars_con_and_dis <- names(df)[c(1,4,5,10,19,20,27,6,7,8,9,11,12,13,14,15,16,17,23,24,25,26)] 
-catdes(df[,vars_con_and_dis],num.var=5)
+vars_con_and_dis <- names(df)[c(1,4,5,10,19,20,22,27,6,7,8,9,11,12,13,14,15,16,17,23,24,25,26)] 
+catdes(df[,vars_con_and_dis],num.var=7)
 ```
 
 
