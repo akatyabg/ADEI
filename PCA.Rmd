@@ -109,3 +109,15 @@ elbowDF<-data.frame(elbow)
 ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
 ```
 
+#V Hierarchical clustering
+
+```{r}
+clusters <- hclust(dist(elbowDF), method = 'average')
+plot(clusters)
+clusterCut <- cutree(clusters, 3)
+ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2)) + 
+  geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
+  scale_color_manual(values = c('yellow', 'red', 'green'))
+
+```
+
