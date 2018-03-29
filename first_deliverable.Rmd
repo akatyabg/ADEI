@@ -118,6 +118,9 @@ barplot(prop.table(table(df$VendorID)))
 missingData<-which(is.na(df$RateCodeID));length(missingData) #No missing Data
 errors<-which(df$RateCodeID==0.0);length(errors) #No errors
 df$RateCodeID<-factor(df$RateCodeID,labels=c("Standard rate","JFK","Newark","Nassau or Westchester","Negotiated fare"))
+summary(df$RateCodeID)levels(df$RateCodeID)[levels(df$RateCodeID)=="Newark"] <- "Special rate"
+levels(df$RateCodeID)[levels(df$RateCodeID)=="Nassau or Westchester"] <- "Special rate"
+levels(df$RateCodeID)[levels(df$RateCodeID)=="Negotiated fare"] <- "Special rate"
 table(df$RateCodeID) 
 barplot(prop.table(table(df$RateCodeID)))
 ```
@@ -647,7 +650,8 @@ summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
 
 ## f.tip_amount
 ```{r}
-df$f.tip_amount<-factor(df$Tip_amount)
+
+df$f.tip_amount<-factor(cut(df$Tip_amount, breaks = c(-0.1,1,23)))
 summary(df$f.tip_amount) #2869 NA's
 ```
 
