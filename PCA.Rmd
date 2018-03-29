@@ -31,10 +31,10 @@ vars_con
 res.pca<-PCA(df[,vars_con], quanti.sup = 13, quali.sup = 14 ) # TotalAmount and AnyTip
 barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
 length <-length(which(res.pca$eig[,1]>=1))
-kaiser <- res.pca$eig[1:length,1] #keep only EV >=1
-length(res.pca$eig[,1])
-kaiser # first 6 
-elbow <- res.pca$eig[1:5,1] #above the elbow
+#kaiser <- res.pca$eig[1:length,1] #keep only EV >=1 ->first 6
+#length(res.pca$ind[,1])
+#kaiser # first 6 
+elbow <- res.pca$ind$coord #above the elbow first 5 dimentions
 
 plot(res.pca$eig[,1], type = "l") # line chart
 
@@ -103,10 +103,9 @@ fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="gree
 #IV K-Means Classification
 
 ```{r}
-kMeansCluster <- kmeans(kaiser, 3, nstart = 20)
+kMeansCluster <- kmeans(elbow, 4, nstart = 20)
 kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
-
-ggplot(kaiser, aes(kaiser[, 1:2], color = kMeansCluster$clusterF)) + geom_point()
+elbowDF<-data.frame(elbow)
+ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
 ```
-
 
