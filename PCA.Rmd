@@ -14,24 +14,31 @@ setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 
 ```
-
+#I Introduction
+1. The Kaiser rule is to drop all components with eigenvalues under 1.0 
+   According to the Elbow rule when the drop ceases and the curve makes an elbow toward less steep declinewe should drop all further components after the one starting the elbow.
 #JAJA
 ```{r}
-load("Taxi5000_raw.RData")
+load("Taxi5000_raw_libraryDay.RData")
 
 names (df)
 vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26)] 
 vars_con
-actives<-names(df[c(10,12,15,23,24,25,28,18)])# only quantative
-qualsup<-names(df[c(22)])
+#actives<-names(df[c(10,12,15,23,24,25,28,18)])# only quantative
+##qualsup<-names(df[c(22)])
 
-quantsup<-names(df[c(18)])
-res.pca<-PCA(df[,vars_con], quanti.sup = 13, quali.sup = 14 )
+#quantsup<-names(df[c(18)])
+res.pca<-PCA(df[,vars_con], quanti.sup = 13, quali.sup = 14 ) # TotalAmount and AnyTip
 barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
+length <-length(which(res.pca$eig[,1]>=1))
+kaiser <- res.pca$eig[1:length,1] #keep only EV >=1
+length(res.pca$eig[,1])
+kaiser # first 6 
+elbow <- res.pca$eig[1:5,1] #above the elbow
 
+plot(res.pca$eig[,1], type = "l") # line chart
 
 #facto extra
-
 fviz_eig(res.pca, addlabels = TRUE)
 fviz_eig(res.pca, choice = "eigenvalue",addlabels = TRUE)
 
@@ -89,10 +96,17 @@ plot(res.pca,choix="var", cex = 0.75, axes = (3:4))# 3rd and 4th PCA
 fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw() #Almost
 
 ###last section missing
-lines(res.pca)#...
+#lines(res.pca)#...
 
 
 ```
+#IV K-Means Classification
 
+```{r}
+kMeansCluster <- kmeans(kaiser, 3, nstart = 20)
+kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
+
+ggplot(kaiser, aes(kaiser[, 1:2], color = kMeansCluster$clusterF)) + geom_point()
+```
 
 
