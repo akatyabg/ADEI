@@ -140,6 +140,8 @@ barplot(prop.table(table(df$Store_and_fwd_flag)))
 missingData<-which(is.na(df$Trip_type));length(missingData) #No missing Data
 errors<-which(df$Payment_type==0.0);length(errors) #No errors
 df$Payment_type<-factor(df$Payment_type,labels=c("Credit card","Cash", "No charge", "Dispute"))
+levels(df$Payment_type)[levels(df$Payment_type)=="No charge"] <- "Other"
+levels(df$Payment_type)[levels(df$Payment_type)=="Dispute"] <- "Other"
 table(df$Payment_type)
 barplot(prop.table(table(df$Payment_type)))
 ```
@@ -631,29 +633,27 @@ summary(df$f.fare_amount)
 
 ## f.extra
 ```{r}
-df$f.extra<-factorize(df$Extra)
+df$f.extra<-factor(cut(df$Extra,breaks=c(-0.1,0.5,2)))
 summary(df$f.extra)
 ```
 
 ## f.MTA_tax
 ```{r}
-
-df$f.MTA_tax<-factorize(df$MTA_tax)
+df$f.MTA_tax<-factor(cut(df$MTA_tax,breaks=c(-0.1,0.4,0.5)))
 summary(df$f.MTA_tax) #11 NA's -> values of -0.5 => Outliers?
 
 ```
 
 ## f.Improvement_surcharge
 ```{r}
-df$f.Improvement_surcharge<-factorize(df$improvement_surcharge)
+df$f.Improvement_surcharge<-factor(cut(df$improvement_surcharge, breaks=c(-0.1,0.1,0.8)))
 summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
 ```
 
 ## f.tip_amount
 ```{r}
-
-df$f.tip_amount<-factor(cut(df$Tip_amount, breaks = c(-0.1,1,23)))
-summary(df$f.tip_amount) #2869 NA's
+df$f.tip_amount<-factor(cut(df$Tip_amount, breaks=c(-0.1,1,22)))
+summary(df$f.tip_amount)
 ```
 
 ## f.tolls_amount
@@ -664,7 +664,7 @@ summary(df$f.toll)
 
 ## f.total_amount
 ```{r}
-df$f.total<-factorize(df$Total_amount)
+df$f.total<-factor(cut(df$Total_amount,breaks=c(-1,7.8,11,16.6,46)))
 summary(df$f.total)
 ```
 
