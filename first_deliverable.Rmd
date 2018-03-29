@@ -10,7 +10,7 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("D:/ADEI/ADEI.git/trunk") #Change 
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
 
 
 ```
@@ -39,7 +39,7 @@ lapply(requiredPackages, require, character.only = TRUE)
 #df<-df[sam,]
 #setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
-#save.image("Taxi5000_raw.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+save.image("Taxi5000_raw_libraryDay.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
 ##Load usefull functions
@@ -130,6 +130,7 @@ barplot(prop.table(table(df$RateCodeID)))
 missingData<-which(is.na(df$Store_and_fwd_flag));length(missingData) #No missing Data
 erors<-which(df$Store_and_fwd_flag==0.0);length(errors) #No errors
 df$Store_and_fwd_flag<-factor(df$Store_and_fwd_flag,labels=c("not a store and forward trip","store and forward trip"))
+levels(df$Store_and_fwd_flag) <- c("Store_and_fwd","Not_Store_and_fwd")
 table(df$Store_and_fwd_flag)
 barplot(prop.table(table(df$Store_and_fwd_flag)))
 ```
