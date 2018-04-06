@@ -10,17 +10,29 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("D:/ADEI/ADEI.git/trunk") #Change 
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
 
 
 ```
+
+#Loading function
+```{r}
+
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3], 
+       q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
+
+```
+
 #I Introduction
 1. The Kaiser rule is to drop all components with eigenvalues under 1.0 
    According to the Elbow rule when the drop ceases and the curve makes an elbow toward less steep declinewe should drop all further components after the one starting the elbow.
 #JAJA
 ```{r}
 load("Taxi5000_raw_libraryDay.RData")
-
+library(FactoMineR)
 names (df)
 vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26)] 
 vars_con
@@ -28,7 +40,14 @@ vars_con
 ##qualsup<-names(df[c(22)])
 
 #quantsup<-names(df[c(18)])
-res.pca<-PCA(df[,vars_con], quanti.sup = 13, quali.sup = 14 ) # TotalAmount and AnyTip
+vars_dis
+
+#WHAT SHE HAS DONE IN CLASS (IT IS NOT OUR VECTORS SO IT WON'T WORK)
+# f.hour it is not a good choice anyway, she prefers period (conclusions made in clusters analysis)
+# we have to choose suplementary variable that would help us to interpret -> it's a good idea to use discretees homologous of the variables that contribute the most for pca projection.
+#res.pca<-PCA(df[,c(vars_conpca, "f.fare", "f.tt", "f.hour")], ncp=4, quanti.sup=which(vars_conpca=="Total_amount"), ind.sup = llvout, quali.sup = 19:21, graph= FALSE)
+
+res.pca<-PCA(df[,vars_con], quanti.sup = 13, quali.sup = 14, ncp = 4 ) # TotalAmount and AnyTip
 barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
 length <-length(which(res.pca$eig[,1]>=1))
 #kaiser <- res.pca$eig[1:length,1] #keep only EV >=1 ->first 6
@@ -52,6 +71,7 @@ ll1<-Boxplot(res.pca$ind$coord[,1])
 calcQ(res.pca$ind$coord[,1]) # doesn't work 'cause we have to load the function
 rang1<-sort(res.pca$ind$coord[,1],decreasing = T)
 df[rang1[1:3], vars_con]
+
 #graphic
 plot.PCA(res.pca, choix=c("ind"),cex=0.8,col.ind="grey80",select="contrib15",axes=c(1,2))
 
@@ -103,7 +123,32 @@ fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="gree
 #IV K-Means Classification
 
 ```{r}
+#partitioning in k=7 groups
+res.pca<- PCA(df[,c(vars_con)], ncp=4,quanti.sup=which(vars_con=="Total_amount"),ind.sup = llvout, graph = FALSE)
+
+ppcc<-res.pca$ind$coord[,1:4]
+dim(ppcc)
+kc<-kmeans(ppcc,6,iter.max = 30, trace=T)
+
+df$claKM<-7
+df[names(kc$cluster),"claKM"]<-kc$cluster
+kc$betweenss/kc$totss
+
+#caracterització claKM
+catdes(df, 39)
+#veure si s'han posat d'acord o no
+table(df$claHP, df$claKM)
+
+#assignar 
+df$claHp<-factor(df$claHP,labels=paste("kHp-",1:7))
+df$claKM<-factor(df$claKM, levels=c(6,5,7,1,2,4,3,8), labels = ...)
+
+#-----------------------------------------------#
 kMeansCluster <- kmeans(elbow, 4, nstart = 20)
+
+kMeansCluster <- kmeans(res.pca$ind$coord[,1:6],center= 3)
+
+
 kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
 elbowDF<-data.frame(elbow)
 ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
@@ -112,12 +157,34 @@ ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF
 #V Hierarchical clustering
 
 ```{r}
-clusters <- hclust(dist(elbowDF), method = 'average')
-plot(clusters)
-clusterCut <- cutree(clusters, 3)
-ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2)) + 
-  geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + 
-  scale_color_manual(values = c('yellow', 'red', 'green'))
+library(FactoMineR)
+library (ggplot2)
+library(ggdendro)
+
+summary(df[,vars_con])
+#we need to do at least 6-7-8 clusters
+res.hcpc <-HCPC(res.pca)
+names(res.hcpc)
+table (res.hcpc$data.clust$clust)
+#Block A descripció per variables
+res.hcpc$desc.var
+#Block B descripció per eixos
+#She doesn't recommend that (not very usefull by her opinion)
+res.hcpc$desc.axes
+#Block C individus
+#parangons. per cadascun dels clusters tenim els seus parangons i els seus més espeicifis (dist) -> que es diferencien més dels altres clusters
+res.hcpc$desc.ind
+
+#Donar-li una classe (la última) a tots els outliers multidimensionals (sup.)
+
+#No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
+
+#clusters <- hclust(dist(elbowDF), method = 'mcquitty')
+#ggdendrogram(clusters, rotate = FALSE, size = 2)
+#plot(clusters)
+#clusterCut <- cutree(clusters, 3)
+#ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2)) + 
+ # geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + A
+  #scale_color_manual(values = c('yellow', 'red', 'green'))
 
 ```
-
