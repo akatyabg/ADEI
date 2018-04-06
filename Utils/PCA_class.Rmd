@@ -1,0 +1,105 @@
+---
+title: "Untitled"
+author: "Lídia Montero"
+date: "17 de octubre de 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Example: European Temperatures
+
+```{r}
+# Temperatures can be summarised by two synthetic variables: average annual temperature and thermal amplitude
+library(FactoMineR)
+temperature <- read.table("http://factominer.free.fr/book/temperature.csv",header=TRUE,sep=";",dec=".",row.names=1)
+
+summary(temperature)
+names(temperature)
+row.names(temperature)
+dim(temperature)
+condes(temperature,13) 
+catdes(temperature,17) # categorical description
+
+#ind.sup -> outliers multidimensionals
+res<-PCA(temperature,quanti.sup=13:16,quali.sup=17)
+
+#en blau les complementaries (del grafic)
+
+#TOTAL_AMOUNT sempre serà suplementaria (no activa)
+# S'ha combinat les 12 per crear una direcció de màxima variabilitat -> corresponent a la direcció del vector propi lligat al valor propi més gran(?).
+# dues variables estàn relacionades segons cosinus de l'angle amb l'eix. 
+
+#longitud està relacionada amb amplitud perque quan incrementem longitud ens trobem amb la part continental europea i puja la amplitud (diferencies tèrmiques)
+#latitud oposada perque quan augmenta baixen temperatures
+
+
+res<-PCA(temperature,ind.sup=24:35,quanti.sup=13:16,quali.sup=17)
+#treu ciutats (individus)
+plot(res)
+
+
+# Dim = eix per això només hi ha dos. Cota de 1 (dim < 1 no serveixen) si estàn normalitzades. Si NO estàn normalitzades ens interessa per sobre de la mitana denosequé.
+#Eigenvalues -> valors propis. "El nou eix equival a 9.94 variables"
+#Individuals (the 10 first) són  els individus actius (s'ha de costumitzar el numero. Posar 0? en CABS)
+summary(res)
+
+#ctr sumen 100
+#cos2 quan més proper a l'eix més relacionada (més gran el cos2)
+#Per cada individual:
+# Dist = distancia al centre de gravetat
+# Athens -> 7.6 per la dimensió1 (coordenada artificial per la nova base). ctr = 25.24 és molt important per construir aquesta nova dimensió. 
+#Reykjavik té molta ctr però baix cos2 (s'explica poc per dim2 "amplitud")
+
+#Variables mirar el cercle
+#Septembre-Octubre tenen el cos2 més gran(són les més representives -> estàn més a la mitjana)
+summary(res, nb.dec = 2, ncp = 2, nbelements = 23 ) #2 decimals, 2 dimensions i totes les ciutats (que són 23)
+
+
+dimdesc(res,1:4)
+res$eig
+
+```
+
+
+#Decathlon
+
+```{r}
+data(decathlon)
+names(decathlon)
+summary(decathlon)
+condes (decathlon, num.var=12)
+catdes (decathlon, num.var=13)
+tapply(decathlon$Rank, decathlon$Competition,summary)
+
+library
+# no s'ha d'utilitzar les dotze com a actives, perque només ho són desde la 1 fins la 10, les altres suplementaries.
+res.pca <- PCA(decathlon[,1:12])
+
+#Punts-> 100m estàn negatius per la semàntica de les variables (quan més trigues menys punts tindràs)
+#angles marquen la correlació entre variables
+# Casarsa és dolent en resistencia (tarda més). Sembla un outlier, té un perfil molt atípic.
+res.pca <- PCA(decathlon, quanti.sup = 11:12, quali.sup = 13)
+
+res.pca
+sum(res.pca$eig[,1])
+
+#regla de Keiser -> totes aquelles dimensions que tinguin valor propi major que 1. (4 primeres dimensions)
+summary(res)
+
+```
+
+
+
+
+
+#Monday 3 april
+
+```{r}
+
+```
+
+
+
