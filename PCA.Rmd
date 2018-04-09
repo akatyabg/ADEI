@@ -13,9 +13,22 @@ output: pdf_document
 setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
 
 
+
 ```
 
-#Loading function
+#Previous work
+
+## Load requiered packages
+
+```{r,include=FALSE}
+# Load Required Packages: to be increased over the course
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2")
+missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
+if(length(missingPackages)) install.packages(missingPackages)
+lapply(requiredPackages, require, character.only = TRUE)
+```
+
+##Loading function
 ```{r}
 
 calcQ <- function(x) {
@@ -29,7 +42,8 @@ calcQ <- function(x) {
 #I Introduction
 1. The Kaiser rule is to drop all components with eigenvalues under 1.0 
    According to the Elbow rule when the drop ceases and the curve makes an elbow toward less steep declinewe should drop all further components after the one starting the elbow.
-#JAJA
+   
+#PCA
 ```{r}
 load("Taxi5000_raw_libraryDay.RData")
 library(FactoMineR)
@@ -84,7 +98,10 @@ quantil3<-quantile(res.pca$ind$coord[,1], .75);quantil3 #get 3rd quartile
 outliers<-which(res.pca$ind$coord[,1]>(iqrvar*3)+quantil3);length(outliers)
 
 
-df$f.outlierPCAd1<-outliers
+df$f.outlierPCAd1<-0
+df[outliers,"f.outlierPCAd1"]<-1
+df$f.outlierPCAd1<-factor(df$f.outlierPCAd1,labels=c("NoOutDim1", "YesOutDim1"))
+summary(df$f.outlierPCAd1)
 names(df)
 #catdes(,names(df)[c(22)])
 
