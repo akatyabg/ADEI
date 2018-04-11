@@ -57,9 +57,9 @@ elbow <- kaiser ## we also stop at 6th dimension because of the graphic (the slo
 ```{r}
 summary(res.pca, dig = 2, nbelements = 17, nbind=3, ncp=4)
 
-ll1<-Boxplot(res.pca$ind$coord[,1]);ll1 #outliers from coord of all ind. for 1rst dimension
-rang1<-sort(res.pca$ind$coord[,1],decreasing = T)
-df[rang1[1:3], vars_con]
+#ll1<-Boxplot(res.pca$ind$coord[,1]);ll1 #outliers from coord of all ind. for 1rst dimension
+#rang1<-sort(res.pca$ind$coord[,1],decreasing = T)
+#df[rang1[1:3], vars_con]
 
 #graphic
 plot.PCA(res.pca, choix=c("ind"),cex=0.8,col.ind="grey80",select="contrib15",axes=c(1,2))
@@ -89,7 +89,7 @@ df$epca1[rang1[1:length(outliers)]]<-1
 summary(df$epca1)
 df$epca1<-factor(df$epca1,labels=c("NoOutDim1", "YesOutDim1"))
 names(df)
-catdes(df, 42)
+catdes(df, 43)
 
 
 # Use supplementary individuals and execute PCA again
