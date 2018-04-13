@@ -9,6 +9,7 @@ output: pdf_document
 #knitr::opts_chunk$set(echo = TRUE)
 
 ```
+
 ```{r,include=FALSE}
 setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
 
@@ -32,6 +33,34 @@ calcQ <- function(x) {
   iqr<-s.x[5]-s.x[2]
   list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3],        q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
 
+```
+
+# Multivariant Outliers Detection
+
+```{r}
+library(mvoutlier)
+names(df)
+vars_con # Problems with some variables
+summary(df[,vars_con])
+aq.plot(df[,vars_con]) # Problems when few numeric values are present in one variable
+
+vars_con_out<-vars_con[c(1:4,14:15)]
+mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
+sum(mvout$outliers)
+
+summary(df)
+
+df$mvout<-factor(mvout$outliers)
+catdes(df,which(names(df)=="mvout"))
+```
+
+# Repeat PCA using multivariant outliers as supplementary observations
+
+```{r}
+par(mfrow=c(1,1))
+llvout<-which(df$mvout==TRUE)
+#llout<-unique(c(llout,llvout))
+res.pca<-PCA(df[,c(vars_conpca)],ncp=4,quanti.sup=which(vars_conpca=="Total_amount"),ind.sup=llvout)
 ```
 
 
@@ -71,7 +100,7 @@ summary(res.pca, dig = 2, nbelements = 17, nbind=3, ncp=4)
 plot.PCA(res.pca, choix=c("ind"),cex=0.8,col.ind="grey80",select="contrib15",axes=c(1,2))
 
 
-#characteristic of extreme otliers in dim1 or sth like this
+#characteristic of extreme otliers in dim1
 summary(res.pca$ind$coord[,1])
 iqrvar<-IQR(res.pca$ind$coord[,1])
 quantil3<-quantile(res.pca$ind$coord[,1], .75);quantil3 #get 3rd quartile
@@ -122,7 +151,7 @@ vec_out
 #WHAT SHE HAS DONE IN CLASS (IT IS NOT OUR VECTORS SO IT WON'T WORK)
 # f.hour it is not a good choice anyway, she prefers period (conclusions made in clusters analysis)
 # we have to choose suplementary variable that would help us to interpret -> it's a good idea to use discretees homologous of the variables that contribute the most for pca projection.
-res.pca<-PCA(df[,c(vars_con_pca, "f.fare", "f.tt", "f.hour")], ncp=4, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = vec_out, quali.sup = 19:21, graph= FALSE)
+res.pca<-PCA(df[,c(vars_con_pca, "f.fare", "f.tt", "f.hour")], ncp=4, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = vec_out, quali.sup = 19:21, graph= FALSE) ##still not working
 
 ```
 
@@ -186,6 +215,9 @@ table(df$claHP, df$claKM)
 df$claHp<-factor(df$claHP,labels=paste("kHp-",1:7))
 df$claKM<-factor(df$claKM, levels=c(6,5,7,1,2,4,3,8), labels = ...)
 
+
+```
+
 #-----------------------------------------------#
 kMeansCluster <- kmeans(res.pca$ind$coord, 4, nstart = 20)
 
@@ -195,30 +227,3 @@ kMeansCluster <- kmeans(res.pca$ind$coord[,1:6],center= 3)
 kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
 elbowDF<-data.frame(res.pca$ind$coord)
 ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
-```
-
-
-# Multivariant Outliers Detection
-
-```{r}
-library(mvoutlier)
-names(df)
-vars_con # Problems with some variables
-summary(df[,vars_con])
-aq.plot(df[,vars_con]) # Problems when few numeric values are present in one variable
-
-vars_con_out<-vars_con[c(1:4,6:7,14:16)]
-mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
-sum(mvout$outliers)
-
-df$mvout<-factor(mvout$outliers)
-catdes(df,which(names(df)=="mvout"))
-```
-
-# Repeat PCA using multivariant outliers as supplementary observations
-
-```{r}
-par(mfrow=c(1,1))
-llvout<-which(df$mvout==TRUE)
-#llout<-unique(c(llout,llvout))
-res.pca<-PCA(df[,c(vars_conpca)],ncp=4,quanti.sup=which(vars_conpca=="Total_amount"),ind.sup=llvout)
