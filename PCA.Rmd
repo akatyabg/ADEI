@@ -165,7 +165,7 @@ library(ggdendro)
 
 summary(df[,vars_con])
 #we need to do at least 6-7-8 clusters
-res.hcpc <-HCPC(res.pca)
+res.hcpc <-HCPC(res.pca, clust=8) # clust=8 as a parameter?
 names(res.hcpc)
 table (res.hcpc$data.clust$clust)
 #Block A descripció per variables
@@ -181,13 +181,6 @@ res.hcpc$desc.ind
 
 #No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
 
-#clusters <- hclust(dist(elbowDF), method = 'mcquitty')
-#ggdendrogram(clusters, rotate = FALSE, size = 2)
-#plot(clusters)
-#clusterCut <- cutree(clusters, 3)
-#ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2)) + 
- # geom_point(alpha = 0.4, size = 3.5) + geom_point(col = clusterCut) + A
-  #scale_color_manual(values = c('yellow', 'red', 'green'))
 
 ```
 
