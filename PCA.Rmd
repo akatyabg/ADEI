@@ -11,7 +11,8 @@ output: pdf_document
 ```
 
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -70,10 +71,12 @@ res.pca<-PCA(df[,c(vars_conpca)],ncp=4,quanti.sup=which(vars_conpca=="Total_amou
    
 ##I. I. Eigenvalues and  axes 
 ```{r}
-load("Taxi5000_raw_libraryDay.RData")
+load("Taxi5000_raw_DataClean.RData")
 library(FactoMineR)
 names (df)
-vars_con_pca<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26)] 
+vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26) 
+
+#vars_con_pca<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26)] 
 res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 14, ncp = 6 ) # TotalAmount and AnyTip
 barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
 plot(res.pca$eig[,1], type = "l") # line chart
@@ -165,7 +168,7 @@ library(ggdendro)
 
 summary(df[,vars_con])
 #we need to do at least 6-7-8 clusters
-res.hcpc <-HCPC(res.pca, clust=8) # clust=8 as a parameter?
+res.hcpc <-HCPC(res.pca, nb.clust = 8)
 names(res.hcpc)
 table (res.hcpc$data.clust$clust)
 #Block A descripció per variables
@@ -177,10 +180,9 @@ res.hcpc$desc.axes
 #parangons. per cadascun dels clusters tenim els seus parangons i els seus més espeicifis (dist) -> que es diferencien més dels altres clusters
 res.hcpc$desc.ind
 
-#Donar-li una classe (la última) a tots els outliers multidimensionals (sup.)
+#Donar-li una classe (the last one) a tots els outliers multidimensionals (sup.)
 
 #No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
-
 
 ```
 
@@ -192,31 +194,40 @@ res.hcpc$desc.ind
 
 ppcc<-res.pca$ind$coord[,1:4]
 dim(ppcc)
-kc<-kmeans(ppcc,6,iter.max = 30, trace=T)
+kc<-kmeans(ppcc,8,iter.max = 30, trace=T)
+
+table(kc$cluster)
 
 df$claKM<-7
 df[names(kc$cluster),"claKM"]<-kc$cluster
 kc$betweenss/kc$totss
 
-#caracterització claKM
+#caracteristació claKM
 names(df)
 catdes(df, 44)
 #veure si s'han posat d'acord o no
+#table(df$claHP, df$claKM)
+df$claHP<-res.hcpc$data.clust$clust
+df$claKM<-kc$cluster
 table(df$claHP, df$claKM)
 
+ 
 #assignar 
-df$claHp<-factor(df$claHP,labels=paste("kHp-",1:7))
-df$claKM<-factor(df$claKM, levels=c(6,5,7,1,2,4,3,8), labels = ...)
+df$claHp<-factor(df$claHP,labels=paste("kHp-",1:8))
+df$claKM<-factor(df$claKM, levels=c(6,5,7,1,2,4,3,8), labels = "blob") # DO later when everything before it is ready
 
 
 ```
 
-#-----------------------------------------------#
-kMeansCluster <- kmeans(res.pca$ind$coord, 4, nstart = 20)
 
+```{r, include=false}
+kMeansCluster <- kmeans(res.pca$ind$coord, 4, nstart = 20)
 kMeansCluster <- kmeans(res.pca$ind$coord[,1:6],center= 3)
 
 
 kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
 elbowDF<-data.frame(res.pca$ind$coord)
 ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
+```
+
+
