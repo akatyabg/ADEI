@@ -20,7 +20,7 @@ setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change
 
 ```{r,include=FALSE}
 # Load Required Packages: to be increased over the course
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2")
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","ggdendro")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
@@ -39,7 +39,7 @@ lapply(requiredPackages, require, character.only = TRUE)
 #df<-df[sam,]
 #setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
-save.image("Taxi5000_raw_libraryDay.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+#save.image("Taxi5000_raw_DataClean.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
 ##Load usefull functions
@@ -174,19 +174,13 @@ hist(df$Passenger_count, col="pink")
 missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
 errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
-dfaux<-df
-ll<-which(is.na(df$Trip_distance));ll
-if(length(ll)>0){
-  dfaux<-df[-ll,]
-}
-iqrvar<-IQR(dfaux$Trip_distance)
-quantil3<-quantile(dfaux$Trip_distance, .75);quantil3 #get 3rd quartile
-outliers<-which(df$Trip_distance>(iqrvar*3)+quantil3);length(outliers) #138 extreme outliers
+outlier <- which(df$Trip_distance>50.0);length(outlier) #No missing Data
 
 df[outliers,"Trip_distance"]<-NA 
 df[errors,"Trip_distance"]<-NA 
 boxplot(df$Trip_distance)
 hist(df$Trip_distance, col="pink")
+summary(df$Trip_distance)
 ```
 
 ## Pickup_longitude
@@ -384,6 +378,7 @@ outlier<-which(df$Total_amount>(iqrvar*3)+quantil3);length(outlier) #72 extreme 
 df[outlier,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
+dim(df)
 ```
 
 # Number of missing values:
@@ -411,8 +406,11 @@ df$AnyTip<-factor(df$AnyTip,labels=paste("AnyTip",c("No","Yes")))
 ## Trip length
 ```{r}
 for (i in 1:nrow(df)){
-  df$trip_length[i] <-man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
+  df$trip_length[i] <- man.dist.manual(df$Pickup_latitude[i],df$Pickup_longitude[i],df$Dropoff_latitude[i],df$Dropoff_longitude[i])
 }
+
+outlier <- which(df$trip_length<0.1);length(outlier) #No missing Data
+df[outlier,"trip_length"]<-NA
 
 summary(df$trip_length)
 boxplot(df$trip_length)
@@ -431,12 +429,14 @@ boxplot(df$trip_distance_km)
 
 ## Travel time in minutes
 ```{r}
-
+summary(df$lpep_pickup_datetime)
 b1<-as.POSIXlt(df$lpep_pickup_datetime)
 b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
 df$travel_time<-as.double(difftime(b2,b1,units='min'))
-error<-which(df$travel_time== 0.0);length(error) #No missing Data
+error<-which(df$travel_time< 1.0);length(error) #No missing Data
 df[error,"travel_time"]<-NA 
+outlier<-which(df$travel_time>1000.0);length(outlier) #No missing Data
+df[outlier,"travel_time"]<-NA
 summary(df$travel_time)
 boxplot(df$travel_time)
 ```
@@ -466,18 +466,17 @@ summary(df$pick_up_period)
 # Declaring vectors of data
 ```{r}
 names(df)
-vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,23,24,25,26)] 
+vars_con<-names(df)[c(6:16,18,24:26,28,29)] 
 vars_con
-vars_dis<-names(df)[c(1,4,5,10,19,20,27,28)]
+vars_dis<-names(df)[c(1:5,20,21,23)]
 vars_dis
-vars_res<-names(df)[c(18,22)]
+vars_res<-names(df)[c(19,23)]
 vars_res
 
 ```
 
 
-## Multivariant Outlier Detection
-We haven't sorted some problems during implementation to achieve a logic result of aq.plot in order to identify multivariate outliers.
+
 
 # Correlations error variable
 
@@ -533,41 +532,44 @@ df[,"Passenger_count"]<-res.comp$completeObs[,"Passenger_count"]
 df[,"Fare_amount"]<-res.comp$completeObs[,"Fare_amount"]
 df[,"Extra"]<-res.comp$completeObs[,"Extra"]
 df[,"travel_time"]<- res.comp$completeObs[,"travel_time"]
+df[,"espeed"]<- res.comp$completeObs[,"espeed"]
 df[,"MTA_tax"]<-res.comp$completeObs[,"MTA_tax"]
 df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
 df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
 df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
+
 ```
 
 ## Espeed (km/h)
 ```{r}
 #efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
 
-summary(df$travel_time)
+summary(df$trip_length)
 
 for (i in 1:nrow(df)){
   df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
 }
-names(df)
-vars_con<-names(df)[c(6,7,8,9,10,11,12,13,14,15,16,17,23,24,25,26,28)] 
-vars_con
 
 summary(df$espeed)
 boxplot(df$espeed)
+
+outliers<-which(df$espeed>100.0);length(outliers) #0 outlier
+df[outliers,"espeed"]<-NA
+
 ```
 
 
 ## Imputation of qualitative variables
 ```{r}
-library(missMDA)
-vars_dis_qual <-vars_dis[c(1,2,3,5,6)]
-summary(df$Passenger_count)
-res.impute = imputeMCA(df[,vars_dis_qual],ncp = 3)
-res.impute
-df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
-df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
-df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
-df[,"Trip_type"]<-res.impute$completeObs[,"Trip_type"]
+#library(missMDA)
+#vars_dis_qual <-vars_dis[c(1,2,3,5,6)]
+#summary(df$Passenger_count)
+#res.impute = imputeMCA(df[,vars_dis_qual],ncp = 3)
+#res.impute
+#df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
+#df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
+#df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
+#df[,"Trip_type"]<-res.impute$completeObs[,"Trip_type"]
 
 ```
 
@@ -668,6 +670,19 @@ df$f.total<-factor(cut(df$Total_amount,breaks=c(-1,7.8,11,16.6,46)))
 summary(df$f.total)
 ```
 
+## Multivariant Outlier Detection
+
+```{r}
+library(mvoutlier)
+names(df)
+vars_con
+summary(df[,vars_con])
+vars_con_out<-vars_con[c(1:4,14:16)]
+summary(df$Tolls_amount)
+mvout<-aq.plot(df[,vars_con_out])
+sum(mvout$outliers)
+```
+
 
 # Profiling
 ```{r}
@@ -691,26 +706,7 @@ catdes(df[,vars_con_and_dis],num.var=7)
 ```
 
 
-#Multivariant Outlier Detection
-```{r}
-library(mvoutlier)
-names(df)
-vars_con # Problems c(5,8,9,10,11,12)
-summary(df[,vars_con])
-vars_con_out<-vars_con[c(1:4)]
-aq.plot(df[,vars_con_out]) # Problems when few numeric values are present in one variable
 
-# Use common sense, but technicalities might difficult the application of the procedure
-
-vars_con_out<-vars_con[c(1:4)]
-mvout<-aq.plot(df[,vars_con_out])  # Problems when missing data are present
-
-# Use common sense
-vars_con
-vars_con_out<-vars_con[c(6,13,16)]
-aq.plot(df[,vars_con_out])  # Problems when missing data are present
-vars_con_out
-```
 
 
 
