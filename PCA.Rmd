@@ -11,8 +11,8 @@ output: pdf_document
 ```
 
 ```{r,include=FALSE}
-#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-setwd("D:/ADEI/ADEI.git/trunk") #Change
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -232,7 +232,7 @@ table(df$claKM)
 
 ```{r}
 #caracteristació claKM
-catdes(df, 44)
+#catdes(df, 44)
 #veure si s'han posat d'acord o no
 table(df$claHP,df$claKM)
 ```
@@ -246,16 +246,4 @@ tt
 sum(diag(tt)/sum(tt))
 
 ```
-
-
-```{r, include=false}
-kMeansCluster <- kmeans(res.pca$ind$coord, 4, nstart = 20)
-kMeansCluster <- kmeans(res.pca$ind$coord[,1:6],center= 3)
-
-
-kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
-elbowDF<-data.frame(res.pca$ind$coord)
-ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
-```
-
 
