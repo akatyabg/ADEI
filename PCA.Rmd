@@ -172,27 +172,41 @@ fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="gree
 
 #Hierarchical clustering
 
+
 ```{r}
 library(FactoMineR)
 library (ggplot2)
 library(ggdendro)
 
-summary(df[,vars_con])
-#we need to do at least 6-7-8 clusters
 res.hcpc <-HCPC(res.pca, nb.clust = 8)
 names(res.hcpc)
 table (res.hcpc$data.clust$clust)
+```
+
+```{r}
+
 #Block A descripció per variables
 res.hcpc$desc.var
+```
+
+```{r}
+
 #Block B descripció per eixos
 #She doesn't recommend that (not very usefull by her opinion)
 res.hcpc$desc.axes
+```
+
+```{r}
 #Block C individus
 #parangons. per cadascun dels clusters tenim els seus parangons i els seus més espeicifis (dist) -> que es diferencien més dels altres clusters
 res.hcpc$desc.ind
+```
+
+```{r}
 
 #Donar-li una classe (the last one) a tots els outliers multidimensionals (sup.)
-
+df$claHP<-9
+df[names(kc$cluster),"claHP"]<-factor(res.hcpc$data.clust$clust,labels=paste("kHp-",1:8))
 #No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
 
 ```
@@ -200,37 +214,41 @@ res.hcpc$desc.ind
 #K-Means Classification
 
 ```{r}
-#partitioning in k=7 groups
-#res.pca<- PCA(df[,c(vars_con)], ncp=4,quanti.sup=which(vars_con=="Total_amount"),ind.sup = llvout, graph = FALSE)
 
 ppcc<-res.pca$ind$coord[,1:4]
 dim(ppcc)
 kc<-kmeans(ppcc,8,iter.max = 30, trace=T)
-
 table(kc$cluster)
+```
+
+```{r}
 
 df$claKM<-9
-df$claHP<-9
 dim(df$claKM)
 df[names(kc$cluster),"claKM"]<-kc$cluster
 kc$betweenss/kc$totss
+```
 
+```{r}
 #caracteristació claKM
 names(df)
 catdes(df, 44)
-#veure si s'han posat d'acord o no
-#table(df$claHP, df$claKM)
+```
 
+```{r}
+
+#veure si s'han posat d'acord o no
 table(res.hcpc$data.clust$clust,kc$cluster)
 df$claKM 
- 
-#assignar 
-df[names(kc$cluster),"claHP"]<-factor(res.hcpc$data.clust$clust,labels=paste("kHp-",1:8))
-df[names(kc$cluster),"claKM"]<-factor(kc$cluster, levels=c(8,7,2,1,6,5,4,3), labels=c("kKM-8","kKM-7","kKM-2","kKM-1","kKM-6","kKM-5","kKM-4","kKM-3"))
+```
 
+```{r}
+#assignar 
+df[names(kc$cluster),"claKM"]<-factor(kc$cluster, levels=c(8,7,2,1,6,3,4,5), labels=c("kKM-8","kKM-7","kKM-2","kKM-1","kKM-6","kKM-3","kKM-4","kKM-5"))
+
+#comparar
 tt<-table(df$claHP,df$claKM)
 sum(diag(tt)/sum(tt))
-
 
 ```
 
