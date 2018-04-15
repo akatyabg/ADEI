@@ -130,7 +130,7 @@ df$f.outlierPCAd4<-factor(df$f.outlierPCAd4,labels=c("NoOutDim4"))
 summary(df$f.outlierPCAd4)
 names(df)
 
-#Finally we have obtained 62 extreme outliers. 
+#Finally we obtained 62 extreme outliers. 
 llvout<- c(outliers, outliers2);length(llvout)
 
 catdes(df, 42)
@@ -160,9 +160,13 @@ vars_con_pca <- names(df)[c(6:16,18,23:26)]
 # We do a PCA analysis using the factorial variables Fare amount, total and the pickup perio in order to interpret the results even better. We use the discovered outliers as suplementary individuals.
 
 res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = vec_out, quali.sup = 17:19, graph= FALSE)
+
 plot(res.pca,choix="var", cex = 0.75)
 plot(res.pca,choix="var", cex = 0.75, axes = (3:4))# 3rd and 4th PCA
 fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw()
+
+#We can see that trips in the afternoon tend to be longer and thus also more expensive than the ones during night and in the morning.
+plot.PCA(res.pca, choix=c("ind"),cex=0.8,col.ind="grey80",select="contrib15",axes=c(1,2))
 
 
 ```
@@ -170,7 +174,7 @@ fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="gree
 
 #Hierarchical clustering
 
-Generem 8 clusters amb el mètode Hierarchichal a partir de les projeccions obtingudes amb el PCA.
+Generem 8 clusters amb el metode Hierarchichal a partir de les projeccions obtingudes amb el PCA.
 
 ```{r}
 library(FactoMineR)
