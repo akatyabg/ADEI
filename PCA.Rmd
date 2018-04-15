@@ -188,20 +188,20 @@ table (res.hcpc$data.clust$clust)
 
 ```{r}
 
-#Block A descripció per variables
+#Block A descripcion per variables
 res.hcpc$desc.var
 ```
 
 ```{r}
 
-#Block B descripció per eixos
+#Block B descripcion per eixos
 #She doesn't recommend that (not very usefull by her opinion)
 res.hcpc$desc.axes
 ```
 
 ```{r}
 #Block C individus
-#parangons. per cadascun dels clusters tenim els seus parangons i els seus més espeicifis (dist) -> que es diferencien més dels altres clusters
+#parangons. per cadascun dels clusters tenim els seus parangons i els seus mis espeicifis (dist) -> que es diferencien mis dels altres clusters
 res.hcpc$desc.ind
 ```
 
@@ -212,7 +212,7 @@ df$claHP<-7
 df[row.names(res.hcpc$data.clust),"claHP"]<-res.hcpc$data.clust$clust
 table(df$claHP)
 
-#No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
+#No ens hem de preocupar de la clase outliers, nomis caracteritizar els clusters del metode per defecte que genera la classificaci jerarquica. 
 
 ```
 
@@ -235,10 +235,10 @@ table(df$claKM)
 ```
 
 ```{r}
-#caracteristació claKM
-catdes(df, 44)
+#caracteristaci claKM
+#catdes(df, 44)
 #veure si s'han posat d'acord o no
-table(df$claHP,df$claKM)
+#table(df$claHP,df$claKM)
 ```
 
 ```{r}
@@ -252,14 +252,5 @@ sum(diag(tt)/sum(tt))
 ```
 
 
-```{r, include=false}
-kMeansCluster <- kmeans(res.pca$ind$coord, 4, nstart = 20)
-kMeansCluster <- kmeans(res.pca$ind$coord[,1:6],center= 3)
-
-
-kMeansCluster$clusterF <-as.factor(kMeansCluster$cluster)
-elbowDF<-data.frame(res.pca$ind$coord)
-ggplot(elbowDF, aes(elbowDF$Dim.1,elbowDF$Dim.2 , color = kMeansCluster$clusterF)) + geom_point()
-```
 
 
