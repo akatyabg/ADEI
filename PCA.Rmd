@@ -164,7 +164,7 @@ vars_con_pca <- names(df)[c(6:16,18,23:26)]
 res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = vec_out, quali.sup = 17:19, graph= FALSE) ##still not working
 plot(res.pca,choix="var", cex = 0.75)
 plot(res.pca,choix="var", cex = 0.75, axes = (3:4))# 3rd and 4th PCA
-fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw() #Almost
+fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw()
 
 
 ```
@@ -227,9 +227,9 @@ table(kc$cluster)
 ```{r}
 
 df$claKM<-7
-dim(df$claKM)
 df[names(kc$cluster),"claKM"]<-kc$cluster
 kc$betweenss/kc$totss
+table(df$claKM)
 ```
 
 ```{r}
@@ -237,22 +237,14 @@ kc$betweenss/kc$totss
 catdes(df, 44)
 #veure si s'han posat d'acord o no
 table(df$claHP,df$claKM)
-df$claKM 
 ```
 
 ```{r}
 
 df$claHP<-factor(df$claHP,labels=paste("kHP-",1:7))
-df$claKM<-factor(df$claKM,levels=c(5,3,6,1,4,2,7),labels=c("kKM-5","kKM-3","kKM-6","kKM-1","kKM-4","kKM-2","kKM-7"))
+df$claKM<-factor(df$claKM,levels=c(2,3,1,5,4,6,7),labels=c("kKM-2","kKM-3","kKM-1","kKM-5","kKM-4","kKM-6","kKM-7"))
 tt<-table(df$claHP,df$claKM)
 tt
-sum(diag(tt)/sum(tt))
-
-#assignar 
-df[names(kc$cluster),"claKM"]<-factor(kc$cluster, levels=c(8,7,2,1,6,3,4,5), labels=c("kKM-8","kKM-7","kKM-2","kKM-1","kKM-6","kKM-3","kKM-4","kKM-5"))
-
-#comparar
-tt<-table(df$claHP,df$claKM)
 sum(diag(tt)/sum(tt))
 
 ```
