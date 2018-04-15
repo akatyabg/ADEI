@@ -172,16 +172,17 @@ fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="gree
 
 #Hierarchical clustering
 
+Generem 8 clusters amb el mètode Hierarchichal a partir de les projeccions obtingudes amb el PCA.
 
 ```{r}
 library(FactoMineR)
 library (ggplot2)
 library(ggdendro)
 
-res.hcpc <-HCPC(res.pca, nb.clust = 8)
-names(res.hcpc)
+res.hcpc <-HCPC(res.pca, nb.clust = 6, order=TRUE)
 table (res.hcpc$data.clust$clust)
 ```
+
 
 ```{r}
 
@@ -205,8 +206,10 @@ res.hcpc$desc.ind
 ```{r}
 
 #Donar-li una classe (the last one) a tots els outliers multidimensionals (sup.)
-df$claHP<-9
-df[names(kc$cluster),"claHP"]<-factor(res.hcpc$data.clust$clust,labels=paste("kHp-",1:8))
+df$claHP<-7
+df[row.names(res.hcpc$data.clust),"claHP"]<-res.hcpc$data.clust$clust
+table(df$claHP)
+
 #No ens hem de preocupar de la clase outliers, només caracteritizar els clusters del metode per defecte que genera la classificació jerarquica. 
 
 ```
@@ -215,15 +218,15 @@ df[names(kc$cluster),"claHP"]<-factor(res.hcpc$data.clust$clust,labels=paste("kH
 
 ```{r}
 
-ppcc<-res.pca$ind$coord[,1:4]
+ppcc<-res.pca$ind$coord[,1:6]
 dim(ppcc)
-kc<-kmeans(ppcc,8,iter.max = 30, trace=T)
+kc<-kmeans(ppcc,6,iter.max = 30, trace=T)
 table(kc$cluster)
 ```
 
 ```{r}
 
-df$claKM<-9
+df$claKM<-7
 dim(df$claKM)
 df[names(kc$cluster),"claKM"]<-kc$cluster
 kc$betweenss/kc$totss
@@ -231,18 +234,20 @@ kc$betweenss/kc$totss
 
 ```{r}
 #caracteristació claKM
-names(df)
 catdes(df, 44)
-```
-
-```{r}
-
 #veure si s'han posat d'acord o no
-table(res.hcpc$data.clust$clust,kc$cluster)
+table(df$claHP,df$claKM)
 df$claKM 
 ```
 
 ```{r}
+
+df$claHP<-factor(df$claHP,labels=paste("kHP-",1:7))
+df$claKM<-factor(df$claKM,levels=c(5,3,6,1,4,2,7),labels=c("kKM-5","kKM-3","kKM-6","kKM-1","kKM-4","kKM-2","kKM-7"))
+tt<-table(df$claHP,df$claKM)
+tt
+sum(diag(tt)/sum(tt))
+
 #assignar 
 df[names(kc$cluster),"claKM"]<-factor(kc$cluster, levels=c(8,7,2,1,6,3,4,5), labels=c("kKM-8","kKM-7","kKM-2","kKM-1","kKM-6","kKM-3","kKM-4","kKM-5"))
 
