@@ -597,39 +597,38 @@ summary(df$f.passenger)
 
 ## f.distance
 ```{r}
-df$f.distance<-factorize(df$Trip_distance) # NO VA be?
+df$f.distance<-factor(cut(df$Trip_distance,breaks=c(0,1.01,1.8,3.31,11.5)))
 summary(df$f.distance) 
 ```
 
 ## f.pickup_longitude
 ```{r}
-
-df$f.pickup_longitude<-factorize(df$Pickup_longitude)
+df$f.pickup_longitude<-factor(cut(df$Pickup_longitude,breaks=c(-74.1,-73.96,-73.947,-73.918,-73.79)))
 summary(df$f.pickup_longitude)
 ```
 
 ## f.pickup_latitude
 ```{r}
-df$f.pickup_latitude<-factorize(df$Pickup_latitude)
+df$f.pickup_latitude<-factor(cut(df$Pickup_latitude,breaks=c(40.5,40.695,40.744,40.8,40.92)))
 summary(df$f.pickup_latitude)
 ```
 
 ## f.dropoff_longitude
 ```{r}
-df$f.dropoff_longitude<-factorize(df$Dropoff_longitude)
+df$f.dropoff_longitude<-factor(cut(df$Dropoff_longitude,breaks=c(-74.1,-73.97,-73.945,-73.91,-73.75)))
 summary(df$f.dropoff_longitude)
 
 ```
 
 ## f.dropoff_latitude
 ```{r}
-df$f.dropoff_latitude<-factorize(df$Pickup_latitude)
+df$f.dropoff_latitude<-factor(cut(df$Dropoff_latitude,breaks=c(40.57,40.7,40.75,40.79,40.92)))
 summary(df$f.dropoff_latitude) 
 ```
 
 ## f.fare_amount
 ```{r}
-df$f.fare_amount<-factorize(df$Fare_amount)
+df$f.fare_amount<-factor(cut(df$Fare_amount,breaks=c(0,6,9,14,43)))
 summary(df$f.fare_amount)
 ```
 
