@@ -39,7 +39,7 @@ lapply(requiredPackages, require, character.only = TRUE)
 #df<-df[sam,]
 #setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
-#save.image("Taxi5000_raw_DataClean.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+save.image("Taxi5000_raw_DataCleanv3.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
 ##Load usefull functions
@@ -668,6 +668,13 @@ summary(df$f.toll)
 df$f.total<-factor(cut(df$Total_amount,breaks=c(-1,7.8,11,16.6,46)))
 summary(df$f.total)
 ```
+
+##f.ttime
+```{r}
+df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,215)))
+summary(df$f.ttime)
+```
+
 
 ## Multivariant Outlier Detection
 
