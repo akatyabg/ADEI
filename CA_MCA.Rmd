@@ -59,6 +59,9 @@ summary(res.ca,dig=2)
 #We see that the the column points and the row points are far away from each other and thus not similar to each other. We can also interpret that at night the trips tend to be more expensive. In the afternoon is the middle price and about the cheap trips we cannot say anything definite since they are between valley and morning.
 fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
+```
+
+```{r}
 tt<-table(df[,c("f.total","f.ttime")])
 tt
 prop.table(tt,1)
@@ -85,10 +88,10 @@ summary(res.ca,dig=2)
 fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 
-tt<-table(df[,c("AnyTip","f.ttime")])  # No tinc sentit fer-ho
-tt
-res.ca<-CA(tt)
-fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
+#tt<-table(df[,c("AnyTip","f.ttime")])  # No tinc sentit fer-ho
+#tt
+#res.ca<-CA(tt)
+#fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 ```
 
