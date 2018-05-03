@@ -168,14 +168,22 @@ fviz_cluster(res.hcpc, geom = "point", main = "Factor map")
 #Anytip
 vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26) 
 res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 14, ncp = 6 ) # TotalAmount and AnyTip
-res.hcpcPCA <-HCPC(res.pca, nb.clust = 6, order=TRUE)
+res.hcpcPCA <-HCPC(res.pca, nb.clust = 8, order=TRUE)
 table (res.hcpc$data.clust$clust, res.hcpcPCA$data.clust$clust)
-
-#Anytip
+claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
+claHP<-factor(res.hcpc$data.clust$clust,levels=c(5,7,1,4,2,8,3,6),labels=c("kKM-5","kKM-7","kKM-1","kKM-4","kKM-2","kKM-8","kKM-3","kKM-6"))
+tt<-table(claHPPCA,claHP)
+tt
+sum(diag(tt)/sum(tt))
+#F.total
 vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,23,24,25,26,41) 
 names(df[,vars_con_pca])
 names(df)
 res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 18, ncp = 6 ) # TotalAmount and f.total
-res.hcpcPCA <-HCPC(res.pca, nb.clust = 6, order=TRUE)
-table (res.hcpc$data.clust$clust, res.hcpcPCA$data.clust$clust)
+res.hcpcPCA <-HCPC(res.pca, nb.clust = 8, order=TRUE)
+claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
+claHP<-factor(res.hcpc$data.clust$clust,levels=c(4,7,1,5,2,8,3,6),labels=c("kKM-5","kKM-7","kKM-1","kKM-4","kKM-2","kKM-8","kKM-3","kKM-6"))
+tt<-table(claHPPCA,claHP)
+tt
+sum(diag(tt)/sum(tt))
 ```
