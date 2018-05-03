@@ -74,6 +74,7 @@ summary(res.ca)
 res.ca$row$contrib[,1:2]
 res.ca$row$coord[,1:2]
 res.ca$row$cos2[,1:2]
+#The 2st two eigenectors give us 90% of the variance so they are sufficient. 
 res.ca$eig
 sum(res.ca$eig[1:2,1])/sum(res.ca$eig[1:3,1])
 sum(res.ca$eig[1:3,1])
@@ -84,7 +85,7 @@ summary(res.ca,dig=2)
 fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 
-tt<-table(df[,c("AnyTip","f.tt")])  # No t� sentit fer-ho
+tt<-table(df[,c("AnyTip","f.ttime")])  # No tinc sentit fer-ho
 tt
 res.ca<-CA(tt)
 fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
@@ -100,12 +101,17 @@ names(df)
 summary(df$Store_and_fwd_flag)
 #add espeed factor as active (we need to generate it)
 vars_dis <- names(df)[c(1,19,20,22,29:40,42)]
+vars_cat<-names(df)[c(1, 5,19:20,22,27, 29:42)]#10, 21 not working
 #add f.totalamount as quali.sup
-res.mca<-MCA(df[,c(vars_dis,"Total_amount")],quali.sup=4,quanti.sup=18)
+res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(5,13),quanti.sup=21)
 
+# We see that all of the eigenvectors are really small, so we will use a similiar rule like in the PCA and take all EW with value >1 => the first 26 dimentions.
+fviz_eig(res.mca)
+fviz_screeplot(res.mca, addlabels = TRUE, ylim = c(0, 45))
+get_eigenvalue(res.mca)
 names(res.mca)
 summary(res.mca,nbelements=50)
-mean(res.mca$eig$eigenvalue) 
+mean(res.mca$eig) 
 
 # Individual Representation
 plot.MCA(res.mca,choix=c("ind"),cex=0.8)
@@ -113,10 +119,19 @@ plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),cex=0.8)
 
 # Representation of categories
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(1,2))
-lines(res.mca$quali.sup$coord[3:6,1],res.mca$quali.sup$coord[3:6,2],lwd=2,col="darkgreen") # Trencada dels nivells de f.cost
+lines(res.mca$quali.sup$coord[3:4, 1],res.mca$quali.sup$coord[3:4,2],lwd=2,col="darkgreen") # Trencada dels nivells de f.fare_amount #??
 lines(res.mca$quali.sup$coord[1:2,1],res.mca$quali.sup$coord[1:2,2],lwd=2,col="darkblue") # Trencada AnyTip
 names(res.mca)
-res.mca$var
+
+# Contributions of rows to dimension 1
+fviz_contrib(res.mca, choice = "var", axes = 1, top = 15)
+# Contributions of rows to dimension 2
+fviz_contrib(res.mca, choice = "var", axes = 2, top = 15)
+# Total contribution to dimension 1 and 2
+fviz_contrib(res.mca, choice = "var", axes = 1:2, top = 15)
+#we see that the the provider of the record,categories of the rate code are most contributive and the the type of the payment. Also it makes difference when it is night.
+head(round(res.mca$var$contrib,2), 10)
+
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
 plot.MCA(res.mca,choix=c("var"),axes=c(3,4))
 
@@ -144,8 +159,10 @@ fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=FALSE)+theme_bw()
 ### Before, hou have to perform a MCA with the number of axes 
 ### that you have decided to take into account (indicated through ncp=)
 ?HCPC
-res.mca<-MCA(df[,c(vars_dis,"Total_amount")],quali.sup=c(5,14),quanti.sup=19,ncp=29)
+res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(5,13),quanti.sup=21,ncp=26)
 res.hcpc<-HCPC(res.mca,nb.clust=8,order=TRUE)
 names(res.hcpc)
+
+fviz_cluster(res.hcpc, geom = "point", main = "Factor map")
 
 ```
