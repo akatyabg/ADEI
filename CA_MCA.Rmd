@@ -96,8 +96,12 @@ fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 ```{r}
 par(mfrow=c(1,1))
 names(df)
-vars_dis <- names(df)[c(1:5,19:22,29:42)]
-res.mca<-MCA(df[,c(vars_dis,"Total_amount")],quali.sup=9,quanti.sup=24)
+#explain we don't use this variable cause it is too bad balanced
+summary(df$Store_and_fwd_flag)
+#add espeed factor as active (we need to generate it)
+vars_dis <- names(df)[c(1,19,20,22,29:40,42)]
+#add f.totalamount as quali.sup
+res.mca<-MCA(df[,c(vars_dis,"Total_amount")],quali.sup=4,quanti.sup=18)
 
 names(res.mca)
 summary(res.mca,nbelements=50)
@@ -137,7 +141,7 @@ fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=FALSE)+theme_bw()
 ```{r}
 ###
 ### Clustering the individuals
-### Before, hou have to perform a PCA with the number of axes 
+### Before, hou have to perform a MCA with the number of axes 
 ### that you have decided to take into account (indicated through ncp=)
 ?HCPC
 res.mca<-MCA(df[,c(vars_dis,"Total_amount")],quali.sup=c(5,14),quanti.sup=19,ncp=29)
