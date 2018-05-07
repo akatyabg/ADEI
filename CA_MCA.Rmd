@@ -301,6 +301,15 @@ table(df$MCAhp)
 
 ```{r}
 res.hcpc$desc.var
+```
+
+### Cluster 1
+86% of its individuals have the CheapestTrip category for f.total. Dist1, FAmount1 and Time1 for their respective variables (f.distance,  f.fare_amount and f.ttime) are also predominant (more than 85% in Mod/Cla for each one). This means that Cluster 1 is defined by the cheapest and shortest trips. 
+
+### Cluster 2
+We can see that here we still have a predominance of cheap trips (with a 71% of individuals of cluster 2 have cheaptrip) but now f.distance, f.fare_amount and f.ttime get their second level (category) of values. So we got cheap trips with a bigger distances than in cluster 1 here.
+
+### Cluster 3
 
 table (df$claHP, df$MCAhp)
 claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
