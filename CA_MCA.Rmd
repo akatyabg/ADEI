@@ -52,11 +52,11 @@ levels(df$f.toll) <- c("smallToll","highToll")
 levels(df$f.total) <- c("CheapestTrip","CheapTrip","MediumTrip","ExpensiveTrip")
 levels(df$f.ttime) <- c("Time1","Time2", "Time3", "Time4")
 levels(df$f.espeed) <- c("Speed1","Speed2", "Speed3","Speed4")
-levels(df$f.outlierPCAd1) <- c("OutlierD1","NormalD1")
-levels(df$f.outlierPCAd2) <- c("OutlierD2","NormalD1")
-levels(df$f.outlierPCAd3) <- c("OutlierD3","NormalD3")
-levels(df$f.outlierPCAd4) <- c("OutlierD4","NormalD4")
-levels(df$f.outlierPCA) <- c("Outlier","Normal")
+levels(df$f.outlierPCAd1) <- c("Normald1", "Outlierd1")
+levels(df$f.outlierPCAd2) <- c("Normald2", "Outlierd2")
+levels(df$f.outlierPCAd3) <- c("Normald3", "Outlierd3")
+levels(df$f.outlierPCAd4) <- c("Normald4", "Outlierd4")
+levels(df$f.outlierPCA) <- c("Normal", "Outlier")
 
 ```
 
@@ -256,7 +256,7 @@ V. Perform a MCA taking into account also supplementary variables (use all numer
 ## MCA with all supplementary variables
 ```{r}
 vars_con_pca <- names(df)[c(6:16,18,23:26,28)]
-vec_out <- which(df$f.outlierPCA == "YesOut"); length(vec_out)
+vec_out <- which(df$f.outlierPCA == "Outlier"); length(vec_out)
 res.mca<-MCA(df[,c(vars_cat,vars_con_pca)], ind.sup = vec_out, quali.sup=c(4,14),quanti.sup=17:33,ncp=17)
 ```
 
@@ -280,7 +280,7 @@ table(df$MCAhp)
 
 ```
 
-## Description
+## Description of clusters
 
 ```{r}
 res.hcpc$desc.var
