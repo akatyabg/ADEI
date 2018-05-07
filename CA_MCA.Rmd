@@ -9,8 +9,8 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r,include=FALSE}
-#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-setwd("D:/ADEI/ADEI.git/trunk") #Change
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -164,8 +164,6 @@ summary(res.ca)
 res.ca$row$contrib[,1:2]
 res.ca$row$coord[,1:2]
 res.ca$row$cos2[,1:2]
-#The 2st two eigenectors give us 90% of the variance so they are sufficient. 
-res.ca$eig
 sum(res.ca$eig[1:2,1])/sum(res.ca$eig[1:3,1])
 sum(res.ca$eig[1:3,1])
 res.ca$call$marge.col
@@ -176,11 +174,6 @@ fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 ```
 
-
-II.  Individuals point of view: Are they any individuals "too contributive"?Are there any groups?
-
-III. Interpreting map of categories: average profile versus extreme profiles (rare categories)
-IV. Interpreting the axes association to factor map.
 
 
 # Multiple Correspondence Analysis
@@ -268,7 +261,7 @@ fviz_mca_var(res.mca, col.var="contrib",repel=TRUE)+
 fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=FALSE)+theme_bw()
 ```
 
-V. Perform a MCA taking into account also supplementary variables (use all numeric variables) quantitative and/or categorical. How supplementary variables enhance the axis interpretation?
+
 
 ## MCA with all supplementary variables
 ```{r}
@@ -278,10 +271,7 @@ res.mca<-MCA(df[,c(vars_cat,vars_con_pca)], ind.sup = vec_out, quali.sup=c(4,14)
 ```
 
 
-Description of clusters
 Parangons and class-specific individuals.
-Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical Clustering (based on PCA) focusing on f.total_amount target.
-Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical Clustering (based on PCA) focusing on AnyTip binary target.
 
 # Synthesis through HCPC: Hierarchical Clustering
 
@@ -304,17 +294,128 @@ res.hcpc$desc.var
 ```
 
 ### Cluster 1
-86% of its individuals have the CheapestTrip category for f.total. Dist1, FAmount1 and Time1 for their respective variables (f.distance,  f.fare_amount and f.ttime) are also predominant (more than 85% in Mod/Cla for each one). This means that Cluster 1 is defined by the cheapest and shortest trips. 
+#### Category
+86% of its individuals have the CheapestTrip category for f.total. Dist1, FAmount1 and Time1 for their respective variables (f.distance,  f.fare_amount and f.ttime) are also predominant (more than 85% in Mod/Cla for each one). This means that Cluster 1 is defined by the cheapest and shortest trips with a small tips. 
+#### Quanti
+As a prove of the conclusions made before, we can see how the most remarkable quantitatives variables are trip_length, Fare_amount, Total_amount and travel_time. The mean of all of this variables inside the cluster is clearly above the overall mean in the dataset.
 
 ### Cluster 2
+#### Category
 We can see that here we still have a predominance of cheap trips (with a 71% of individuals of cluster 2 have cheaptrip) but now f.distance, f.fare_amount and f.ttime get their second level (category) of values. So we got cheap trips with a bigger distances than in cluster 1 here.
+#### Quanti
+The same as the case before. The numerical variables agreed with the conclusions made. The most significance variables are still trip_length, Fare_amount, Total_amount and travel_time and their mean is a bit higher than the cluster1 but still above the overall mean. 
 
 ### Cluster 3
+#### Category
+In cluster 3 seems to be still splitting by its cost and lentgh of the journey, now with middle trips which contains medium costs (77% of the rows) and the 3rd level of f.fare_amount, f.distance and time, which also means longer trips than before. 
+#### Quanti
+Travel time and trip_length in this cluster are in the mean values, which is logic for what we just said, but it is curious how the variables with biggest v.test values are actually longitudes and latitudes.  
 
-table (df$claHP, df$MCAhp)
-claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
-claHP<-factor(res.hcpc$data.clust$clust,levels=c(5,7,1,4,2,8,3,6),labels=c("kKM-5","kKM-7","kKM-1","kKM-4","kKM-2","kKM-8","kKM-3","kKM-6"))
-tt<-table(claHPPCA,claHP)
+### Cluster 4
+#### Category
+Clearly defined by one parameter: the type of the trip "Dispatch". 100% of its individuals are of this type and 100% of this category is included in this cluster. 
+#### Quanti
+MTA_tax is the most remarkable variables here and it doesn't say too much except of the cluster except we only have rows without taxes nor extra's.
+
+### Cluster 5
+#### Category
+It has been build from the longitutds and latitudes of the first level/category of the pick_up and dropoff variables.
+#### Quanti
+As we already pointed out, mostly longitudes and latitudes involved here.
+
+###Cluster 6
+#### Category
+Here we find the most expensive trips with all the elements that it follows from it: large trips (Dist4) that take a lot of time (Time4) with a big Fare amount (FAmount4). All of this classes have more than 85% of representation inside this cluster.
+#### Quanti
+Fare_amount, trip_length, travel_time and Total_amount clearly over the overall mean and with a lot of significance here.
+
+## Individuals
+Again, this command can help us now to confirm the conclusions made until now.
+
+```{r}
+res.hcpc$desc.ind
+```
+
+### Cluster 1
+For a parangon of C1 we expect some row with a cheapTrip and short distance. We can check Total_amount (8.3) is below the mean (11.0) as the rest of significant quantitatives variables explained for Cluster1.
+On the contrary, for the distinguished, we have a Total_amount over the mean (20.34).
+
+```{r}
+#parangon C1
+df["419422",]
+#distinguished C1
+df["572868",]
+```
+
+
+### Cluster 2
+Cheap trips (total_amount below the mean) with bigger distances than cluster 1 for parangons as we predicted.
+
+```{r}
+#parangon 
+df["746656",]
+#distinguished 
+df["532659",]
+```
+
+
+### Cluster 3
+Parangon with medium costs -> total_amount in the mean.
+Distinguished with high espeed and low travel_time
+
+```{r}
+#parangon 
+df["473230",]
+#distinguished 
+df["274842",]
+```
+
+
+### Cluster 4
+
+
+```{r}
+#parangon 
+df["473235",]
+#distinguished 
+df["1137082",]
+```
+
+
+### Cluster 5
+
+
+```{r}
+#parangon C1
+df["272451",]
+#distinguished C1
+df["675043",]
+```
+
+
+### Cluster 6
+
+
+```{r}
+#parangon C1
+df["678042",]
+#distinguished C1
+df["285458",]
+```
+
+
+## Comparison with PCA clustering
+As it fails everytime we re-execute this commands, we commented it in order to show the proper results.
+
+```{r}
+#tt<-table(df$claHP,df$MCAhp)
+#df$MCAhp<-factor(df$MCAhp,levels=c(1,3,5,2,4,6,7),labels=c("mcaC-1","mcaC-3","mcaC-5","mcaC-2","mcaC-4","mcaC-6","mcaC-7"))
+#tt<-table(df$claHP,df$MCAhp)
 tt
 sum(diag(tt)/sum(tt))
 ```
+
+We can see, thou, that only with the table of contingencies is enough to appreciate how different are the clusters generated by both techniques.
+The diagonal summatory it's about 0.5 which means only a 50% of matching in the cluster structure.
+
+To conclude, for our target total_amount, this clustering with MCA is taking a better approach to split by its categories (low, medium, and high prices) than the clusterings resulting from numerical PCA method.
