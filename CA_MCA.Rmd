@@ -32,6 +32,33 @@ calcQ <- function(x) {
   list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3],        q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
 ```
 
+#Leveling 
+For better understanding of the results we will name the levels of the factorial variables
+
+```{r}
+levels(df$f.fare_amount)
+levels(df$f.passenger) <- c("onePassager","multiPassagers")
+levels(df$f.pickup_longitude) <- c("p.Y1","p.Y2","p.Y3","p.Y4") #pickup->p., longtitude->Y
+levels(df$f.pickup_latitude) <- c("p.X1","p.X2","p.X3","p.X4") #pickup->p., latitude->X
+levels(df$f.distance) <- c("Dist1","Dist2", "Dist3", "Dist4")#distance 1-4, 1 shortest
+levels(df$f.dropoff_longitude) <- c("d.Y1","d.Y2", "d.Y3", "d.Y4")
+levels(df$f.dropoff_latitude) <- c("d.X1","d.X2", "d.X3", "d.X4")
+levels(df$f.fare_amount) <- c("FAmount1","FAmount2", "FAmount3", "FAmount4")
+levels(df$f.extra) <- c("smallExtra","highExtra")
+levels(df$f.MTA_tax) <- c("smallMTA","highMTA")
+levels(df$f.Improvement_surcharge) <- c("smallSurcharge","highSurcharge")
+levels(df$f.tip_amount) <- c("smallTip","highTip")
+levels(df$f.toll) <- c("smallToll","highToll")
+levels(df$f.total) <- c("CheapestTrip","CheapTrip","MediumTrip","ExpensiveTrip")
+levels(df$f.ttime) <- c("Time1","Time2", "Time3", "Time4")
+levels(df$f.espeed) <- c("Speed1","Speed2", "Speed3","Speed4")
+levels(df$f.outlierPCAd1) <- c("OutlierD1","NormalD1")
+levels(df$f.outlierPCAd2) <- c("OutlierD2","NormalD1")
+levels(df$f.outlierPCAd3) <- c("OutlierD3","NormalD3")
+levels(df$f.outlierPCAd4) <- c("OutlierD4","NormalD4")
+levels(df$f.outlierPCA) <- c("Outlier","Normal")
+
+```
 
 
 # Correspondence Analysis: f.cost (discretization of Total_amount) vs f.hour and f.tt and period
@@ -155,7 +182,6 @@ II.  Individuals point of view: Are they any individuals "too contributive"?Are 
 III. Interpreting map of categories: average profile versus extreme profiles (rare categories)
 IV. Interpreting the axes association to factor map.
 
-V. Perform a MCA taking into account also supplementary variables (use all numeric variables) quantitative and/or categorical. How supplementary variables enhance the axis interpretation?
 
 # Multiple Correspondence Analysis
 
@@ -225,6 +251,16 @@ fviz_mca_var(res.mca, col.var="contrib",repel=TRUE)+
 fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=FALSE)+theme_bw()
 ```
 
+V. Perform a MCA taking into account also supplementary variables (use all numeric variables) quantitative and/or categorical. How supplementary variables enhance the axis interpretation?
+
+## MCA with all supplementary variables
+```{r}
+vars_con_pca <- names(df)[c(6:16,18,23:26,28)]
+vec_out <- which(df$f.outlierPCA == "YesOut"); length(vec_out)
+res.mca<-MCA(df[,c(vars_cat,vars_con_pca)], ind.sup = vec_out, quali.sup=c(4,14),quanti.sup=17:33,ncp=17)
+```
+
+
 Description of clusters
 Parangons and class-specific individuals.
 Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical Clustering (based on PCA) focusing on f.total_amount target.
@@ -232,33 +268,26 @@ Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical
 
 # Synthesis through HCPC: Hierarchical Clustering
 
+With the last MCA computation with 17 axes taken into account, we generate the clusters through hierarchical technique.
+
 ```{r}
-### Clustering the individuals
-### Before, hou have to perform a MCA with the number of axes 
-### that you have decided to take into account (indicated through ncp=)
-res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(4,14),quanti.sup=17,ncp=17)
-res.hcpc<-HCPC(res.mca,nb.clust=8,order=TRUE)
 
+res.hcpc<-HCPC(res.mca, nb.clust = 6,order=TRUE)
 fviz_cluster(res.hcpc, geom = "point", main = "Factor map")
+df$MCAhp<-7
+df[row.names(res.hcpc$data.clust),"MCAhp"]<-res.hcpc$data.clust$clust
+table(df$MCAhp)
 
-#Anytip
-vars_con_pca <- names(df)[c(6:16,18,23:26)]
-res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period", "f.passenger", "f.pickup_longitude", "f.pickup_latitude", "f.dropoff_longitude", "f.dropoff_latitude", "f.Improvement_surcharge", "f.MTA_tax")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), quali.sup = 17:26, graph= FALSE)
-res.hcpcPCA <-HCPC(res.pca, nb.clust = 8, order=TRUE)
-table (res.hcpc$data.clust$clust, res.hcpcPCA$data.clust$clust)
+```
+
+## Description
+
+```{r}
+res.hcpc$desc.var
+
+table (df$claHP, df$MCAhp)
 claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
 claHP<-factor(res.hcpc$data.clust$clust,levels=c(5,7,1,4,2,8,3,6),labels=c("kKM-5","kKM-7","kKM-1","kKM-4","kKM-2","kKM-8","kKM-3","kKM-6"))
-tt<-table(claHPPCA,claHP)
-tt
-sum(diag(tt)/sum(tt))
-#F.total
-vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,23,24,25,26,41) 
-names(df[,vars_con_pca])
-names(df)
-res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 18, ncp = 6 ) # TotalAmount and f.total
-res.hcpcPCA <-HCPC(res.pca, nb.clust = 8, order=TRUE)
-claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
-claHP<-factor(res.hcpc$data.clust$clust,levels=c(4,7,1,5,2,8,3,6),labels=c("kKM-5","kKM-7","kKM-1","kKM-4","kKM-2","kKM-8","kKM-3","kKM-6"))
 tt<-table(claHPPCA,claHP)
 tt
 sum(diag(tt)/sum(tt))
