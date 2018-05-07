@@ -9,22 +9,22 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-#setwd("D:/ADEI/ADEI.git/trunk") #Change
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
 # Load Required Packages: to be increased over the course
 ```{r}
 rm(list=ls())
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","ggmap","ggthemes","knitr","MVA")
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","ggmap","ggthemes","knitr","MVA","corrplot")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
 
 # Useful function and Data
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
 load("Taxi5000_raw_DataDefinitivev1.RData")
 calcQ <- function(x) {
   s.x <- summary(x)
@@ -213,7 +213,20 @@ summary(res.mca, dig=2,nbelements=50, ncp=4)
 
 
 ## Individuals
+We have 4866 observation so each individual should have 100/4866 ~ 0.02 contribution.So the expected avaradge contribution is 0.02*Dim1 + 0.02*Dim2 = 0.02*0.1+0.02*0.78 = 0.035.So as we see in the two plots there are some too contributive individuals.
+
+Too contributive groups would be:
+- Individuals with longest travel time, high total price, high fare amount and longest distance
+- Individulas with shortest travel time, lowest Fare Amount and lowest total amount
+- Individuals with a dispach trip type and the biggest pickup and dropoff longtitude
+- Individuals with smallest pickup and droppoff longitude and latitude.
 ```{r}
+
+fviz_contrib(res.mca, choice = "ind", axes = 1:2, top = 20)
+head(res.mca$ind$contrib)
+fviz_mca_ind(res.mca, col.ind="contrib")+
+scale_color_gradient2(low="white", mid="blue", 
+                      high="red", midpoint=0.035)+theme_minimal()
 plot.MCA(res.mca,choix=c("ind"),cex=0.8)
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),cex=0.8)
 
@@ -221,6 +234,7 @@ plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),cex=0.8)
 
 
 ## Representation of categories
+We see that the pickup and dropoff coordinates and fare amount are best correlated to the first 2 dimentions. Rare categories can be found near the border such as Dispach.
 ```{r}
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(1,2))
 lines(res.mca$quali.sup$coord[3:4,1],res.mca$quali.sup$coord[3:4,2],lwd=2,col="darkgreen") # Trencada dels nivells de f.fare_amount #??
@@ -228,8 +242,11 @@ lines(res.mca$quali.sup$coord[1:2,1],res.mca$quali.sup$coord[1:2,2],lwd=2,col="d
 res.mca$var
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
 plot.MCA(res.mca,choix=c("var"))
-```
 
+
+
+```
+We see that the the provider of the record,categories of the rate code are most contributive and the the type of the payment. Also it makes difference when it is night.
 ```{r}
 # Contributions of rows to dimension 1
 fviz_contrib(res.mca, choice = "var", axes = 1, top = 15)
@@ -237,7 +254,7 @@ fviz_contrib(res.mca, choice = "var", axes = 1, top = 15)
 fviz_contrib(res.mca, choice = "var", axes = 2, top = 15)
 # Total contribution to dimension 1 and 2
 fviz_contrib(res.mca, choice = "var", axes = 1:2, top = 15)
-#we see that the the provider of the record,categories of the rate code are most contributive and the the type of the payment. Also it makes difference when it is night.
+
 head(round(res.mca$var$contrib,2), 10)
 
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
