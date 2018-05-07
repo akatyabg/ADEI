@@ -39,7 +39,7 @@ lapply(requiredPackages, require, character.only = TRUE)
 #df<-df[sam,]
 #setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
-save.image("Taxi5000_raw_DataCleanv3.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+#save.image("Taxi5000_raw_DataDefinitivev1.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
 ```
 
 ##Load usefull functions
@@ -675,6 +675,11 @@ df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,215)))
 summary(df$f.ttime)
 ```
 
+##f.espeed
+```{r}
+df$f.espeed<-factor(cut(df$espeed,breaks=c(0.0,15.3,20.1,26.2,95)))
+summary(df$f.espeed)
+```
 
 ## Multivariant Outlier Detection
 

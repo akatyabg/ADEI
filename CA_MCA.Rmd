@@ -24,7 +24,8 @@ if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
 
 # Useful function and Data
-load("Taxi5000_raw_DataCleanv4.RData")
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+load("Taxi5000_raw_DataDefinitivev1.RData")
 calcQ <- function(x) {
   s.x <- summary(x)
   iqr<-s.x[5]-s.x[2]
@@ -64,7 +65,7 @@ we can appreciate that the cheapest trips take place, in a greater proportion, d
 chisq.test(tt)
 ```
 
-From the chi-square test we see that the p.value is less than 0.05 which meand that we can reject the Nul hypotesis thus the two factors are dependent. The df is 9 which means that the chi value of the threshold is 16,9 and we see that we have X-squared = 36,42 which is bigger than 16,9. => We can deffinetly reject the hypotesis. Factors are dependent and so we can affirm that the conclusions made below are statistically significant.
+From the chi-square test we see that the p.value is less than 0.05 which meand that we can reject the Nul hypotesis thus the two factors are dependent. The df is 9 which means that the chi value of the threshold is 16,9 and we see that we have X-squared = 36,42 which is bigger than 16,9. => We can deffinetly reject the hypotesis. Factors are dependent and so we can affirm that the conclusions made above are statistically significant.
 
 
 ### CA plot interpretation
@@ -97,27 +98,41 @@ fviz_eig(res.ca)
 For the next output we deduce that the more extreme individuals are actually the most contributive ones for the specific axe of their coordinates.
 
 ```{r}
-names(res.ca)
 res.ca$row$contrib[,1:2]
 res.ca$row$coord[,1:2]
 
 ```
 
 ## Total_amount vs f.ttime
+Now we will look at the contingency table for this two variables and execute the chisq test.
 
 ```{r}
 tt<-table(df[,c("f.total","f.ttime")])
 tt
 prop.table(tt,1)
 prop.table(table(df$f.ttime))
-chisq.test(tt)
 prop.table(tt,2)
 prop.table(table(df$f.total))
+chisq.test(tt)
+```
 
-#From the plot we see that the longer the trips is the more it costs which was also expected.
+We can appreciate a directionality between the increment of f.total and the f.ttime values. The diagonal of the contingency table has most of individuals contended and this is proved by the marginal tables too (no matter which one you look at). Lastly, they have a really good balanced distribution for each of their categories (almost equitative in each of them).
+
+The chisq test numerically validates what we have already seen: these two variable are completetly dependent.
+
+### CA plot interpretation
+The plot shows a visual representation of the conclusion above: the longer the trips the more they cost.
+```{r}
 res.ca<-CA(tt)
 lines(res.ca$row$coord[,1],res.ca$row$coord[,2],lwd=2,col="blue")
-#We need to consider the first 2 dimentions which together explain 90% of the data.
+```
+
+### Eigenvalues and dominant axes analysis. How many axes we have to consider
+We need to consider the first 2 dimentions which together explains 90% of the data.
+
+```{r}
+res.ca$eig
+fviz_eig(res.ca)
 summary(res.ca)
 res.ca$row$contrib[,1:2]
 res.ca$row$coord[,1:2]
@@ -134,35 +149,62 @@ fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 ```
 
-# MCA using multivariant
+
+II.  Individuals point of view: Are they any individuals "too contributive"?Are there any groups?
+
+III. Interpreting map of categories: average profile versus extreme profiles (rare categories)
+IV. Interpreting the axes association to factor map.
+
+V. Perform a MCA taking into account also supplementary variables (use all numeric variables) quantitative and/or categorical. How supplementary variables enhance the axis interpretation?
+
+# Multiple Correspondence Analysis
+
+In order to compute MCA we gather all the categorical variables that we want to use as an active ones in vars_cat vector.
+We are not taking all distributed nor factors in it because we want to avoid using some extremely unbalanced variables such as Store_and_fwd_flag.
+
+As a suplementary we will use the targets itselfs and the factor of the total_amount too.
 
 ```{r}
 names(df)
-#explain we don't use this variable cause it is too bad balanced
-summary(df$Store_and_fwd_flag)
-#add espeed factor as active (we need to generate it)
 vars_cat <- names(df)[c(1,19,20,22,27,29:35,39,41,42,43)]
 #add f.totalamount as quali.sup
-res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(4,13),quanti.sup=17)
+res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(4,14),quanti.sup=17)
+```
 
-# We see that all of the eigenvectors are really small, so we will use a similiar rule like in the PCA and take all EW with value >1 => the first 26 dimentions.
+## Axes analysis
+Below are shown the histograms of Eigen values and explained variances -in this order- as the numerical table for each dimension.
+In order to get the number of dimensions which we will take into account from now on, we keep only the dimensions associated to eigenvalues greater than 1/(nbvar), which is until the 17th dimension and we got almost 80% of the variance explained. 
+
+```{r}
 fviz_eig(res.mca)
 fviz_screeplot(res.mca, addlabels = TRUE, ylim = c(0, 45))
-get_eigenvalue(res.mca)
-names(res.mca)
-summary(res.mca,nbelements=50)
-mean(res.mca$eig) 
+get_eig(res.mca)
+length <-length(which(res.mca$eig[,1]>=(1/length(df[,c(vars_cat)]))));length 
+res.mca$eig[1:length,1]
+summary(res.mca, dig=2,nbelements=50, ncp=4)
+```
 
-# Individual Representation
+
+
+## Individuals
+```{r}
 plot.MCA(res.mca,choix=c("ind"),cex=0.8)
 plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),cex=0.8)
 
-# Representation of categories
-plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(1,2))
-lines(res.mca$quali.sup$coord[3:4, 1],res.mca$quali.sup$coord[3:4,2],lwd=2,col="darkgreen") # Trencada dels nivells de f.fare_amount #??
-lines(res.mca$quali.sup$coord[1:2,1],res.mca$quali.sup$coord[1:2,2],lwd=2,col="darkblue") # Trencada AnyTip
-names(res.mca)
+```
 
+
+## Representation of categories
+```{r}
+plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(1,2))
+lines(res.mca$quali.sup$coord[3:4,1],res.mca$quali.sup$coord[3:4,2],lwd=2,col="darkgreen") # Trencada dels nivells de f.fare_amount #??
+lines(res.mca$quali.sup$coord[1:2,1],res.mca$quali.sup$coord[1:2,2],lwd=2,col="darkblue") # Trencada AnyTip
+res.mca$var
+plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
+plot.MCA(res.mca,choix=c("var"))
+```
+
+```{r}
 # Contributions of rows to dimension 1
 fviz_contrib(res.mca, choice = "var", axes = 1, top = 15)
 # Contributions of rows to dimension 2
@@ -176,37 +218,32 @@ plot.MCA(res.mca,choix=c("ind"),invisible=c("ind"),axes=c(3,4))
 plot.MCA(res.mca,choix=c("var"),axes=c(3,4))
 
 # Use modern ggplot facilities
-names(res.mca)
-fviz_eig(res.mca)
-fviz_cos2(res.mca, choice = "var", axes = 1:2)+theme_bw()
-fviz_contrib(res.mca, choice = "var", axes = 3:4)+theme_bw()
 fviz_mca_var(res.mca, col.var="contrib",repel=TRUE)+
-    scale_color_gradient2(low="green", mid="blue", 
-    high="red", midpoint=0.75)+theme_bw()
-fviz_mca_var(res.mca, col.var="contrib",repel=F)+
     scale_color_gradient2(low="green", mid="blue", 
     high="red", midpoint=0.75)+theme_bw()
 
 fviz_mca_biplot(res.mca, invisible="ind",axes=1:2,repel=FALSE)+theme_bw()
-#fviz_mca_biplot(res.mca, axes=1:2,repel=TRUE,arrows=c(TRUE,FALSE))+theme_bw()
 ```
+
+Description of clusters
+Parangons and class-specific individuals.
+Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical Clustering (based on PCA) focusing on f.total_amount target.
+Comparison of clusters obtained after K-Means (based on PCA) and/or Hierarchical Clustering (based on PCA) focusing on AnyTip binary target.
 
 # Synthesis through HCPC: Hierarchical Clustering
 
 ```{r}
-###
 ### Clustering the individuals
 ### Before, hou have to perform a MCA with the number of axes 
 ### that you have decided to take into account (indicated through ncp=)
-res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(5,13),quanti.sup=21,ncp=26)
+res.mca<-MCA(df[,c(vars_cat,"Total_amount")],quali.sup=c(4,14),quanti.sup=17,ncp=17)
 res.hcpc<-HCPC(res.mca,nb.clust=8,order=TRUE)
-names(res.hcpc)
 
 fviz_cluster(res.hcpc, geom = "point", main = "Factor map")
 
 #Anytip
-vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26) 
-res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 14, ncp = 6 ) # TotalAmount and AnyTip
+vars_con_pca <- names(df)[c(6:16,18,23:26)]
+res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period", "f.passenger", "f.pickup_longitude", "f.pickup_latitude", "f.dropoff_longitude", "f.dropoff_latitude", "f.Improvement_surcharge", "f.MTA_tax")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), quali.sup = 17:26, graph= FALSE)
 res.hcpcPCA <-HCPC(res.pca, nb.clust = 8, order=TRUE)
 table (res.hcpc$data.clust$clust, res.hcpcPCA$data.clust$clust)
 claHPPCA<-factor(res.hcpcPCA$data.clust$clust,labels=paste("kHP-",1:8))
