@@ -1,0 +1,586 @@
+---
+title: "Forecasting modeling of numeric target"
+author: "Katerina Dimitrova, Jose Romero, Sergi Munoz"
+date: "May 11, 2018"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Previous work
+
+## Load requiered packages
+
+```{r,include=FALSE}
+rm(list=ls())
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","ggmap","ggthemes","knitr","MVA")
+missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
+
+if(length(missingPackages)) install.packages(missingPackages)
+lapply(requiredPackages, require, character.only = TRUE)
+
+# Useful function
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3],        q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
+
+```
+#MODELING
+1. A statistical model is an expression that attempts to explain patterns in the observed values of a
+response variable by relating the response variable to a set of predictor variables and parameters.
+Consider the following familiar statistical model:
+y = mx+c
+This simple statistical model relates a response variable
+(y) to a single predictor variable (x) as a straight line
+according to the values of two constant parameters:
+m - the degree to which y changes per
+unit of change in x (gradient of
+line)
+c - the value of y when x = 0 (yintercept)
+In complex biological systems, variables are typically the result of many influential and
+interacting factors and therefore simple models usually fail to fully explain a response variable.
+Consequently, the statistical model also has an error component that represents the portion of the
+response variable that the model fails to explain. Hence, statistical models are of the form:
+response variable = model + error
+
+
+## Load your sample after data cleaning and validation 
+```{r cars}
+attach(df)
+names(df)
+summary(df)
+vars_con
+```
+
+#Linear models in R
+Les variables que utilizarem per a comenzar a fer el model són les variables continues mes significatives per a nosaltres.
+```{r} 
+# Quines variables són les més adientes per crear el nostre model? La resposta és sencilla, les variables més realcionades amb la nostra variable resposta són les seleccionades com a possibles candidates per a formar part del nostre model
+condes(df[,vars_con],12)
+# Les variables més relacionades amb Total_amount (variable resposta) són: Trip_distance,Fare_amount,trip_distance_km,Trip_distance,travel_time,trip_length
+
+# Feature Selection 
+cor(df[,c("Total_amount",vars_con)],method="spearman") #coeficient no parametric
+
+# Quantes variables agafem? Hem d'intentar arribar al millor model que pogem representar.
+```
+# Multiple Linear Regression issues
+*Target numeric Total_amount*
+```{r cars}
+# Most related: Trip_distance and Fare_amount
+m1<-lm(Total_amount~Trip_distance,data=df)
+m2<-lm(Total_amount~Fare_amount,data=df)
+m3<-lm(Total_amount~Trip_distance+Fare_amount,data=df)
+# Creem 3 models diferent, el primer ve determinat perla variable Trip_distance, el segon per la variable Fare_amount i el tercer per les dues anteriors 
+
+summary(m1)
+# Explicació:
+# 1. L'estimació del valor del parametre B0 és 4.68723. Hipoteticament, s'interpretaria el nombre estimat o el average de el total pagat si la distancia del viatge fos 0, la qual cosa no te sentit. Acontinuació apareix l'error estandar de l'estimació (0.07075), el valor del estadistic contraste (66.25)  i el p-valor del contraste de H0: B0 = 0 davant H1: B0 != 0, observem que aquest valor és ínfim.
+# 2. L'estimació de B1 és 3.48710 amb un error estandar 0.02157. El contrast de H0: B1 = 0 davant H1: B1 != 0 llença un valor estadistic de 161.70 i un p-valor inferior a 2e-16.
+# La recta ajustada apareix, per tant, especificada a través dels dos coeficients, el terme independent i el pendent de la recta:
+# Total_amount = 4.68723+3.48710*Trip_distance.
+# 3. L'error estandar de l'ajust te un valor de 3.15.
+# 4. El coeficient R^2 te el valor 0.8432, que indica que el 84.32% de tota la variabilitat que te el fenomen relatiu a al preu pagat per cada 100 ("") pot ser explicat per la distancia del viatge.
+
+summary(m2)
+# Explicació:
+# 1. L'estimació de B0 és 1.093195 amb un error estandar 0.051890. El contrast de H0: B0 = 0 davant H1: B0 != 0 llença un valor estadistic de 21.07 i un p-valor inferior a 2e-16.
+# 2. L'estimació de B1 és 1.111684 amb un error estandar 0.003949. El contrast de H0: B1 = 0 davant H1: B1 != 0 llença un valor estadistic de 281.50 i un p-valor inferior a 2e-16.
+# La recta ajustada apareix, per tant, especificada a través dels dos coeficients, el terme independent i el pendent de la recta:
+# Total_amount = 1.093195+1.111684*Fare_amount.
+# 3. L'error estandar de l'ajust te un valor de 1.913.
+# 4. El coeficient R^2 te el valor 0.9422, que indica que el 94.22% de tota la variabilitat que te el fenomen relatiu al preu pagat per cada 100 ("") pot ser explicat per la quantitat de tarifes.
+
+summary(m3)
+# Explicaió: 
+# 1. L'estimació de B0 és 1.29958 amb un error estandar 0.05618. El contrast de H0: B0 = 0 davant H1: B0 != 0 llença un valor estadistic de 23.131 i un p-valor inferior a 2e-16.
+# 2. L'estimació de B1 és 0.33376 amb un error estandar 0.03648. El contrast de H0: B1 = 0 davant H1: B1 != 0 llença un valor estadistic de 9.148 i un p-valor inferior a 2e-16.
+# 3. L'estimació de B2 és 1.01762 amb un error estandar 0.01100. El contrast de H0: B2 = 0 davant H1: B2 != 0 llença un valor estadistic de 92.486 i un p-valor inferior a 2e-16.
+# La recta ajustada apareix, per tant, especificada a través dels tres coeficients:
+# Total_amount = 1.093195+0.33376*Trip_distance+1.01762*Fare_amount.
+# 4. L'error estandar de l'ajust te un valor de 1.897.
+# 5. El coeficient R^2 te el valor 0.9431, que indica que el 94.31% de tota la variabilitat que te el fenomen relatiu al preu pagat per cada 100 ("") pot ser explicat per la distancia del viatge i la quantitat de tarifes.
+
+
+# Variance inflation factor
+vif(m3)
+# Observació: els valors resultants que es donen impliquen la colinealitat del model, i aquest no pot superar la cota de 3. Per al model m3 observem que la relació que hi ha entre les variables Trip_distance i Fare_amount és molt gran, per tant no necessitem les dues variables. 
+
+anova(m1,m3)
+# Observem que el p-valor és infim per tant podem dir que els dos models no són equivalents
+#Test Fisher: m20 - m21 H0 Equivalents ###########################
+
+# Creem un nou model amb les variables Fare_amount, trip_distance_km, travel_time, Tip_amount, espeed.
+m10<-lm(Total_amount~Fare_amount+trip_distance_km
+        +travel_time+Tip_amount+espeed,data=df)
+summary(m10)
+#Explicació:
+# 1. L'estimació de B0 és 1.1175243 amb un error estandar 0.0407993. El contrast de H0: B0 = 0 davant H1: B0 != 0 llença un valor estadistic de 27.391 i un p-valor inferior a 2e-16.
+# 2. L'estimació de B1 és 0.9864011 amb un error estandar 0.0053612. El contrast de H0: B1 = 0 davant H1: B1 != 0 llença un valor estadistic de 183.989 i un p-valor inferior a 2e-16.
+# 3. L'estimació de B2 és 0.0585972 amb un error estandar 0.0102656. El contrast de H0: B2 = 0 davant H1: B2 != 0 llença un valor estadistic de 5.708 i un p-valor de 1.21e-08.
+# 4. L'estimació de B3 és -0.0041999 amb un error estandar 0.0019113 El contrast de H0: B3 = 0 davant H1: B3 != 0 llença un valor estadistic de -2.197 i un p-valor de 0.028.
+# 5. L'estimació de B4 és 1.0491685 amb un error estandar 0.0066837. El contrast de H0: B4 = 0 davant H1: B4 != 0 llença un valor estadistic de 156.974 i un p-valor inferior a 2e-16.
+# 6. L'estimació de B5 és 0.0003075 amb un error estandar 0.0014119 El contrast de H0: B5 = 0 davant H1: B5 != 0 llença un valor estadistic de 0.218 i un p-valor de 0.828.
+# La recta ajustada apareix, per tant, especificada a través dels cinc coeficients:
+# Total_amount = 1.1175243+0.9864011*Fare_amount+0.0585972*trip_distance_km-0.0041999*travel_time+1.0491685*Tip_amount+0.0003075*espeed
+# 7. L'error estandar de l'ajust te un valor de 0.7687.
+# 8. El coeficient R^2 te el valor 0.9907, que indica que el 99.07% de tota la variabilitat que te el fenomen relatiu al preu pagat.
+
+# Les variables més significatives són les que tenen un p-valor menor a 0.05, ja que no podem rebutjar la hipotesi nul·la. En aquest cas les més significatives són: Fare_amount, trip_distance_km, travel_time,Tip_amount. Observem que podem descartar la variable espeed, almenys de moment.
+
+# Test net effects
+# All net effects are significant?
+Anova(m10)
+# No tots els efectes son significants, ja que obtenim variables que tenen un p-valor major al nostre llindar 0.05
+
+# Apliquem la comanda step al model anterior per determinar quina combinació es la més adient i poder treure variables que no són necessaries
+m11<-step(m10)
+m11<-step(m10,k=log(nrow(df)))  # BIC
+vif(m11) 
+# Observem que l'unica variable que compleix la nostra cota es Tip_amount, per tant podem agafar aquesta variable per al nostre model, i hem de continuar treballant per tdeterminar quina es la millor entre Fare_amount trip_distance_km
+
+#####treure aixo
+m4<-step(m3)  # Colinearity not detected!!!
+#Hem de treure Fare_amount.
+###############################
+
+AIC(m1,m2,m3,m10,m11) 
+# Comparem tos el models que tenim fins el momnet per determinar quin és el millor.
+# Segons el dit a classe el millor model es el que te el Valor de AIC més petit, en el nostre cas és m10.
+
+vars_con_model <- vars_con[c(1:5,7:8,10:11,13:17)]
+m20<-lm(Total_amount~.,data= df[,c("Total_amount",vars_con_model)])
+summary(m20)
+vif(m20)
+
+m21<-step(m20) # AIC
+m21<-step(m20,k=log(nrow(df)))  # BIC
+summary(m21)
+vif(m21)
+
+# Test Fisher: m20 - m21 H0 Equivalents
+anova(m21,m20)
+
+# All net effects are significant?
+Anova(m21)
+
+vif(m21)  # Check association between explanatory vars
+round(cor(df[,vars_con],use="pairwise.complete.obs"),dig=2)
+
+coefficients(m21)
+##############################
+
+# Creem un nou model amb les variables Pickup_longitude, trip_distance_km+Fare_amount, Extra+MTA_tax, Tip_amount, Tolls_amount 
+m22<-lm(Total_amount~Pickup_longitude+trip_distance_km+Fare_amount+Extra+MTA_tax+Tip_amount+Tolls_amount,data=df)
+summary(m22)
+# Explicació:
+# 1. L'estimació de B0 és 1.114e-02 amb un error estandar 3.617e-01. 
+# 2. L'estimació de B1 és -3.857e-05 amb un error estandar 4.895e-03. 
+# 3. L'estimació de B2 és -7.437e-04 amb un error estandar 1.670e-04. 
+# 4. L'estimació de B3 és 1.000e+00 amb un error estandar 8.048e-05. 
+# 5. L'estimació de B4 és 1.003e+00 amb un error estandar 5.489e-04. 
+# 6. L'estimació de B5 és 1.567e+00 amb un error estandar 3.119e-03. 
+# 7. L'estimació de B6 és 9.999e-01 amb un error estandar 1.216e-04.
+# 8. L'estimació de B7 és 1.000e+00 amb un error estandar 2.962e-04.
+# La recta ajustada apareix, per tant, especificada a través dels cinc coeficients:
+# Total_amount = 1.114e-02-3.857e-05*Pickup_longitude-7.437e-04*trip_distance_km1.000e+00*Fare_amount+1.003e+00*Extra+1.567e+00*MTA_tax+9.999e-01*Tip_amount+1.000e+00*Tolls_amount
+# 7. L'error estandar de l'ajust te un valor de 0.01376.
+# 8. El coeficient R^2 te el valor 1, que indica que el 100% de tota la variabilitat que te el fenomen relatiu al preu pagat ve determinat per aquestes variables.
+
+# Test net effects
+# All net effects are significant?
+Anova(m22)
+# Observem que casi tots els efectes son significants, ja que casi totes les variables tenen un p-valor inferior al nostre llindar 0.05, l'unica que té un p-valor superior a 0.05 és Pickup_longitude.
+
+# En aquest moment ja comencem a tenir una ida de quines variables continues necessitem per al nostre model
+
+# Creem una nou model amb les variables trip_distance_km, Fare_amount, Extra+MTA_tax, Tip_amount, Tolls_amount
+m23<-lm(Total_amount~trip_distance_km+Fare_amount+Extra+MTA_tax+Tip_amount+Tolls_amount,data=df)
+summary(m23)
+
+Anova(m23)
+# Observem que totes les variables son significatives
+
+vif(m23)
+# Encara observem que hiha variables que estan relacionades entre elles, ja que superen la cota de 3 en el valor resultant 
+
+# Creem un nou model amb les variables que creiem més significatives i que no estan ralacionades entre elles
+m24<-lm(Total_amount~trip_distance_km
+        +Extra+Tip_amount+Tolls_amount,data=df)
+summary(m24)
+
+Anova(m24) # All Net effects are significant
+#condicionat a tenir 3 variables en el model la quarta es significativa 
+
+vif(m24)
+#Observem que no hi ha colinealitat entre les variables utilitzades per aquet model
+
+# Residual Analysis
+par(mfrow=c(2,2))
+plot(m24)
+# Explicació Gràfics
+#
+par(mfrow=c(1,1))
+
+marginalModelPlots(m24)
+# Explicació:
+# Observem un comportament extran en les variables Extra i Tolls_amount, tindrem que comprovar si utilitzant els factors d'aquestes variables obtenim un millor resultat
+
+residualPlots(m24)
+# Explicació: 
+```
+
+# Diagnostics
+Homoscedasticitat
+L'homoscedasticitat és una propietat fonamental del model de regressió lineal general i està dins dels seus supòsits clàssics bàsics. Es diu que hi ha homoscedasticitat quan la variància dels errors de la regressió són els mateixos per a cada observació i (d'1 a n observacions)
+```{r cars}
+# Heterocedastricitat (variança no constant)
+# Creem un nou model amb les variables que hens han semblat les millors per a fer el model segons l'apartat anterior i apliquem el logaridme a la variable resposta.
+m25 <-lm(log(Total_amount)~trip_distance_km
+        +Extra+Tip_amount+Tolls_amount,data=df)
+summary(m25)
+# Explicació:
+#
+# log(Total_amount) = 1.839703+0.123742*trip_distance_km+0.110499*Extra+0.065952*Tip_amount+0.015307*Tolls_amount
+
+Anova(m25)
+# Observem que totes les variables són significant ja que tenen el p-valor inferir a 0.05
+
+# apliquem l'exponencial per poder treure el logaridme aplicat anteriorment i aixi poder fer el predict de forma correcta.
+exp(predict(m25))[0:100]
+par(mfrow=c(2,2))
+plot(m25)
+#Observem una millora en les grafiques? 
+# Expicació:
+
+par(mfrow=c(1,1))
+
+#############################################
+library(MASS)
+boxcox(m24,data=df)
+#transformacio
+#a->0,5
+#a->-1
+#a->0 -> log(Total_amount)
+############################################
+
+# No cal transformar, pero cal termes de ordre superior
+m26 <-lm(Total_amount~poly(trip_distance_km,2)
+        +Extra+poly(Tip_amount,2)+Tolls_amount,data=df)
+summary(m26)
+#no interpretable 
+Anova(m26)
+anova(m24,m26)
+
+marginalModelPlot(m26) #EXTRA Y Tolls_amount com a variables factors
+
+m26m <-lm(Total_amount~trip_distance_km+I(trip_distance_km^2)
+        +Extra+Tip_amount+I(Tip_amount^2)+Tolls_amount,data=df)
+summary(m26m)
+# Y = 2.19 trip_distance_km-0.021 tripdistance^2....
+
+Boxplot(rstudent(m26))
+llout<-which(abs(rstudent(m26))>5); length(llout)
+# decir que pasa, por que tiene un desajuste?
+
+# Influence data
+Boxplot(cooks.distance(m26),id.n=3)
+abline(h=0.08,col='red')
+llcoo<-which(cooks.distance(m26)>0.08); length(llcoo)
+
+#df[llcoo,] Report
+llrem<-unique(c(llcoo,llout));length(llrem)
+
+df<-df[-llrem]
+
+m26 <-lm(Total_amount~poly(trip_distance_km,2)
+        +Extra+poly(Tip_amount,2)+Tolls_amount,data=df)
+summary(m26)
+#no interpretable 
+Anova(m26)
+
+# No correcte, no es pot fer
+anova(m24,m26)
+BIC(m24,m26)
+```
+
+# Using factors as explanatory variables
+```{r}
+# Més raonada: mirar si Extra i Toll funcionen millor com a factors
+df$f.extra<-0
+df$f.extra[df$Extra>0]<-1
+df$f.extra[df$Extra>0.5]<-2
+m27<-lm(Total_amount~poly(trip_distance_km,2)
+        +f.extra+poly(Tip_amount,2)+Tolls_amount,data=df)
+summary(m27)
+Anova(m27)
+
+# NO ES POT FER
+anova(m26,m27) 
+# no son encaixats
+
+
+# Per poder determinar si el model m27 es millor que el model m26 apliquem la comanda BIC
+BIC(m26,m27) # hem quedo amb el model m27
+# Funciona f.extra com a factor
+
+
+# Buscar els factors en el df que poden millorar el model
+library(FactoMineR)
+names(vars_dis)
+condes(df[,c(vars_dis,"Total_amount")],num.var =1)
+# agafar f.ttime, f.essped, f.passenger, Payment_type
+
+options(contrasts = c("contr.treatment","contr.treatment"))
+m28<-lm(Total_amount~poly(trip_distance_km,2)
+        +f.extra+f.ttime+f.espeed+f.passenger+Payment_type+poly(Tip_amount,2)+Tolls_amount,data=df)
+summary(m28)
+Anova(m28)
+
+m29<-step(m28,k=log(nrow(df)))
+vif(m29)
+
+m30<-m28<-lm(Total_amount~(poly(trip_distance_km,2)
+        +f.extra+f.passenger+Payment_type+poly(Tip_amount,2)+Tolls_amount)*(f.ttime+f.espeed),data=df)
+
+m30<-step(m30,k=log(nrow(df)))
+Anova(m30)
+
+library(effects)
+plot(allEffects(m30))
+
+marginalModelPlots(m30)
+#tinct algun desajust?
+#Explicació: 
+
+#falta
+#  Residual analysis
+#diagnostics on influent data
+```
+
+# pruebas #
+```{r cars}
+# Y
+#1) uasar var explicatives numeriques Yi = B1+ B2*Xi + ei  
+  #quantes? 
+  #quines? les mes correlacionades (utilitzar condes)
+
+#2) check per transformacions/Diagnostics
+#3) Afegir factors
+#4) Afegir interaccions 
+#5) Diagnostics
+
+########## MODELLING
+#1)
+#quines
+vars_con_model <- vars_con[c(1:5,7:8,10:11,13:17)]
+vars_dis
+vars_res
+condes(df[,vars_con],12) #el 12 es total amount dintre del vector vars_con
+# Feature Selection
+cor(df[,c("Total_amount",vars_con)],method = "spearman") #coeficient no parametric (triar les que mes interesin NOTA:mirar la primera taula que es mostra)
+
+
+maaux1<-lm(Total_amount~Trip_distance,data=df)
+maaux2<-lm(Total_amount~Fare_amount,data=df)
+maaux3<-lm(Total_amount~Fare_amount+Trip_distance,data=df)
+summary(maaux1)
+summary(maaux2)
+summary(maaux3)
+# vif: variant inflation factor
+vif(maaux3) # per veure bona cualitat en termes de independencia NOTA: no ha de superar la cota de 3
+
+m10<-lm(Total_amount~Fare_amount+trip_distance_km+travel_time, data = df)
+summary(m10)
+
+#quines variables son significatives 
+#NOTA : pvalor de la hipotesi nulla molt petita
+
+# test net effects
+Anova(m10)
+#vol dir que estic comparant el model gran ... que totes les variables del gran menys fare_amount
+
+#test d'efectes nets
+Anova(maaux3)
+#Fisher -> Ho: (M)equivalent(m)
+#(hem fixo en trip_distance)si ya tinc un model on tinc fare_amount? val la pena tenir trip_distance? si en aquets cas -> les 2 son utils
+
+#Utilitzar AIXO??????????????????????????????????
+m11<-step(m10)
+# si en el model trec travel_time llavors pasa a tenir un AIC de 6233.6 
+#intentar que AIC sigui el mes patit possible 
+#AIC:minim
+m11<-step(m10,k=log(nrow(df))) #BIC on marca AIC
+m4<-step(maaux3) #Colinearity not detected!!
+vif(m11)
+#NOTA: NO UTILITZAR FARE_AMOUNT
+AIC(maaux1,maaux2,maaux3,m11)
+#NOTA: no es pot fer AIC ni vif si no hi ha el mateix nombre de "elements"(algun tingui outliers)
+
+
+
+#if 
+m20<-lm(Total_amount~.,data = df[,c("Total_amount",vars_con_model)])
+summary(m20)
+vif(m20)
+
+#test de fisher
+anova(m20)
+##################endif
+
+#2)
+#m24<-lm(Total_amount~)
+#colinearity?
+vif(m24)#no
+#conciencia? m'he passat? NO
+anova(m24,m20)
+summary(m24)
+
+# Residual Analysis
+par(mfrow=c(1,1))
+plot(maaux1,id.n = 5)
+plot(maaux1)
+
+marginalModelPlot(maaux1)
+residualPlot(maaux1)
+summary(maaux1)
+
+
+
+###### Yi = B1+ B2*Xi + ei 
+summary(df)
+attach(df)
+plot(Total_amount,Fare_amount,pch=19)
+maaux<-lm(Fare_amount~Total_amount,data=df)
+summary(ma)
+cbind(Total_amount,fitted.values(maaux))
+lines(Total_amount,fitted.values(maaux),lwd=2,lty=2,col="red")
+text(Total_amount,Fare_amount,row.names(anscombe),adj=0)
+par(mfrow=c(2,2))
+plot(maaux,id.n = 5)
+
+
+
+
+
+
+summary(anscombe)
+attach(anscombe)
+plot(XA,YA,pch=19)
+ma <-lm(YA~XA,data=anscombe)
+summary(ma)
+#explica un 65,6% de la variabilitat de les dades (Multiple R-square == coeficien de determinacio)
+#Y = 3.0 + 0.5Xi + Ei    R^2 = 66,67%
+cbind(XA,fitted.values(ma))
+lines(XA,fitted.values(ma),lwd=2,lty=2)
+text(XA,YA,row.names(anscombe),adj=0)
+par(mfrow=c(1,1))
+plot(ma,id.n = 5)
+
+
+#joc B
+par(mfrow=c(1,1))
+summary(anscombe)
+attach(anscombe)
+plot(XB,YB,pch=19,col= "green")
+ma <-lm(YB~XB,data=anscombe)
+summary(ma)
+#explica un 65,6% de la variabilitat de les dades (Multiple R-square)
+#Y = 3.0 + 0.5Xi + Ei    R^2 = 66,62%
+cbind(XB,fitted.values(ma))
+lines(XB,fitted.values(ma),lwd=2,lty=2,col="red")
+#no es un model adient (a vista)
+text(XB,YB,row.names(anscombe),adj=0,col="red")
+par(mfrow=c(2,2))
+plot(ma,id.n = 5)
+
+#diagnosi i analisi de residus ei = Yi-Îi (i = 1/11)
+
+mb2 <-lm(YB~XB+I(XB^2),data=anscombe)
+summary(mb2)
+plot(XB,YB,pch=19,col= "red")
+#explica un 65,6% de la variabilitat de les dades (Multiple R-square)
+#Y = 3.0 + 0.5Xi + Ei    R^2 = 66,62%
+cbind(XB,fitted.values(mb2))
+lines(XB,fitted.values(mb2),lwd=2,lty=2,col="red")
+#no es un model adient (a vista)
+text(XB,YB,row.names(anscombe),adj=0,col="red")
+
+
+
+#joc c
+par(mfrow=c(1,1))
+summary(anscombe)
+attach(anscombe)
+plot(XC,YC,pch=19,col= "red")
+mC <-lm(YC~XC,data=anscombe)
+summary(mC)
+
+#outliers residus
+library(car)
+par(mflow= c(1,1))
+Boxplot((resid(mC)))
+
+#indicador: Cook's distance of linear model
+cooks.distance(mC)
+Bpxplot(cooks.distance(mc),main= "Distacia cook")
+#si la distancia es molt diferent a les altres s'ha de treure
+
+#solution
+mc2<-lm(YC~XC,data = anscombe[-3,])
+summary(mc2)
+plot(XC,YC,col="green",pch=19)
+lines(XB,fitted.values(mC),lwd=2,lty=2,col="blue")
+lines(anscombe$XB[-3],fitted.values(mc2),lwd=3,lty=3,col="green")
+#residus analysis      
+par(mfrow=c(2,2))
+plot(mC,id.n = 5)
+
+# incorrect 
+cbind(XC,fitted.values(mC))
+lines(XC,fitted.values(mC),lwd=2,lty=2,col="red")
+#no es un model adient (a vista)
+text(XC,YC,row.names(anscombe),adj=0,col="red")
+par(mfrow=c(2,2))
+plot(mC,id.n = 5)
+#end incorrect
+
+#joc D
+par(mfrow=c(1,1))
+summary(anscombe)
+attach(anscombe)
+plot(XD,YD,pch=19,col= "yellow")
+md <-lm(YD~XD,data=anscombe)
+summary(md)
+#explica un 65,6% de la variabilitat de les dades (Multiple R-square)
+#Y = 3.0 + 0.5Xi + Ei    R^2 = 66,62%
+cbind(XD,fitted.values(md))
+lines(XD,fitted.values(md),lwd=2,lty=2,col="brown")
+#no es un model adient (a vista)
+text(XD,YD,row.names(anscombe),adj=0,col="red")
+
+cooks.distance(md)
+
+#residus analysis
+par(mfrow=c(2,2))
+plot(md,id.n = 5)
+#
+
+md2<-lm(YD~XD,data=anscombe)
+summary(md2)
+abline(h=mean(YD),lty=4,col="brown")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+```{r pressure, echo=FALSE}
+plot(anscombe)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
