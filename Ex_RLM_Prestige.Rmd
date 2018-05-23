@@ -1,0 +1,30 @@
+Title Example Prestige in Theory Class
+========================================================
+
+```{r}
+library(car)
+data(Prestige)
+df<-Prestige
+summary(df)
+
+m0<-lm(prestige ~ 1,data=df)
+summary(m0)
+m1<-lm(prestige ~ income+education+women,data=df)
+summary(m1)
+coef(m1)
+predict(m1)
+cbind(df$prestige,predict(m1))
+
+M<-m1
+m<-lm(prestige ~ income,data=df)
+# Test Fisher H0: Els dos models M i m són equivalents
+anova(m,M)
+
+
+# predicció amb interval de confiança 95%
+predict(m1,interval="prediction")
+
+# Predicció professió hipotètica
+predict(m1,interval="prediction",newdata=data.frame(income=15000,education=15,women=10))
+```
+

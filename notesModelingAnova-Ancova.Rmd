@@ -1,0 +1,52 @@
+---
+title: "Apunts modeling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(car)
+df<-Prestige
+df$f.femenin<-ifelse(df$women>50,1,0)
+df$f.femenin<-factor(df$f.femenin,labels=c("fem.no", "fem.yes"))
+m0<-lm(prestige~1,data=df)
+m1<-lm(prestige~type*f.femenin,data=df)
+m2<-lm(prestige~type+f.femenin,data=df)
+summary(m1) #intentem interpretar el model d'interaccions (el més complciat)
+#
+
+
+m3<-lm(prestige~type,data=df)
+anova(m2,m1) #acceptem hipotesi nula a partir del 15% o així (que significa que els dos models són equivalents) <- això és un test de Fischer
+Anova(m2) #test d'efectes nets -> un cop tinc la resta de variables al model: Hipotesi nula = no val la pena afegir type (REBUTGEM HIPOTESI NULA <2e-16). En canvi per femenin acceptem hipotesi nula (no val la pena afegir-la)
+model.matrix(m1) #no ens la mirarem mai més, només ara per entendre la teoria
+
+```
+
+## ANCOVA
+
+```{r pressure, echo=FALSE}
+options(contrasts=c("contr.treatment","contr.treatment"))
+m0<-lm(prestige~1,data=Prestige[!is.na(Prestige$type),])
+m1<-lm(prestige~type*income,data=Prestige[!is.na(Prestige$type),])
+m2<-lm(prestige~type+income,data=Prestige[!is.na(Prestige$type),])
+m3<-lm(prestige~type,data=Prestige[!is.na(Prestige$type),])
+m4<-lm(prestige~income,data=Prestige[!is.na(Prestige$type),])
+
+anova(m2,m1) #intentar treure's de sobre les interaccions
+Anova(m2) #tots dos tenen uns efectes nets que són significatius (és coherent amb el fet que m'he trobat que fa falta les interaccions) tot i que no smepre ha de ser així
+
+summary(m1)
+scatterplot(prestige~income|type,data=df)
+#tenim interaccions perque podem veure que tenim 3 pendents diferenciades
+?scatterplot #per mirar el help!!
+```
