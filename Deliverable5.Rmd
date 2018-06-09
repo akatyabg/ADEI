@@ -1,0 +1,118 @@
+---
+  title: "Forecasting modeling of categorical target Assignment"
+author: "Katerina Dimitrova, Jose Romero, Sergi Munoz"
+date: "5 June, 2018"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+  
+  ```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r,include=FALSE}
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
+
+```
+
+#Previous work
+
+## Load requiered packages
+
+```{r, echo=FALSE, include=FALSE}
+rm(list=ls())
+# Load Required Packages: to be increased over the course
+
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","ggmap","ggthemes","knitr","MVA", "ROCR")
+missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
+
+if(length(missingPackages)) install.packages(missingPackages)
+lapply(requiredPackages, require, character.only = TRUE)
+
+# Useful function
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3],        q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
+
+```
+
+# Statistical Modelling
+
+## Load your sample after data cleaning and validation (Deliverable 1)
+
+
+```{r}
+load("Taxi5000_raw_DataCleanv4.RData")
+names(df)
+#summary(df)
+#vars_con
+#vars_dis
+#vars_res
+
+
+```
+#Split data 70-30
+```{r}
+llwork<-sample(1:nrow(df),0.70*nrow(df),replace=FALSE)
+llwork<-sort(llwork);length(llwork)
+dfwork<-df[llwork,]
+dftest<-df[-llwork,]
+```
+
+#Best model is using  Pickup_latitude + Dropoff_longitude + Trip_distance + MTA_tax? + Tolls_amount?, ? make sence?
+```{r}
+
+names(dfwork)
+catdes(df,num.var=22)
+vars_cexp<-vars_con[c(1:4,5,6,7,8,9,11,13)]# 10 and 12 do problems?
+
+dfX <- dfwork[,c("AnyTip",vars_cexp)]
+cor(dfwork[,c(vars_cexp)])
+m50<-glm(AnyTip~.,family="binomial",data=dfX)
+summary(m50)
+Anova(m50,test="Wald")
+vif(m50)
+
+m51<-step(m50,k=log(nrow(dfwork)))
+summary(m51)
+Anova(m51,test="Wald")
+vif(m51)
+
+BIC(m50,m51)
+```
+# Diagnostics
+```{r}
+
+predict <- predict(m51, type = 'response')
+#confusion matrix
+table(dfX$AnyTip, predict > 0.5)
+
+#ROCR Curve
+library(ROCR)
+ROCRpred <- prediction(predict, dfX$AnyTip)
+ROCRperf <- performance(ROCRpred, 'tpr','fpr')
+plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
+
+
+# Boxplot dels residus
+Boxplot(rstudent(m51),id.n=15)
+
+llout<-which(abs(rstudent(m51))>2,8);length(llout)
+dfwork[llout,] 
+
+# Observacions potencialment influents
+quantile(hatvalues(m51),seq(0,1,0.1))
+
+mean(hatvalues(m51))
+hh<-5*mean(hatvalues(m51))
+llhat<-which(hatvalues(m51)>hh);length(llhat)
+hh
+Boxplot(hatvalues(m51),labels=rownames(dfwork))
+abline(h=hh,lwd=2,col="red",lty=2)
+dfwork[llhat,]
+```
+
+
