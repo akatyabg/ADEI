@@ -12,8 +12,8 @@ editor_options:
 ```
 
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-#setwd("D:/ADEI/ADEI.git/trunk") #Change
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -45,7 +45,7 @@ calcQ <- function(x) {
 
 
 ```{r}
-load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_DataDefinitivev1.RData")
+load("Taxi5000_raw_DataDefinitivev1.RData")
 names(df)
 #summary(df)
 #vars_con
@@ -127,8 +127,10 @@ vif(m55)
 BIC(m65,m63)
 
 
-lm(formula = medv ~ rm + f.chas + f.hcla + rm:f.hcla, data = df)
+#lm(formula = medv ~ rm + f.chas + f.hcla + rm:f.hcla, data = df)
 
+
+#best model m51
 ```
 # Diagnostics
 ```{r}
@@ -138,13 +140,19 @@ lm(formula = medv ~ rm + f.chas + f.hcla + rm:f.hcla, data = df)
 
 predict <- predict(m63, type = 'response')
 #confusion matrix
-table(dfwork$AnyTip, predict > 0.5)
 
+table(dfwork$AnyTip, predict > 0.5)
+print(paste('Accuracy',1-mean(predict)))
 #ROCR Curve
 library(ROCR)
-ROCRpred <- prediction(predict, dfX$AnyTip)
+ROCRpred <- prediction(predict, dfwork$AnyTip)
 ROCRperf <- performance(ROCRpred, 'tpr','fpr')
 plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
+auc <- performance(ROCRpred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
+
+#confusionMatrix(data = as.numeric(pdata>0.5), reference = train$LoanStatus_B)
 
 
 # Boxplot dels residus
