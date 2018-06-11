@@ -12,8 +12,8 @@ editor_options:
 ```
 
 ```{r,include=FALSE}
-#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-setwd("D:/ADEI/ADEI.git/trunk") #Change
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -45,7 +45,7 @@ calcQ <- function(x) {
 
 
 ```{r}
-load("Taxi5000_raw_DataCleanv4.RData")
+load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_DataDefinitivev1.RData")
 names(df)
 #summary(df)
 #vars_con
@@ -62,13 +62,13 @@ dfwork<-df[llwork,]
 dftest<-df[-llwork,]
 ```
 
-#Best model is using  Pickup_latitude + Dropoff_longitude + Trip_distance + MTA_tax? + Tolls_amount?, ? make sence?
+#Best model is using  Pickup_latitude + Dropoff_longitude + Trip_distance + MTA_tax? + Tolls_amount?, ? make sense? 
 ```{r}
 
 names(dfwork)
 catdes(df,num.var=22)
 vars_cexp<-vars_con[c(1:4,5,6,7,8,9,11,13)]# 10 and 12 do problems?
-
+levels(df$claHp)
 dfX <- dfwork[,c("AnyTip",vars_cexp)]
 cor(dfwork[,c(vars_cexp)])
 m50<-glm(AnyTip~.,family="binomial",data=dfX)
@@ -81,14 +81,52 @@ summary(m51)
 Anova(m51,test="Wald")
 vif(m51)
 
-BIC(m50,m51)
+m52<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude + Trip_distance)*claHP ,family="binomial",data=dfwork)
+summary(m52)
+
+m62<-step(m52,k=log(nrow(dfwork)))
+
+m53<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)*claHP ,family="binomial",data=dfwork)
+summary(m53)
+m63<-step(m53,k=log(nrow(dfwork)))
+#Dropoff_longitude + claHP
+summary(m63)
+
+
+anova(m53,m63, test = "Chisq")
+BIC(m63,m53)
+
+m54<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)+(claHP*f.distance) ,family="binomial",data=dfwork)
+m64<-step(m54,k=log(nrow(dfwork)))
+#Dropoff_longitude + claHP + f.distance
+summary(m64)
+BIC(m63, m64)
+summary(m54)
+
+vif(m63)
+vif(m64)
+m55<-glm(AnyTip~ Pickup_latitude + claHP + f.distance + Pickup_latitude:claHP,family="binomial",data=dfwork)
+summary(m55)
+
+m65<-step(m55,k=log(nrow(dfwork)))
+summary(m65)
+
+vif(m55)
+BIC(m65,m63)
+
+
+lm(formula = medv ~ rm + f.chas + f.hcla + rm:f.hcla, data = df)
+
 ```
 # Diagnostics
 ```{r}
 
-predict <- predict(m51, type = 'response')
+#residualPlots(m63)
+#influenceIndexPlot(m63, vars=c("Cook", "hat"), id.n=3)
+
+predict <- predict(m63, type = 'response')
 #confusion matrix
-table(dfX$AnyTip, predict > 0.5)
+table(dfwork$AnyTip, predict > 0.5)
 
 #ROCR Curve
 library(ROCR)
@@ -98,21 +136,22 @@ plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
 
 
 # Boxplot dels residus
-Boxplot(rstudent(m51),id.n=15)
+Boxplot(rstudent(m63),id.n=15)
 
-llout<-which(abs(rstudent(m51))>2,8);length(llout)
+llout<-which(abs(rstudent(m63))>2,8);length(llout)
 dfwork[llout,] 
 
 # Observacions potencialment influents
-quantile(hatvalues(m51),seq(0,1,0.1))
+quantile(hatvalues(m63),seq(0,1,0.1))
 
-mean(hatvalues(m51))
-hh<-5*mean(hatvalues(m51))
-llhat<-which(hatvalues(m51)>hh);length(llhat)
+mean(hatvalues(m63))
+hh<-5*mean(hatvalues(m63))
+llhat<-which(hatvalues(m63)>hh);length(llhat)
 hh
-Boxplot(hatvalues(m51),labels=rownames(dfwork))
+Boxplot(hatvalues(m63),labels=rownames(dfwork))
 abline(h=hh,lwd=2,col="red",lty=2)
-dfwork[llhat,]
+dfwork2 <-dfwork[-llhat,]
+
 ```
 
 
