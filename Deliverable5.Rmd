@@ -161,24 +161,7 @@ BIC(m64,m58)
 ```
 # Diagnostics
 ```{r}
-
-#residualPlots(m63)
-#influenceIndexPlot(m63, vars=c("Cook", "hat"), id.n=3)
-
-predict <- predict(m51, type = 'response')
-#confusion matrix
-
-table(dfwork$AnyTip, (predict > 0.5))
-print(paste('Accuracy',1-mean(predict)))
-#ROCR Curve
-library(ROCR)
-ROCRpred <- prediction(predict, dfwork$AnyTip)
-ROCRperf <- performance(ROCRpred, 'tpr','fpr')
-plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
-auc <- performance(ROCRpred, measure = "auc")
-
-auc <- auc@y.values[[1]]
-auc
+#Residuals
 Boxplot(cooks.distance(m51))
 
 llcoo<-which(cooks.distance(m51)>0.01);length(llcoo)
@@ -187,20 +170,15 @@ influencePlot(m51,id.n=5)
 attributes(llista)
 influenceIndexPlot(m51)
 dfwork[llcoo,]
-
+#Remove influential data
 llfora1<-row.names(llista);llfora1;length(llfora1)
 ll<-which(row.names(dfwork)%in%llfora1);ll;length(ll)
 df1<-dffwork[-ll,]
 
 plot(allEffects(m51))
-fit73<-predict(m51,type="response")
-fit73[1:6]
-fitpl73<-predict(m51)
-fitpl73[1:6]
+p51<-predict(m51,type="response")
+p51<-predict(m51)
 
-# predicciу en mostra test
-tfit73<-predict(m51,type="response",newdata=dftest)
-tfit73
 
 
 fit.AnyTip<-factor(ifelse(predict(m51,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
@@ -208,13 +186,37 @@ tt<-table(fit.AnyTip,dfwork$AnyTip);tt
 sum(tt)
 100*sum(diag(tt))/sum(tt)
 
-#??? Do we need this?
+
+#Predict using test data partition
+p <- predict(m51, newdata=subset(dftest, type="response"))
+pr <- prediction(p, dftest$AnyTip)
+prf <- performance(pr, measure = "tpr", x.measure = "fpr")
+table(dftest$AnyTip, (p > 0.5))
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]]
+auc #Accuracy
+par(mfrow=c(1,2))
+plot(performance(dadesroc,"err"))
+plot(performance(dadesroc,"tpr","fpr"))
+abline(0,1,lty=2)
+#---------------------------------------------------------------------------------------------
+
+#Here we calculate how would we predict without any model
 m0<-glm(AnyTip~1, family="binomial", data=dfwork)
 fit0<-predict(m0,type="response")
 fit.AnyTip0<-factor(ifelse(fit0<0.5,0,1),labels=c("fit.Yes"))
-tt0<-table(fit.AnyTip0,dfwork$AnyTip);tt0;sum(tt0)
-100*sum(tt0[1,2])/sum(tt0)
 
+tt0<-table(fit.AnyTip0,dfwork$AnyTip);tt0;sum(tt0)
+sum(tt0[1,2])/sum(tt0) #Accuracy without the prediction model
+
+#Repeating test, i dont know why.....
+dadesroc<-prediction(predict(m51,type="response"),dfwork$AnyTip)
+par(mfrow=c(1,2))
+plot(performance(dadesroc,"err"))
+plot(performance(dadesroc,"tpr","fpr"))
+abline(0,1,lty=2)
+
+residualPlots(m51) # USeful?, I think not but I wont remove it since I am not sure?
 
 ```
 
