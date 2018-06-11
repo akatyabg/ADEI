@@ -25,7 +25,7 @@ setwd("D:/ADEI/ADEI.git/trunk") #Change
 rm(list=ls())
 # Load Required Packages: to be increased over the course
 
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","ggmap","ggthemes","knitr","MVA", "ROCR")
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 
 if(length(missingPackages)) install.packages(missingPackages)
@@ -115,8 +115,10 @@ summary(m64)
 #we would choose m64
 BIC(m63, m64)
 
+#but colinearity test points that m64 has some while m63 is ok
 vif(m63)
 vif(m64)
+
 m55<-glm(AnyTip~ Pickup_latitude + claHP + f.distance + Pickup_latitude:claHP,family="binomial",data=dfwork)
 summary(m55)
 
@@ -124,13 +126,38 @@ m65<-step(m55,k=log(nrow(dfwork)))
 summary(m65)
 
 vif(m55)
-BIC(m65,m63)
+vif(m65)
+
+m56<-glm(AnyTip~ Pickup_latitude + Dropoff_longitude * f.distance, family="binomial",data=dfwork)
+summary(m56)
+vif(m56)
+
+m66<-step(m56,k=log(nrow(dfwork)))
+summary(m66)
+vif(m66)
+
+m57<-glm(AnyTip~ Dropoff_longitude * (f.distance+claHP), family="binomial",data=dfwork)
+summary(m57)
+vif(m57)
+
+m67<-step(m57,k=log(nrow(dfwork)))
+summary(m67)
+vif(m67)
 
 
-#lm(formula = medv ~ rm + f.chas + f.hcla + rm:f.hcla, data = df)
+BIC(m55,m56)
+BIC(m63,m64)
+BIC(m63,m65)
+BIC(m64,m66)
+BIC(m64,m67)
 
+summary(m67)
 
-#best model m51
+m58<-glm(AnyTip~ Dropoff_longitude:claHP + f.distance, family="binomial",data=dfwork)
+summary(m58)
+vif(m58)
+
+BIC(m64,m58)
 ```
 # Diagnostics
 ```{r}
@@ -138,10 +165,10 @@ BIC(m65,m63)
 #residualPlots(m63)
 #influenceIndexPlot(m63, vars=c("Cook", "hat"), id.n=3)
 
-predict <- predict(m63, type = 'response')
+predict <- predict(m51, type = 'response')
 #confusion matrix
 
-table(dfwork$AnyTip, predict > 0.5)
+table(dfwork$AnyTip, (predict > 0.5))
 print(paste('Accuracy',1-mean(predict)))
 #ROCR Curve
 library(ROCR)
@@ -149,28 +176,45 @@ ROCRpred <- prediction(predict, dfwork$AnyTip)
 ROCRperf <- performance(ROCRpred, 'tpr','fpr')
 plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
 auc <- performance(ROCRpred, measure = "auc")
+
 auc <- auc@y.values[[1]]
 auc
+Boxplot(cooks.distance(m51))
 
-#confusionMatrix(data = as.numeric(pdata>0.5), reference = train$LoanStatus_B)
+llcoo<-which(cooks.distance(m51)>0.01);length(llcoo)
+llista<-influencePlot(m51,id.n=8)
+influencePlot(m51,id.n=5)
+attributes(llista)
+influenceIndexPlot(m51)
+dfwork[llcoo,]
+
+llfora1<-row.names(llista);llfora1;length(llfora1)
+ll<-which(row.names(dfwork)%in%llfora1);ll;length(ll)
+df1<-dffwork[-ll,]
+
+plot(allEffects(m51))
+fit73<-predict(m51,type="response")
+fit73[1:6]
+fitpl73<-predict(m51)
+fitpl73[1:6]
+
+# predicciу en mostra test
+tfit73<-predict(m51,type="response",newdata=dftest)
+tfit73
 
 
-# Boxplot dels residus
-Boxplot(rstudent(m63),id.n=15)
+fit.AnyTip<-factor(ifelse(predict(m51,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
+tt<-table(fit.AnyTip,dfwork$AnyTip);tt
+sum(tt)
+100*sum(diag(tt))/sum(tt)
 
-llout<-which(abs(rstudent(m63))>2,8);length(llout)
-dfwork[llout,] 
+#??? Do we need this?
+m0<-glm(AnyTip~1, family="binomial", data=dfwork)
+fit0<-predict(m0,type="response")
+fit.AnyTip0<-factor(ifelse(fit0<0.5,0,1),labels=c("fit.Yes"))
+tt0<-table(fit.AnyTip0,dfwork$AnyTip);tt0;sum(tt0)
+100*sum(tt0[1,2])/sum(tt0)
 
-# Observacions potencialment influents
-quantile(hatvalues(m63),seq(0,1,0.1))
-
-mean(hatvalues(m63))
-hh<-5*mean(hatvalues(m63))
-llhat<-which(hatvalues(m63)>hh);length(llhat)
-hh
-Boxplot(hatvalues(m63),labels=rownames(dfwork))
-abline(h=hh,lwd=2,col="red",lty=2)
-dfwork2 <-dfwork[-llhat,]
 
 ```
 
