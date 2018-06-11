@@ -68,7 +68,6 @@ dftest<-df[-llwork,]
 names(dfwork)
 catdes(df,num.var=22)
 vars_cexp<-vars_con[c(1:4,5,6,7,8,9,11,13)]# 10 and 12 do problems?
-levels(df$claHp)
 dfX <- dfwork[,c("AnyTip",vars_cexp)]
 cor(dfwork[,c(vars_cexp)])
 m50<-glm(AnyTip~.,family="binomial",data=dfX)
@@ -83,25 +82,38 @@ vif(m51)
 
 m52<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude + Trip_distance)*claHP ,family="binomial",data=dfwork)
 summary(m52)
+#exageratted colinearity?
+vif(m52)
 
+#it gets rid of any interaction
 m62<-step(m52,k=log(nrow(dfwork)))
+summary(m62)
+
 
 m53<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)*claHP ,family="binomial",data=dfwork)
 summary(m53)
-m63<-step(m53,k=log(nrow(dfwork)))
+vif(m53)
+
 #Dropoff_longitude + claHP
+m63<-step(m53,k=log(nrow(dfwork)))
 summary(m63)
+vif(m63)
 
-
+#not the same, so we compare and choose m63
 anova(m53,m63, test = "Chisq")
 BIC(m63,m53)
 
+#too complexity
 m54<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)+(claHP*f.distance) ,family="binomial",data=dfwork)
+summary(m54)
+#too much colinearity claHP
+vif(m54)
+
 m64<-step(m54,k=log(nrow(dfwork)))
 #Dropoff_longitude + claHP + f.distance
 summary(m64)
+#we would choose m64
 BIC(m63, m64)
-summary(m54)
 
 vif(m63)
 vif(m64)
