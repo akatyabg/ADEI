@@ -54,7 +54,7 @@ names(df)
 
 
 ```
-#Split data 70-30
+# Split data 70-30
 ```{r}
 llwork<-sample(1:nrow(df),0.70*nrow(df),replace=FALSE)
 llwork<-sort(llwork);length(llwork)
@@ -62,7 +62,7 @@ dfwork<-df[llwork,]
 dftest<-df[-llwork,]
 ```
 
-#Best model is using  Pickup_latitude + Dropoff_longitude + Trip_distance + MTA_tax? + Tolls_amount?, ? make sense? 
+# Selecting the best model
 ```{r}
 
 names(dfwork)
@@ -161,6 +161,13 @@ BIC(m64,m58)
 ```
 # Diagnostics
 ```{r}
+
+xpea<-sum(residuals(m51,'pearson')^2);xpea
+xpea<-sum(residuals(m58,'pearson')^2);xpea
+xpea<-sum(residuals(m63,'pearson')^2);xpea
+xpea<-sum(residuals(m64,'pearson')^2);xpea
+
+
 #Residuals
 Boxplot(cooks.distance(m51))
 
@@ -168,7 +175,7 @@ llcoo<-which(cooks.distance(m51)>0.01);length(llcoo)
 llista<-influencePlot(m51,id.n=8)
 influencePlot(m51,id.n=5)
 attributes(llista)
-influenceIndexPlot(m51)
+influenceIndexPlot(m51) #teacher said not to do that
 dfwork[llcoo,]
 #Remove influential data
 llfora1<-row.names(llista);llfora1;length(llfora1)
@@ -176,17 +183,37 @@ ll<-which(row.names(dfwork)%in%llfora1);ll;length(ll)
 df1<-dffwork[-ll,]
 
 plot(allEffects(m51))
+
+residualPlots(m51, layout=c(1, 3)) 
+
+#---------------------------------------------------
+
+> ## Diagnosi
+> library(car)
+> residualPlots(bm3, layout=c(1, 3))
+ Test stat Pr(>|t|)
+sons NA NA
+income 1.226 0.268
+> influenceIndexPlot(bm3, id.n=10)
+> matplot(dfbetas(bm3),type='l')
+> abline(h=sqrt(2/(dim(womenlf)[1])),lty=3,col=6)
+> abline(h=-sqrt(2/(dim(womenlf)[1])),lty=3,col=6)
+> lines(sqrt(cooks.distance(bm3)),lwd=3,col=1)
+>legend(locator(n=1),legend=c(names(as.data.frame(dfbetas(bm3))),"Cook D"), col=c(1:3,1),
+lty=c(3,3,3,1) )
+
+
+```
+
+# Predicting
+
+```{r}
 p51<-predict(m51,type="response")
 p51<-predict(m51)
-
-
-
 fit.AnyTip<-factor(ifelse(predict(m51,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
 tt<-table(fit.AnyTip,dfwork$AnyTip);tt
 sum(tt)
 100*sum(diag(tt))/sum(tt)
-
-
 #Predict using test data partition
 p <- predict(m51, newdata=subset(dftest, type="response"))
 pr <- prediction(p, dftest$AnyTip)
@@ -199,6 +226,7 @@ par(mfrow=c(1,2))
 plot(performance(dadesroc,"err"))
 plot(performance(dadesroc,"tpr","fpr"))
 abline(0,1,lty=2)
+
 #---------------------------------------------------------------------------------------------
 
 #Here we calculate how would we predict without any model
@@ -215,9 +243,5 @@ par(mfrow=c(1,2))
 plot(performance(dadesroc,"err"))
 plot(performance(dadesroc,"tpr","fpr"))
 abline(0,1,lty=2)
-
-residualPlots(m51) # USeful?, I think not but I wont remove it since I am not sure?
-
 ```
-
 
