@@ -41,11 +41,13 @@ calcQ <- function(x) {
 
 # Statistical Modelling
 
-## Load your sample after data cleaning and validation (Deliverable 1)
+## Load your sample after data cleaning and validation
 
 
 ```{r}
-load("Taxi5000_raw_DataDefinitivev1.RData")
+#load("Taxi5000_raw_DataDefinitivev1.RData")
+load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_DataDefinitivev1.RData")
+
 names(df)
 #summary(df)
 #vars_con
@@ -54,7 +56,10 @@ names(df)
 
 
 ```
-# Split data 70-30
+## Split data 70-30
+
+In order to build the model, and test it afterwords, we will generate work and test samples (consisting on a 70-30 split).
+
 ```{r}
 llwork<-sample(1:nrow(df),0.70*nrow(df),replace=FALSE)
 llwork<-sort(llwork);length(llwork)
@@ -62,14 +67,19 @@ dfwork<-df[llwork,]
 dftest<-df[-llwork,]
 ```
 
-# Selecting the best model
+## Selecting the best model
+
+We start modelling and executing some basic tests of Bayesian information criterion (deviance) and colinearity to achieve the better suited model for our binary target.
+In first place, we take a look at catdes and cor outputs to grasp those numerical and discrete coefficients which explain better our targey Any Tip. In vars_cexp we keep the continuous explicative variables to look at their correlation table so we can decide wether to try to combine them or avoid it in order to don't carry colinearity in our model.
+
 ```{r}
 
 names(dfwork)
 catdes(df,num.var=22)
-vars_cexp<-vars_con[c(1:4,5,6,7,8,9,11,13)]# 10 and 12 do problems?
+vars_cexp<-vars_con[c(1:4,5,6,7,8,11,13)]
 dfX <- dfwork[,c("AnyTip",vars_cexp)]
 cor(dfwork[,c(vars_cexp)])
+
 m50<-glm(AnyTip~.,family="binomial",data=dfX)
 summary(m50)
 Anova(m50,test="Wald")
@@ -77,89 +87,133 @@ vif(m50)
 
 m51<-step(m50,k=log(nrow(dfwork)))
 summary(m51)
+anova (m51,m50, test = "Chisq")
 Anova(m51,test="Wald")
 vif(m51)
 
+```
+
+So far we took general model m50 and applied step on it. The resulting one is the addition of Pickup_latitude + Dropoff_longitude + Trip_distance.
+We want to consider adding factors to our model. For that purpose we get those appearing in catdes as associated to anytip. 
+
+```{r}
+#We try claHP 
 m52<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude + Trip_distance)*claHP ,family="binomial",data=dfwork)
 summary(m52)
-#exageratted colinearity?
+#exaggerated colinearity with cluster factor
 vif(m52)
 
-#it gets rid of any interaction
+#As this last model has quite big complexity, we apply step on it and it gets rid of claHP and any possible interaction. So the same m51 model with only numerical coefficients.
 m62<-step(m52,k=log(nrow(dfwork)))
 summary(m62)
 
-
+#We try again without trip distance 
 m53<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)*claHP ,family="binomial",data=dfwork)
 summary(m53)
 vif(m53)
 
-#Dropoff_longitude + claHP
+#And we apply again step on it, resulting Dropoff_longitude + claHP
 m63<-step(m53,k=log(nrow(dfwork)))
 summary(m63)
 vif(m63)
 
-#not the same, so we compare and choose m63
+#This two models are significally differents (p.value under threshold).
 anova(m53,m63, test = "Chisq")
-BIC(m63,m53)
 
-#too complexity
+#Now we try to add a new factor to the model, even though we know it adds too much complexity and we will need to simpify it through step method.
 m54<-glm(AnyTip~ (Pickup_latitude + Dropoff_longitude)+(claHP*f.distance) ,family="binomial",data=dfwork)
 summary(m54)
-#too much colinearity claHP
+#Too much colinearity claHP
 vif(m54)
 
 m64<-step(m54,k=log(nrow(dfwork)))
 #Dropoff_longitude + claHP + f.distance
 summary(m64)
 #we would choose m64
-BIC(m63, m64)
 
-#but colinearity test points that m64 has some while m63 is ok
-vif(m63)
+#but colinearity test points that the model is not good enough (claHP over 4 points)
 vif(m64)
+```
+
+From this moment, we try to simplify our interactions with factors to achieve some balanced model. 
+```{r}
 
 m55<-glm(AnyTip~ Pickup_latitude + claHP + f.distance + Pickup_latitude:claHP,family="binomial",data=dfwork)
 summary(m55)
+vif(m55)
 
+#Here, with this step, it seems to get some decent model taking into consideration just and addition of factors clusters and f.distance. Although, it contains coefficient (groups of the factors) which are irrelevant. 
 m65<-step(m55,k=log(nrow(dfwork)))
 summary(m65)
-
-vif(m55)
 vif(m65)
 
+# We change to two numerical again and let's see which results we have from this interaction.
 m56<-glm(AnyTip~ Pickup_latitude + Dropoff_longitude * f.distance, family="binomial",data=dfwork)
 summary(m56)
 vif(m56)
 
+#Since m56 it's not fitting well, we try a new step. m66 seems interesting, all their coefficients are significative somehow and it has no colinearity.
 m66<-step(m56,k=log(nrow(dfwork)))
 summary(m66)
 vif(m66)
 
-m57<-glm(AnyTip~ Dropoff_longitude * (f.distance+claHP), family="binomial",data=dfwork)
-summary(m57)
-vif(m57)
-
-m67<-step(m57,k=log(nrow(dfwork)))
-summary(m67)
-vif(m67)
+# With all models built so far we got the best estimator on m51 and m62 (which are actually the same).
+BIC(m51,m52,m53,m54,m55,m56,m62,m63,m64,m65,m66)
 
 
-BIC(m55,m56)
-BIC(m63,m64)
-BIC(m63,m65)
-BIC(m64,m66)
-BIC(m64,m67)
-
-summary(m67)
-
-m58<-glm(AnyTip~ Dropoff_longitude:claHP + f.distance, family="binomial",data=dfwork)
+m58<-glm(AnyTip~Dropoff_longitude:claHP + Dropoff_longitude:f.distance, family="binomial",data=dfwork)
 summary(m58)
 vif(m58)
-
-BIC(m64,m58)
+BIC(m51,m58)
 ```
-# Diagnostics
+
+We decide to incorporate f.total as a coefficient
+```{r}
+
+m59<-glm(AnyTip~ Dropoff_longitude + Pickup_latitude + f.total + f.distance + claHP, family="binomial",data=dfwork)
+summary(m59)
+vif(m59)
+BIC(m51,m59)
+
+m69<-step(m59,k=log(nrow(dfwork)))
+summary(m69)
+vif(m69)
+
+m1<-glm(AnyTip~ (Dropoff_longitude + Trip_distance)*f.total, family="binomial",data=dfwork)
+summary(m1)
+vif(m1)
+
+m11<-step(m1,k=log(nrow(dfwork)))
+summary(m11)
+vif(m11)
+
+BIC(m59,m1,m11)
+
+m2<-glm(AnyTip~ Dropoff_longitude + Trip_distance:f.total, family="binomial",data=dfwork)
+summary(m2)
+vif(m2)
+
+BIC(m2)
+
+
+maux<-glm(AnyTip~ Dropoff_longitude + f.total + Trip_distance:f.total, family="binomial",data=dfwork)
+summary(maux)
+vif(maux)
+BIC(maux)
+
+m59<-glm(AnyTip~Dropoff_longitude + f.total, family="binomial",data=dfwork)
+summary(m59)
+vif(m59)
+BIC(m51,m59)
+
+
+```
+
+
+
+## Diagnostics
+Is there any homoscedascity?
+### Residuals
 ```{r}
 
 xpea<-sum(residuals(m51,'pearson')^2);xpea
@@ -169,13 +223,19 @@ xpea<-sum(residuals(m64,'pearson')^2);xpea
 
 
 #Residuals
-Boxplot(cooks.distance(m51))
+residualPlots(m51, layout=c(1, 3)) 
+
+```
+
+### Influence Data
+```{r}
+
+influencePlot(m51,id.n=5)
+Boxplot(cooks.distance(m51)) #connections with influence data
 
 llcoo<-which(cooks.distance(m51)>0.01);length(llcoo)
 llista<-influencePlot(m51,id.n=8)
-influencePlot(m51,id.n=5)
 attributes(llista)
-influenceIndexPlot(m51) #teacher said not to do that
 dfwork[llcoo,]
 #Remove influential data
 llfora1<-row.names(llista);llfora1;length(llfora1)
@@ -184,28 +244,9 @@ df1<-dffwork[-ll,]
 
 plot(allEffects(m51))
 
-residualPlots(m51, layout=c(1, 3)) 
-
-#---------------------------------------------------
-
-> ## Diagnosi
-> library(car)
-> residualPlots(bm3, layout=c(1, 3))
- Test stat Pr(>|t|)
-sons NA NA
-income 1.226 0.268
-> influenceIndexPlot(bm3, id.n=10)
-> matplot(dfbetas(bm3),type='l')
-> abline(h=sqrt(2/(dim(womenlf)[1])),lty=3,col=6)
-> abline(h=-sqrt(2/(dim(womenlf)[1])),lty=3,col=6)
-> lines(sqrt(cooks.distance(bm3)),lwd=3,col=1)
->legend(locator(n=1),legend=c(names(as.data.frame(dfbetas(bm3))),"Cook D"), col=c(1:3,1),
-lty=c(3,3,3,1) )
-
-
 ```
 
-# Predicting
+### Predicting
 
 ```{r}
 p51<-predict(m51,type="response")
@@ -222,6 +263,8 @@ table(dftest$AnyTip, (p > 0.5))
 auc <- performance(pr, measure = "auc")
 auc <- auc@y.values[[1]]
 auc #Accuracy
+
+dadesroc<-prediction(predict(m51,type="response"),dfwork$AnyTip)
 par(mfrow=c(1,2))
 plot(performance(dadesroc,"err"))
 plot(performance(dadesroc,"tpr","fpr"))
@@ -244,4 +287,5 @@ plot(performance(dadesroc,"err"))
 plot(performance(dadesroc,"tpr","fpr"))
 abline(0,1,lty=2)
 ```
+
 
