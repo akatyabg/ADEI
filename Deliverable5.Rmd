@@ -206,27 +206,6 @@ We finally choose m2.
 
 ## Diagnostics
 
-### Residuals
-```{r}
-
-xpea<-sum(residuals(m51,'pearson')^2);xpea
-xpea<-sum(residuals(m2,'pearson')^2);xpea
-
-qqnorm(rstudent(m2))
-
-#Residuals
-residualPlots(m51) 
-residualPlots(m2)
-
-
-plot(allEffects(m51))
-plot(allEffects(m2))
-
-par(mfrow=c(2,2))
-plot(m51)
-
-```
-
 ### Influence Data
 ```{r}
 
