@@ -1,5 +1,5 @@
 ---
-  title: "Forecasting modeling of categorical target Assignment"
+title: "Forecasting modeling of categorical target Assignment"
 author: "Katerina Dimitrova, Jose Romero, Sergi Munoz"
 date: "5 June, 2018"
 output: pdf_document
@@ -12,8 +12,8 @@ editor_options:
 ```
 
 ```{r,include=FALSE}
-#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-setwd("D:/ADEI/ADEI.git/trunk") #Change
+setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+#setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -175,8 +175,10 @@ summary(m59)
 vif(m59)
 BIC(m51,m59)
 
+#We apply step in order to simplify
 m69<-step(m59,k=log(nrow(dfwork)))
 summary(m69)
+#colinearity
 vif(m69)
 
 m1<-glm(AnyTip~ (Dropoff_longitude + Trip_distance)*f.total, family="binomial",data=dfwork)
@@ -185,78 +187,76 @@ vif(m1)
 
 m11<-step(m1,k=log(nrow(dfwork)))
 summary(m11)
+#still colinearity present
 vif(m11)
 
-BIC(m59,m1,m11)
-
-m2<-glm(AnyTip~ Dropoff_longitude + Trip_distance:f.total, family="binomial",data=dfwork)
+#This seems to be also a good model
+m2<-glm(AnyTip~ Dropoff_longitude:f.espeed + Trip_distance:f.total, family="binomial",data=dfwork)
 summary(m2)
 vif(m2)
 
 BIC(m2)
 
-
-maux<-glm(AnyTip~ Dropoff_longitude + f.total + Trip_distance:f.total, family="binomial",data=dfwork)
-summary(maux)
-vif(maux)
-BIC(maux)
-
-m59<-glm(AnyTip~Dropoff_longitude + f.total, family="binomial",data=dfwork)
-summary(m59)
-vif(m59)
-BIC(m51,m59)
+BIC(m51,m2)
 
 
 ```
-
+We finally choose m2.
 
 
 ## Diagnostics
-Is there any homoscedascity?
+
 ### Residuals
 ```{r}
 
 xpea<-sum(residuals(m51,'pearson')^2);xpea
-xpea<-sum(residuals(m58,'pearson')^2);xpea
-xpea<-sum(residuals(m63,'pearson')^2);xpea
-xpea<-sum(residuals(m64,'pearson')^2);xpea
+xpea<-sum(residuals(m2,'pearson')^2);xpea
 
+qqnorm(rstudent(m2))
 
 #Residuals
-residualPlots(m51, layout=c(1, 3)) 
+residualPlots(m51) 
+residualPlots(m2)
+
+
+plot(allEffects(m51))
+plot(allEffects(m2))
+
+par(mfrow=c(2,2))
+plot(m51)
 
 ```
 
 ### Influence Data
 ```{r}
 
-influencePlot(m51,id.n=5)
-Boxplot(cooks.distance(m51)) #connections with influence data
+influencePlot(m2,id.n=5)
+Boxplot(cooks.distance(m2)) #connections with influence data
 
-llcoo<-which(cooks.distance(m51)>0.01);length(llcoo)
-llista<-influencePlot(m51,id.n=8)
+llcoo<-which(cooks.distance(m2)>0.01);length(llcoo)
+llista<-influencePlot(m2,id.n=8)
 attributes(llista)
 dfwork[llcoo,]
 #Remove influential data
 llfora1<-row.names(llista);llfora1;length(llfora1)
 ll<-which(row.names(dfwork)%in%llfora1);ll;length(ll)
-df1<-dffwork[-ll,]
+df1<-dfwork[-ll,]
 
-plot(allEffects(m51))
+plot(allEffects(m2))
 
 ```
 
 ### Predicting
 
 ```{r}
-p51<-predict(m51,type="response")
-p51<-predict(m51)
-fit.AnyTip<-factor(ifelse(predict(m51,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
+p51<-predict(m2,type="response")
+p51<-predict(m2)
+fit.AnyTip<-factor(ifelse(predict(m2,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
 tt<-table(fit.AnyTip,dfwork$AnyTip);tt
 sum(tt)
 100*sum(diag(tt))/sum(tt)
 #Predict using test data partition
-p <- predict(m51, newdata=subset(dftest, type="response"))
+p <- predict(m2, newdata=subset(dftest, type="response"))
 pr <- prediction(p, dftest$AnyTip)
 prf <- performance(pr, measure = "tpr", x.measure = "fpr")
 table(dftest$AnyTip, (p > 0.5))
@@ -264,28 +264,12 @@ auc <- performance(pr, measure = "auc")
 auc <- auc@y.values[[1]]
 auc #Accuracy
 
-dadesroc<-prediction(predict(m51,type="response"),dfwork$AnyTip)
+dadesroc<-prediction(predict(m2,type="response"),dfwork$AnyTip)
 par(mfrow=c(1,2))
 plot(performance(dadesroc,"err"))
 plot(performance(dadesroc,"tpr","fpr"))
 abline(0,1,lty=2)
 
-#---------------------------------------------------------------------------------------------
-
-#Here we calculate how would we predict without any model
-m0<-glm(AnyTip~1, family="binomial", data=dfwork)
-fit0<-predict(m0,type="response")
-fit.AnyTip0<-factor(ifelse(fit0<0.5,0,1),labels=c("fit.Yes"))
-
-tt0<-table(fit.AnyTip0,dfwork$AnyTip);tt0;sum(tt0)
-sum(tt0[1,2])/sum(tt0) #Accuracy without the prediction model
-
-#Repeating test, i dont know why.....
-dadesroc<-prediction(predict(m51,type="response"),dfwork$AnyTip)
-par(mfrow=c(1,2))
-plot(performance(dadesroc,"err"))
-plot(performance(dadesroc,"tpr","fpr"))
-abline(0,1,lty=2)
 ```
 
 
