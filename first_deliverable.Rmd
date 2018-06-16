@@ -556,9 +556,6 @@ df[,"travel_time"]<- res.comp$completeObs[,"travel_time"]
 df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
 df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
 summary(df)
-error<-which(df$travel_time< 1.0);length(error) #3 errors from imputation
-df<-df[-error,] 
-summary(df)
 ```
 
 
@@ -681,7 +678,7 @@ summary(df$f.total)
 
 ##f.ttime
 ```{r}
-df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,215)))
+df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,415)))
 summary(df$f.ttime)
 ```
 
@@ -698,15 +695,9 @@ library(mvoutlier)
 names(df)
 vars_con
 summary(df[,vars_con])
-vars_con_out<-vars_con[c(1:4,14:16)]
-summary(df$Tolls_amount)
+vars_con_out<-vars_con[c(5,6,7,9)]
 mvout<-aq.plot(df[,vars_con_out])
 sum(mvout$outliers)
-```
-
-# Multivariant Outlier Detection
-```{r}
-aqoutput<-aq.plot(df[,vars_con_out])
 ```
 
 

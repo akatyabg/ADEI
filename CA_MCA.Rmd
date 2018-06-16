@@ -98,9 +98,9 @@ From the chi-square test we see that the p.value is less than 0.05 which meand t
 ### CA plot interpretation
 The plot visually represents all the information we could have interpreted from the tables:
 
-- At night the trips tend to be more expensive. 
+- At night and morning the trips tend to be more expensive. 
 - In the afternoon we find middle prices 
-- Cheap trips stay between valley and morning.
+- Cheap trips stay at valley.
 
 
 ```{r}
