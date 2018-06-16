@@ -11,8 +11,8 @@ output: pdf_document
 ```
 
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-#setwd("D:/ADEI/ADEI.git/trunk") #Change
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -38,13 +38,13 @@ calcQ <- function(x) {
 
 
 #PCA analysis
-1. The Kaiser rule is to drop all components with eigenvalues under 1.0 
+1. The Kaiser rule is to drop all components with eigenvalues under 1.0 for a normalized PcA
    According to the Elbow rule when the drop ceases and the curve makes an elbow toward less steep declinewe should drop all further components after the one starting the elbow.
    
 ##I. I. Eigenvalues and  axes 
 For the PCA analysis we take all numerical variables as active, where TotalAmount and Anytip are suplementary.
 ```{r}
-load("Taxi5000_raw_DataCleanv4.RData")
+load("Taxi5000_raw_DataDefinitivev2.RData")
 library(FactoMineR)
 names (df)
 vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26) 
@@ -52,17 +52,8 @@ vars_con_pca<-c(6,7,8,9,10,11,12,13,14,15,16,17,18,22,23,24,25,26)
 #From te plot we see that the variables "Trip_distance", "Trip_length", "Travel_time" and "Fare_amount" are strong correlated to "Total_amount", where as the pickup and dropoff latitude and longtitude are correlated with each other but dont have any relation to "Total_amount". The rest of the variables such as the "Passanger_count" and the different taxes and fees are also independent.
 res.pca<-PCA(df[,vars_con_pca], quanti.sup = 13, quali.sup = 14, ncp = 6 ) # TotalAmount and AnyTip
 
-barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
-# With the PCA transformation the PC1 covers 29% of the variance, PC2 - 15,5%, PCA3 - 11%, PCA4 - 9,3% and the rest around 5-6% or less.
-plot(res.pca$eig[,1], type = "l") # line chart
-length <-length(which(res.pca$eig[,1]>=1));length 
-kaiser <- res.pca$eig[1:length,1] #keep only EV >=1 ->first 7
-#If we use the kaiser rule we have to keep all EV greater than 1, which results in saving the first 6 dimetions and 84,6% of the variance. 
-#facto extra
 fviz_eig(res.pca, addlabels = TRUE)
 fviz_eig(res.pca, choice = "eigenvalue",addlabels = TRUE)
-#According to the elbow rule we have to take the first 6 dimentions as the slope of the graphic shows. We are going to follow this rule, even though makes no difference. 78,6 % of the variance is saved
-elbow <- kaiser
 
 ```
 
@@ -130,15 +121,31 @@ df$f.outlierPCAd4<-factor(df$f.outlierPCAd4,labels=c("NoOutDim4"))
 summary(df$f.outlierPCAd4)
 names(df)
 
-#Finally we obtained 62 extreme outliers. 
+#Finally we obtained 59 extreme outliers. 
 llvout<- c(outliers, outliers2);length(llvout)
 df$f.outlierPCA<-0
 df[llvout,"f.outlierPCA"]<-1
 df$f.outlierPCA<-factor(df$f.outlierPCA,labels=c("NoOut", "YesOut"))
 summary(df$f.outlierPCA)
 names(df)
+catdes_var <-c(1,4:48)
+# We see that the most linked variables to the outliers are pickup and droppoff latitude and longtitude. All of the rides with a small MTA-Tax and improvement surchase are outliers. Also all rides with  RateCodeID=Special rate or dispatched trip type are outliers. So there are some categories that are definetly different.
+catdes(df[,catdes_var], num.var = 46)
 
-catdes(df, 42)
+#we execute Pca again with the too contributive individuals as suplementary
+contr_ind = c(outlier, outliers2, outliers3, outliers4)
+res.pca<-PCA(df[,vars_con_pca],ind.sup=contr_ind, quanti.sup = 13, quali.sup = 14, ncp = 6 ) # TotalAmount and AnyTip
+
+
+barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
+# With the PCA transformation the PC1 covers 29.7% of the variance, PC2 - 13.9%, PCA3 - 11.6%, PCA4 - 9,3% and the rest around 5-6% or less.
+kaiser <- res.pca$eig[1:7,1] #keep only EV >=1 ->first 7
+#If we use the kaiser rule we have to keep all EV greater than 1, which results in saving the first 7 dimetions and 84.3% of the variance. 
+#facto extra
+fviz_eig(res.pca, addlabels = TRUE)
+fviz_eig(res.pca, choice = "eigenvalue",addlabels = TRUE)
+#According to the elbow rule we have to take the first 5 dimentions as the slope of the graphic shows. We are going to follow this rule, even though makes no difference. 72.1 % of the variance is saved
+elbow <- res.pca$eig[1:5,1]
 
 ```
 
@@ -152,25 +159,52 @@ dimdesc (res.pca, axes=1:4)
 plot(res.pca,choix="var", cex = 0.75)
 plot(res.pca,choix="var", cex = 0.75, axes = (3:4))# 3rd and 4th PCA
 #modern factoextra
-
+# Components with higher cos^2 are more importaint to interpret both active and supplementary observations. Thus as shown in the graph below the most importaint ones are trip_length, trip_distance, fare_amout. Less importaint are MTA-tac, tolls_amount, improvement_surchase etc.
 fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw()
 
+
+```
+#Leveling 
+For better understanding of the results we will name the levels of the factorial variables
+
+```{r}
+levels(df$f.fare_amount)
+levels(df$f.passenger) <- c("onePassager","multiPassagers")
+levels(df$f.pickup_longitude) <- c("p.Y1","p.Y2","p.Y3","p.Y4") #pickup->p., longtitude->Y
+levels(df$f.pickup_latitude) <- c("p.X1","p.X2","p.X3","p.X4") #pickup->p., latitude->X
+levels(df$f.distance) <- c("Dist1","Dist2", "Dist3", "Dist4")#distance 1-4, 1 shortest
+levels(df$f.dropoff_longitude) <- c("d.Y1","d.Y2", "d.Y3", "d.Y4")
+levels(df$f.dropoff_latitude) <- c("d.X1","d.X2", "d.X3", "d.X4")
+levels(df$f.fare_amount) <- c("FAmount1","FAmount2", "FAmount3", "FAmount4")
+levels(df$f.extra) <- c("smallExtra","highExtra")
+levels(df$f.MTA_tax) <- c("smallMTA","highMTA")
+levels(df$f.Improvement_surcharge) <- c("smallSurcharge","highSurcharge")
+levels(df$f.tip_amount) <- c("smallTip","highTip")
+levels(df$f.toll) <- c("smallToll","highToll")
+levels(df$f.total) <- c("CheapestTrip","CheapTrip","MediumTrip","ExpensiveTrip")
+levels(df$f.ttime) <- c("Time1","Time2", "Time3", "Time4")
+levels(df$f.espeed) <- c("Speed1","Speed2", "Speed3","Speed4")
+levels(df$f.outlierPCAd1) <- c("Normald1", "Outlierd1")
+levels(df$f.outlierPCAd2) <- c("Normald2", "Outlierd2")
+levels(df$f.outlierPCAd3) <- c("Normald3", "Outlierd3")
+levels(df$f.outlierPCAd4) <- c("Normald4", "Outlierd4")
+levels(df$f.outlierPCA) <- c("Normal", "Outlier")
 
 ```
 
 ##IV PCA execution with supplementary individuals
 ```{r}
-vec_out <- llvout
 vars_con_pca <- names(df)[c(6:16,18,23:26)]
 # We do a PCA analysis using the factorial variables Fare amount, total and the pickup perio in order to interpret the results even better. We use the discovered outliers as suplementary individuals.
 
-res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period", "f.passenger", "f.pickup_longitude", "f.pickup_latitude", "f.dropoff_longitude", "f.dropoff_latitude", "f.Improvement_surcharge", "f.MTA_tax")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = vec_out, quali.sup = 17:26, graph= FALSE)
+res.pca<-PCA(df[,c(vars_con_pca, "f.fare_amount", "f.total", "pick_up_period", "f.passenger", "f.pickup_longitude", "f.pickup_latitude", "f.dropoff_longitude", "f.dropoff_latitude", "f.Improvement_surcharge", "f.MTA_tax")], ncp=6, quanti.sup=which(vars_con_pca=="Total_amount"), ind.sup = contr_ind, quali.sup = 17:26, graph= FALSE)
 
 plot(res.pca,choix="var", cex = 0.75)
 plot(res.pca,choix="var", cex = 0.75, axes = (3:4))# 3rd and 4th PCA
 fviz_pca_var(res.pca,col.var="cos2", repel=TRUE)+scale_color_gradient2(low="green", mid="blue", high="red",midpoint=0.5)+theme_bw()
 
 #We can see that trips in the afternoon tend to be longer and thus also more expensive than the ones during night and in the morning.
+# we see That the qualitative varibles are close to the center, so they are not of a big importaince for the principal components.
 plot.PCA(res.pca, choix=c("ind"),cex=0.8,col.ind="grey80",select="contrib15",axes=c(1,2))
 
 
