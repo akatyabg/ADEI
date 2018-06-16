@@ -12,8 +12,8 @@ editor_options:
 ```
 
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-#setwd("D:/ADEI/ADEI.git/trunk") #Change
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
 
 ```
 
@@ -25,7 +25,7 @@ setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change
 rm(list=ls())
 # Load Required Packages: to be increased over the course
 
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR")
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR", "zoom")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 
 if(length(missingPackages)) install.packages(missingPackages)
@@ -45,8 +45,8 @@ calcQ <- function(x) {
 
 
 ```{r}
-#load("Taxi5000_raw_DataDefinitivev1.RData")
-load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_DataDefinitivev1.RData")
+load("Taxi5000_raw_DataDefinitivev1.RData")
+#load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_DataDefinitivev1.RData")
 
 names(df)
 #summary(df)
@@ -201,10 +201,30 @@ BIC(m51,m2)
 
 
 ```
-We finally choose m2.
+#We finally choose m2.
 
 
 ## Diagnostics
+
+### Residuals
+```{r}
+
+xpea<-sum(residuals(m51,'pearson')^2);xpea
+xpea<-sum(residuals(m2,'pearson')^2);xpea
+
+qqnorm(rstudent(m2))
+
+#Residuals
+residualPlots(m51) 
+residualPlot(m2, variable = "fitted", type = "pearson", plot = TRUE, quadratic = FALSE)
+
+plot(allEffects(m51))
+plot(allEffects(m2))
+
+par(mfrow=c(2,2))
+plot(m51)
+
+```
 
 ### Influence Data
 ```{r}
