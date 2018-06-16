@@ -97,17 +97,42 @@ degrees.to.radians<-function(value) {
 
 
 ## Delete unnecessary attributes
+
 ```{r}
 table(df$Ehail_fee) ##Delete unnecessary row
 df$Ehail_fee<-NULL
 
 ```
 
+# Initialize counters for Missing Values and Outliers
+
+```{r}
+
+names(df)
+vars_data_qual <-names(df)[c(6:18)] 
+length(vars_data_qual)
+
+# Missing data
+
+imis<-rep(0,nrow(df))  # rows - trips
+jmis<-rep(0,length(vars_data_qual))  # columns - variables
+
+
+# Outliers for numerical variables
+
+iouts<-rep(0,nrow(df))  # rows - trips
+jouts<-rep(0,length(vars_data_qual))  # columns - variables
+
+# Errors
+
+ierr<-rep(0,nrow(df))  # rows - trips
+jerr<-rep(0,length(vars_data_qual))  # columns - variables
+
+```
+
 #Conversion of qualitative variables
 
 Numeric variables corresponding to qualitative concepts are converted to factors.
-We also 
-
 ## VendorID
 ```{r}
 #No missing Data
@@ -162,33 +187,7 @@ barplot(prop.table(table(df$Trip_type)))
 
 
 # Univariant Descriptive Analysis 
-## Passenger_count
-```{r}
-## Number of missing values:
-missingData<-which(is.na(df$Passenger_count));length(missingData) #No missing Data
-errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
-outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
-df[errors,"Passenger_count"]<-NA
-df[outliers,"Passenger_count"]<-NA
-boxplot(df$Passenger_count)
-barplot(table(df$Passenger_count))
-```
 
-## Trip_distance
-
-We distinguish as an outlier for Trip_distance those elements which value over 20, since we believe it is big enough to our study case and we can not be too severes applying Interquartile Range (we keep a long right queue distribution).
-```{r} 
-missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
-errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
-
-outliers <- which(df$Trip_distance>20.0);length(outliers) #17 outlier
-
-df[outliers,"Trip_distance"]<-NA 
-df[errors,"Trip_distance"]<-NA 
-boxplot(df$Trip_distance)
-hist(df$Trip_distance, col="pink")
-summary(df$Trip_distance)
-```
 
 ## Pickup_longitude
 ```{r}
@@ -201,6 +200,7 @@ max_long <- -73.7004
 errors<-which(df$Pickup_longitude< min_long);length(errors)
 errors<-c(errors,which(df$Pickup_longitude> max_long));length(errors)
 errors<-c(errors,which(df$Pickup_longitude==0.0));length(errors)
+jerr[1] = jerr[1]+length(errors)
 df[errors,"Pickup_longitude"]<-NA
 
 ll<-which(is.na(df$Pickup_longitude));ll
@@ -220,6 +220,11 @@ df[UpperOutlier,"Pickup_longitude"]<-NA
 df[LowerOutlier,"Pickup_longitude"]<-NA 
 boxplot(df$Pickup_longitude)
 summary(df$Pickup_longitude)
+
+jerr[1] = jerr[1]+length(errors)
+jmis[1] = jmis[1]+length(missingData)
+jouts[1] = jouts[1]+length(UpperOutlier)+length(LowerOutlier)
+
 ```
 
 ## Pickup_latitude
@@ -254,6 +259,10 @@ df[UpperOutlier,"Pickup_latitude"]<-NA
 df[LowerOutlier,"Pickup_latitude"]<-NA 
 boxplot(df$Pickup_latitude)
 summary(df$Pickup_latitude)
+
+jerr[2] = jerr[2]+length(errors)
+jmis[2] = jmis[2]+length(missingData)
+jouts[2] = jouts[2]+length(UpperOutlier)+length(LowerOutlier)
 ```
 
 ##Dropoff_longitude
@@ -278,6 +287,10 @@ df[UpperOutlier,"Dropoff_longitude"]<-NA
 df[LowerOutlier,"Dropoff_longitude"]<-NA 
 
 boxplot(df$Dropoff_longitude)
+
+jerr[3] = jerr[3]+length(errors)
+jmis[3] = jmis[3]+length(missingData)
+jouts[3] = jouts[3]+length(UpperOutlier)+length(LowerOutlier)
 ```
 
 ## Dropoff_latitude
@@ -302,7 +315,47 @@ df[UpperOutlier,"Dropoff_latitude"]<-NA
 df[LowerOutlier,"Dropoff_latitude"]<-NA 
 
 boxplot(df$Dropoff_latitude)
+
+jerr[4] = jerr[4]+length(errors)
+jmis[4] = jmis[4]+length(missingData)
+jouts[4] = jouts[4]+length(UpperOutlier)+length(LowerOutlier)
 ```
+
+## Passenger_count
+```{r}
+missingData<-which(is.na(df$Passenger_count));length(missingData) #No missing Data
+errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
+outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
+df[errors,"Passenger_count"]<-NA
+df[outliers,"Passenger_count"]<-NA
+boxplot(df$Passenger_count)
+barplot(table(df$Passenger_count))
+
+jerr[5] = jerr[5]+length(errors)
+jmis[5] = jmis[5]+length(missingData)
+jouts[5] = jouts[5]+length(outliers)
+```
+
+## Trip_distance
+
+We distinguish as an outlier for Trip_distance those elements which value over 20, since we believe it is big enough to our study case and we can not be too severes applying Interquartile Range (we keep a long right queue distribution).
+```{r} 
+missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
+errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
+
+outliers <- which(df$Trip_distance>20.0);length(outliers) #17 outlier
+
+df[outliers,"Trip_distance"]<-NA 
+df[errors,"Trip_distance"]<-NA 
+boxplot(df$Trip_distance)
+hist(df$Trip_distance, col="pink")
+summary(df$Trip_distance)
+
+jerr[6] = jerr[6]+length(errors)
+jmis[6] = jmis[6]+length(missingData)
+jouts[6] = jouts[6]+length(outliers)
+```
+
 
 ## Fare_amount
 
@@ -318,6 +371,10 @@ df[outlier,"Fare_amount"]<-NA
 boxplot(df$Fare_amount)
 hist(df$Fare_amount, col="pink")
 summary(df$Fare_amount)
+
+jerr[7] = jerr[7]+length(sel)
+jmis[7] = jmis[7]+length(missingData)
+jouts[7] = jouts[7]+length(outlier)
 ```
 
 ## Extra 
@@ -329,6 +386,9 @@ sel<-which(df$Extra<0.0);length(sel) #4 error
 df[sel,"Extra"]<-NA 
 boxplot(df$Extra)
 hist(df$Extra, col="pink")
+
+jerr[8] = jerr[8]+length(sel)
+jmis[8] = jmis[8]+length(missingData)
 ```
 
 ## MTA_tax
@@ -339,16 +399,9 @@ sel<-which(df$MTA_tax<0.0);length(sel) #10 error
 df[sel,"MTA_tax"]<-NA
 boxplot(df$MTA_tax)
 hist(df$MTA_tax, col="pink")
-```
 
-## Improvement_surcharge
-```{r}
-missingData<-which(is.na(df$improvement_surcharge));length(missingData) #No missing Data
-
-sel<-which(df$improvement_surcharge<0.0);length(sel) #10 errors
-df[sel,"improvement_surcharge"]<-NA
-boxplot(df$improvement_surcharge)
-hist(df$improvement_surcharge, col="pink")
+jerr[9] = jerr[9]+length(sel)
+jmis[9] = jmis[9]+length(missingData)
 ```
 
 ##Tip_amount
@@ -363,6 +416,10 @@ df[outlier,"Tip_amount"]<-NA
 df[sel,"Tip_amount"]<-NA
 boxplot(df$Tip_amount)
 hist(df$Tip_amount, col="pink")
+
+jerr[10] = jerr[10]+length(sel)
+jmis[10] = jmis[10]+length(missingData)
+jouts[10] = jouts[10]+length(outlier)
 ```
 
 ##Tolls_amount
@@ -376,6 +433,22 @@ df[sel,"Tolls_amount"]<-NA
 boxplot(df$Tolls_amount)
 hist(df$Tolls_amount, col="pink")
 summary(df$Tolls_amount)
+
+jerr[11] = jerr[11]+length(sel)
+jmis[11] = jmis[11]+length(missingData)
+```
+
+## Improvement_surcharge
+```{r}
+missingData<-which(is.na(df$improvement_surcharge));length(missingData) #No missing Data
+
+sel<-which(df$improvement_surcharge<0.0);length(sel) #10 errors
+df[sel,"improvement_surcharge"]<-NA
+boxplot(df$improvement_surcharge)
+hist(df$improvement_surcharge, col="pink")
+
+jerr[12] = jerr[12]+length(sel)
+jmis[12] = jmis[12]+length(missingData)
 ```
 
 ##Total_amount (Target)
@@ -394,19 +467,27 @@ outlier<- which(df$Total_amount>70);length(outlier) #30 extreme outliers
 df[outlier,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
+
+jerr[13] = jerr[13]+length(sel)
+jmis[13] = jmis[13]+length(missingData)
+jouts[13] = jouts[13]+length(outlier)
 ```
 
-# Number of missing values:
+# Data Quality report
 ```{r}
 
+cols <- vars_data_qual
 
+prova <- data.frame(cols, jerr, jmis, jouts)
+print(prova, row.names = FALSE)
 
 mis1<-countNA(df)
 attributes(mis1)
 rank(mis1$mis_col)
 df$mis_ind <- mis1$mis_ind # new attribute missing values
 mis1$mis_col
-
+summary(df$mis_ind)
+hist(df$mis_ind)
 ```
 
 # Creating AnyTip
