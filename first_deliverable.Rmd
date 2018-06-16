@@ -10,7 +10,7 @@ output: pdf_document
 
 ```
 ```{r,include=FALSE}
-setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("C:/Users/Sergi/Desktop/Sergi/ADEI/") #Change 
 
 
 ```
@@ -18,33 +18,40 @@ setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change
 
 ## Load requiered packages
 
-```{r,include=FALSE}
-# Load Required Packages: to be increased over the course
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","ggdendro")
+```{r, echo=FALSE, include=FALSE}
+rm(list=ls())
+
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
+
 if(length(missingPackages)) install.packages(missingPackages)
 lapply(requiredPackages, require, character.only = TRUE)
-```
 
+```
 ## Select 5000 samples
+
+We generate a sample from a random seed (Sergi's birthday) and store it in df var. Since we have already done it before and we don't want to risk that some random effect could have any impact on our data generation, we will just load the initial data raw (without any previous pre-processing execution)
 ```{r}
 #Load samples
-
-#Use birthday of 1 member of the group
-#set.seed(03101994)
-#nrow(df)
-#sam<-sample(1:nrow(df),5000)
-#sam<-as.vector(sort(sam))
-
-#df<-df[sam,]
-#setwd("/Users/Sergi/Desktop/Sergi/CABS")
 #df<-read.table("green_tripdata_2016-01.csv",header=T, sep=",")
-#save.image("Taxi5000_raw_DataDefinitivev1.RData") # Dont execute again since it will create a new data and the following code must be ajusted..
+#set.seed(03101994)
+#sam<-as.vector(sort(sample(1:nrow(df),5000)))
+#df<-df[sam,]
+load("C:/Users/Sergi/Desktop/Sergi/ADEI/Taxi5000_raw_initial.RData")
 ```
 
 ##Load usefull functions
 
 ```{r}
+
+# Useful function
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3],        q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) 
+}
+
+
 countX <- function(x,X) {
   n_x <- NULL
   for (j in 1:ncol(x)) {n_x[j] <- sum(x[,j]==X) }
@@ -91,7 +98,6 @@ degrees.to.radians<-function(value) {
 
 ## Delete unnecessary attributes
 ```{r}
-load("Taxi5000_raw2.RData")
 table(df$Ehail_fee) ##Delete unnecessary row
 df$Ehail_fee<-NULL
 
@@ -106,8 +112,6 @@ We also
 ```{r}
 #No missing Data
 missingData<-which(is.na(df$VendorID));length(missingData) 
-#No errors
-errors<-which(df$VendorID==0.0);length(errors) 
 df$VendorID<-factor(df$VendorID,labels=c("Creative Mobile Technologies, LLC","VeriFone Inc."))
 table(df$VendorID)
 barplot(prop.table(table(df$VendorID)))
@@ -115,20 +119,21 @@ barplot(prop.table(table(df$VendorID)))
 
 ## RateCodeID
 ```{r}
-missingData<-which(is.na(df$RateCodeID));length(missingData) #No missing Data
-errors<-which(df$RateCodeID==0.0);length(errors) #No errors
+#No missing Data
+missingData<-which(is.na(df$RateCodeID));length(missingData) 
 df$RateCodeID<-factor(df$RateCodeID,labels=c("Standard rate","JFK","Newark","Nassau or Westchester","Negotiated fare"))
-summary(df$RateCodeID)levels(df$RateCodeID)[levels(df$RateCodeID)=="Newark"] <- "Special rate"
+levels(df$RateCodeID)[levels(df$RateCodeID)=="Newark"] <- "Special rate"
 levels(df$RateCodeID)[levels(df$RateCodeID)=="Nassau or Westchester"] <- "Special rate"
 levels(df$RateCodeID)[levels(df$RateCodeID)=="Negotiated fare"] <- "Special rate"
+levels(df$RateCodeID)[levels(df$RateCodeID)=="JFK"] <- "Special rate"
 table(df$RateCodeID) 
 barplot(prop.table(table(df$RateCodeID)))
 ```
 
 ## Store_and_fwd_flag 
 ```{r}
-missingData<-which(is.na(df$Store_and_fwd_flag));length(missingData) #No missing Data
-erors<-which(df$Store_and_fwd_flag==0.0);length(errors) #No errors
+#No missing Data
+missingData<-which(is.na(df$Store_and_fwd_flag));length(missingData) 
 df$Store_and_fwd_flag<-factor(df$Store_and_fwd_flag,labels=c("not a store and forward trip","store and forward trip"))
 levels(df$Store_and_fwd_flag) <- c("Store_and_fwd","Not_Store_and_fwd")
 table(df$Store_and_fwd_flag)
@@ -137,8 +142,8 @@ barplot(prop.table(table(df$Store_and_fwd_flag)))
 
 ## Payment_type 
 ```{r}
-missingData<-which(is.na(df$Trip_type));length(missingData) #No missing Data
-errors<-which(df$Payment_type==0.0);length(errors) #No errors
+#No missing Data
+missingData<-which(is.na(df$Trip_type));length(missingData) 
 df$Payment_type<-factor(df$Payment_type,labels=c("Credit card","Cash", "No charge", "Dispute"))
 levels(df$Payment_type)[levels(df$Payment_type)=="No charge"] <- "Other"
 levels(df$Payment_type)[levels(df$Payment_type)=="Dispute"] <- "Other"
@@ -148,8 +153,8 @@ barplot(prop.table(table(df$Payment_type)))
 
 ## Trip_type
 ```{r}
-missingData<-which(is.na(df$Trip_type));length(missingData) #No missing Data
-errors<-which(df$Trip_type==0.0);length(errors) #No errors
+#No missing Data
+missingData<-which(is.na(df$Trip_type));length(missingData) 
 df$Trip_type<-factor(df$Trip_type,labels=c("Street-hail","Dispatch"))
 table(df$Trip_type)
 barplot(prop.table(table(df$Trip_type)))
@@ -166,15 +171,17 @@ outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
 df[errors,"Passenger_count"]<-NA
 df[outliers,"Passenger_count"]<-NA
 boxplot(df$Passenger_count)
-hist(df$Passenger_count, col="pink")
+barplot(table(df$Passenger_count))
 ```
 
 ## Trip_distance
+
+We distinguish as an outlier for Trip_distance those elements which value over 20, since we believe it is big enough to our study case and we can not be too severes applying Interquartile Range (we keep a long right queue distribution).
 ```{r} 
 missingData<-which(is.na(df$Trip_distance));length(missingData) #No missing Data
 errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
-outlier <- which(df$Trip_distance>50.0);length(outlier) #No missing Data
+outliers <- which(df$Trip_distance>20.0);length(outliers) #17 outlier
 
 df[outliers,"Trip_distance"]<-NA 
 df[errors,"Trip_distance"]<-NA 
@@ -194,7 +201,7 @@ max_long <- -73.7004
 errors<-which(df$Pickup_longitude< min_long);length(errors)
 errors<-c(errors,which(df$Pickup_longitude> max_long));length(errors)
 errors<-c(errors,which(df$Pickup_longitude==0.0));length(errors)
-df[errors,"Pickup_longitude"]<-NA #12 errors
+df[errors,"Pickup_longitude"]<-NA
 
 ll<-which(is.na(df$Pickup_longitude));ll
 if(length(ll)>0){
@@ -298,23 +305,27 @@ boxplot(df$Dropoff_latitude)
 ```
 
 ## Fare_amount
+
+We distinguish as an outlier for Fare_amount those elements which value over 60, since we believe it is big enough to our study case and we can not be too severes applying Interquartile Range (we keep a long right queue distribution).
 ```{r}
 missingData<-which(is.na(df$Fare_amount));length(missingData) #No missing Data
-
-sel<-which(df$Fare_amount<=0.0);length(sel) #10 missings
-outlier<-which(df$Fare_amount>100);length(outlier) #1 outlier
+#23 errors
+sel<-which(df$Fare_amount<=0.0);length(sel) 
+#21 outlier
+outlier<-which(df$Fare_amount>60);length(outlier) 
 df[sel,"Fare_amount"]<-NA 
 df[outlier,"Fare_amount"]<-NA 
 boxplot(df$Fare_amount)
 hist(df$Fare_amount, col="pink")
 summary(df$Fare_amount)
-
 ```
+
 ## Extra 
+
 ```{r}
 missingData<-which(is.na(df$Extra));length(missingData) #No missing Data
 
-sel<-which(df$Extra<0.0);length(sel) #10 missings
+sel<-which(df$Extra<0.0);length(sel) #4 error
 df[sel,"Extra"]<-NA 
 boxplot(df$Extra)
 hist(df$Extra, col="pink")
@@ -324,7 +335,7 @@ hist(df$Extra, col="pink")
 ```{r}
 missingData<-which(is.na(df$MTA_tax));length(missingData) #No missing Data
 
-sel<-which(df$MTA_tax<0.0);length(sel) #103 missings
+sel<-which(df$MTA_tax<0.0);length(sel) #10 error
 df[sel,"MTA_tax"]<-NA
 boxplot(df$MTA_tax)
 hist(df$MTA_tax, col="pink")
@@ -334,18 +345,20 @@ hist(df$MTA_tax, col="pink")
 ```{r}
 missingData<-which(is.na(df$improvement_surcharge));length(missingData) #No missing Data
 
-sel<-which(df$improvement_surcharge<0.0);length(sel)
+sel<-which(df$improvement_surcharge<0.0);length(sel) #10 errors
 df[sel,"improvement_surcharge"]<-NA
 boxplot(df$improvement_surcharge)
 hist(df$improvement_surcharge, col="pink")
 ```
 
 ##Tip_amount
+
+We distinguish as an outlier for Tip_amount those elements which value over 25, since we believe it is big enough to our study case and we can not be too severes applying Interquartile Range (we keep a long right queue distribution).
 ```{r}
 missingData<-which(is.na(df$Tip_amount));length(missingData) #No missing Data
 
-sel<-which(df$Tip_amount<0.0);length(sel) #107 missings
-outlier<-which(df$Tip_amount>60.0);length(outlier) #1 missings
+sel<-which(df$Tip_amount<0.0);length(sel) #1 error
+outlier<-which(df$Tip_amount>25.0);length(outlier) #8 outliers
 df[outlier,"Tip_amount"]<-NA
 df[sel,"Tip_amount"]<-NA
 boxplot(df$Tip_amount)
@@ -353,36 +366,40 @@ hist(df$Tip_amount, col="pink")
 ```
 
 ##Tolls_amount
+
+We don't get rid of any row for this variable because of its own nature. We are lack of criteria to detect what would be an outlier and it does not seem to achieve very high values in its distribution (histogram plot).
 ```{r}
 missingData<-which(is.na(df$Tolls_amount));length(missingData) #No missing Data
 
-sel<-which(df$Tolls_amount<0.0);length(sel) #0 missings
+sel<-which(df$Tolls_amount<0.0);length(sel) #0 errors
 df[sel,"Tolls_amount"]<-NA
 boxplot(df$Tolls_amount)
 hist(df$Tolls_amount, col="pink")
+summary(df$Tolls_amount)
 ```
 
 ##Total_amount (Target)
 ```{r}
 missingData<-which(is.na(df$Total_amount));length(missingData) #No missing Data
+sel<-which(df$Total_amount<=0.0);length(sel) #23 errors
+df[sel,"Total_amount"]<-NA 
 
-ll<-which(is.na(df$Total_amount));ll
-if(length(ll)>0){
-  dfaux<-df[-ll,]
-}
+hist(df$Total_amount, col="pink")
 iqrvar<-IQR(dfaux$Total_amount)
 quantil3<-quantile(dfaux$Total_amount, .75) #get 3rd quartile
-sel<-which(df$Total_amount<=0.0);length(sel) #22 errors
-df[sel,"Total_amount"]<-NA 
-outlier<-which(df$Total_amount>(iqrvar*3)+quantil3);length(outlier) #72 extreme outliers
+severePoint<-(iqrvar*3)+quantil3; severePoint; #it's too severe, we won't use this method
+outlier<- which(df$Total_amount>severePoint);length(outlier) #111 extreme outliers
+
+outlier<- which(df$Total_amount>70);length(outlier) #30 extreme outliers
 df[outlier,"Total_amount"]<-NA 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
-dim(df)
 ```
 
 # Number of missing values:
 ```{r}
+
+
 
 mis1<-countNA(df)
 attributes(mis1)
@@ -433,9 +450,9 @@ summary(df$lpep_pickup_datetime)
 b1<-as.POSIXlt(df$lpep_pickup_datetime)
 b2<-as.POSIXlt(df$Lpep_dropoff_datetime)
 df$travel_time<-as.double(difftime(b2,b1,units='min'))
-error<-which(df$travel_time< 1.0);length(error) #No missing Data
+error<-which(df$travel_time< 1.0);length(error) #No errors
 df[error,"travel_time"]<-NA 
-outlier<-which(df$travel_time>1000.0);length(outlier) #No missing Data
+outlier<-which(df$travel_time>400.0);length(outlier) #
 df[outlier,"travel_time"]<-NA
 summary(df$travel_time)
 boxplot(df$travel_time)
@@ -466,11 +483,11 @@ summary(df$pick_up_period)
 # Declaring vectors of data
 ```{r}
 names(df)
-vars_con<-names(df)[c(6:16,18,24:26,28,29)] 
+vars_con<-names(df)[c(6:9, 11,12,15,16,23:25)] 
 vars_con
-vars_dis<-names(df)[c(1:5,20,21,23)]
+vars_dis<-names(df)[c(1:5,13,14,17,10,26,27)]
 vars_dis
-vars_res<-names(df)[c(19,23)]
+vars_res<-names(df)[c(18,22)]
 vars_res
 
 ```
@@ -499,7 +516,15 @@ rank(corV)
 
 ## Remove observations with NA at targets
 
+We also delete passenger count NA row because...
+
 ```{r}
+
+ll<-which(is.na(df$Passenger_count));ll
+if(length(ll)>0){
+  df<-df[-ll,]
+}
+
 ll<-which(is.na(df$Total_amount));ll
 if(length(ll)>0){
   df<-df[-ll,]
@@ -519,8 +544,6 @@ if(length(ll)>0){
 library(missMDA)
 names(df)
 res.comp <- imputePCA(df[,vars_con], ncp=4)
-attributes(res.comp$completeObs)
-summary(res.comp$completeObs)
 df[,"Pickup_longitude"]<-res.comp$completeObs[,"Pickup_longitude"]
 df[,"Pickup_latitude"]<-res.comp$completeObs[,"Pickup_latitude"]
 df[,"Dropoff_longitude"]<-res.comp$completeObs[,"Dropoff_longitude"]
@@ -528,48 +551,32 @@ df[,"Dropoff_latitude"]<-res.comp$completeObs[,"Dropoff_latitude"]
 df[,"Trip_distance"]<-res.comp$completeObs[,"Trip_distance"]
 df[,"trip_distance_km"]<-res.comp$completeObs[,"trip_distance_km"]
 df[,"trip_length"]<-res.comp$completeObs[,"trip_length"]
-df[,"Passenger_count"]<-res.comp$completeObs[,"Passenger_count"]
 df[,"Fare_amount"]<-res.comp$completeObs[,"Fare_amount"]
-df[,"Extra"]<-res.comp$completeObs[,"Extra"]
 df[,"travel_time"]<- res.comp$completeObs[,"travel_time"]
-df[,"espeed"]<- res.comp$completeObs[,"espeed"]
-df[,"MTA_tax"]<-res.comp$completeObs[,"MTA_tax"]
 df[,"Tip_amount"]<-res.comp$completeObs[,"Tip_amount"]
 df[,"Tolls_amount"]<-res.comp$completeObs[,"Tolls_amount"]
-df[,"improvement_surcharge"]<-res.comp$completeObs[,"improvement_surcharge"]
-
+summary(df)
 ```
+
 
 ## Espeed (km/h)
 ```{r}
 #efective speed : trigonometric distance between pickup point and dropoff point divided by travel time 
-
-summary(df$trip_length)
 
 for (i in 1:nrow(df)){
   df$espeed[i] <- df$trip_length[i]/(df$travel_time[i]/60)
 }
 
 summary(df$espeed)
-boxplot(df$espeed)
 
 outliers<-which(df$espeed>100.0);length(outliers) #0 outlier
 df[outliers,"espeed"]<-NA
-
-```
-
-
-## Imputation of qualitative variables
-```{r}
-#library(missMDA)
-#vars_dis_qual <-vars_dis[c(1,2,3,5,6)]
-#summary(df$Passenger_count)
-#res.impute = imputeMCA(df[,vars_dis_qual],ncp = 3)
-#res.impute
-#df[,"VendorID"]<-res.impute$completeObs[,"VendorID"]
-#df[,"RateCodeID"]<-res.impute$completeObs[,"RateCodeID"]
-#df[,"Payment_type"]<-res.impute$completeObs[,"Payment_type"]
-#df[,"Trip_type"]<-res.impute$completeObs[,"Trip_type"]
+vars_con<-names(df)[c(6:9, 11,12,15,16,23:25,28)] 
+vars_con
+res.comp <- imputePCA(df[,vars_con], ncp=4)
+df[,"espeed"]<- res.comp$completeObs[,"espeed"]
+summary(df$espeed)
+boxplot(df$espeed)
 
 ```
 
@@ -597,7 +604,7 @@ summary(df$f.passenger)
 
 ## f.distance
 ```{r}
-df$f.distance<-factor(cut(df$Trip_distance,breaks=c(0,1.01,1.8,3.31,11.5)))
+df$f.distance<-factor(cut(df$Trip_distance,breaks=c(0,1.01,1.8,3.31,19.8)))
 summary(df$f.distance) 
 ```
 
@@ -622,13 +629,13 @@ summary(df$f.dropoff_longitude)
 
 ## f.dropoff_latitude
 ```{r}
-df$f.dropoff_latitude<-factor(cut(df$Dropoff_latitude,breaks=c(40.57,40.7,40.75,40.79,40.92)))
+df$f.dropoff_latitude<-factor(cut(df$Dropoff_latitude,breaks=c(40.53,40.7,40.75,40.79,41.5)))
 summary(df$f.dropoff_latitude) 
 ```
 
 ## f.fare_amount
 ```{r}
-df$f.fare_amount<-factor(cut(df$Fare_amount,breaks=c(0,6,9,14,43)))
+df$f.fare_amount<-factor(cut(df$Fare_amount,breaks=c(0,6,9,14,60.5)))
 summary(df$f.fare_amount)
 ```
 
@@ -653,7 +660,7 @@ summary(df$f.Improvement_surcharge) #11 NA's -> values of -0.3 => Outliers?
 
 ## f.tip_amount
 ```{r}
-df$f.tip_amount<-factor(cut(df$Tip_amount, breaks=c(-0.1,1,22)))
+df$f.tip_amount<-factor(cut(df$Tip_amount, breaks=c(-0.1,1,25.1)))
 summary(df$f.tip_amount)
 ```
 
@@ -665,13 +672,13 @@ summary(df$f.toll)
 
 ## f.total_amount
 ```{r}
-df$f.total<-factor(cut(df$Total_amount,breaks=c(-1,7.8,11,16.6,46)))
+df$f.total<-factor(cut(df$Total_amount,breaks=c(-1,7.8,11,16.6,70.1)))
 summary(df$f.total)
 ```
 
 ##f.ttime
 ```{r}
-df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,215)))
+df$f.ttime<-factor(cut(df$travel_time,breaks=c(-1,6,9.78,15.7,415)))
 summary(df$f.ttime)
 ```
 
@@ -688,8 +695,7 @@ library(mvoutlier)
 names(df)
 vars_con
 summary(df[,vars_con])
-vars_con_out<-vars_con[c(1:4,14:16)]
-summary(df$Tolls_amount)
+vars_con_out<-vars_con[c(5,6,7,9)]
 mvout<-aq.plot(df[,vars_con_out])
 sum(mvout$outliers)
 ```
