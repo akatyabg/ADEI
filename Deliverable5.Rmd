@@ -206,43 +206,66 @@ We finally choose m2.
 
 ## Diagnostics
 
-### Influence Data
+### Influent Data
+
+In the plots below two big elements can be clearly distinguished over the rest: 759257 and 199161 (in the boxplot 1844 and 512 but are the same elements).
+One of them (the first one) has almost a 7 times bigger cook distance value compared to the second and it is a clearly outlier from rstudent boxplot.
+
+```{r}
+# Potentially influent data (we don't see any from hatvalues analysis)
+quantile(hatvalues(m2),seq(0,1,0.1))
+mean(hatvalues(m2))
+hh<-5*mean(hatvalues(m2))
+llhat<-which(hatvalues(m2)>hh);length(llhat)
+hh
+Boxplot(hatvalues(m2),labels=rownames(dfwork))
+abline(h=hh,lwd=2,col="red",lty=2)
+dfwork[llhat,]
+
+ll1 <- influencePlot(m2); ll1
+Boxplot(cooks.distance(m2))
+Boxplot(rstudent(m2),id.n=15)
+
+```
+
+So we took a look at this very differentiate elements. We can observe that the most influential element (759257) it was outlier in the second dimension of PCA too.
+
+```{r}
+llcoo<-which(cooks.distance(m2)>0.01);length(llcoo)
+dfwork[llcoo[1],]
+dfwork[llcoo[2],]
+```
+
+We decide to remove only the outlier.
+
 ```{r}
 
-influencePlot(m2,id.n=5)
-Boxplot(cooks.distance(m2)) #connections with influence data
-
-llcoo<-which(cooks.distance(m2)>0.01);length(llcoo)
-llista<-influencePlot(m2,id.n=8)
-attributes(llista)
-dfwork[llcoo,]
-#Remove influential data
-llfora1<-row.names(llista);llfora1;length(llfora1)
-ll<-which(row.names(dfwork)%in%llfora1);ll;length(ll)
-df1<-dfwork[-ll,]
-
-plot(allEffects(m2))
+df1<-dfwork[-llcoo[2],]
 
 ```
 
 ### Predicting
 
+Finally, we execute the predictions and generate a confusion matrix with the results of it.
+To conclude, the diagonal of this confusion matrix shows a performance of 70% hit rate in our prediction model against our testing data set, while the model 0 without any coefficient would give us only a 41% of hit rate.
+
+Curve ROC of our choosen method is displayed at the end.
+
 ```{r}
-p51<-predict(m2,type="response")
-p51<-predict(m2)
+tfit2<-predict(m2,type="response",newdata=dftest)
 fit.AnyTip<-factor(ifelse(predict(m2,type="response")<0.5,0,1),labels=c("fit.No","fit.Yes"))
 tt<-table(fit.AnyTip,dfwork$AnyTip);tt
 sum(tt)
 100*sum(diag(tt))/sum(tt)
-#Predict using test data partition
-p <- predict(m2, newdata=subset(dftest, type="response"))
-pr <- prediction(p, dftest$AnyTip)
-prf <- performance(pr, measure = "tpr", x.measure = "fpr")
-table(dftest$AnyTip, (p > 0.5))
-auc <- performance(pr, measure = "auc")
-auc <- auc@y.values[[1]]
-auc #Accuracy
 
+m0<-glm(AnyTip~1, family="binomial", data=dfwork)
+fit0<-predict(m0,type="response")
+fit.AnyTip0<-factor(ifelse(fit0<0.5,0,1),labels=c("fit.Yes"))
+tt0<-table(fit.AnyTip0,dfwork$AnyTip);tt0;sum(tt0)
+100*sum(tt0[1,2])/sum(tt0)
+
+# Plot ROC curve
+library("ROCR")
 dadesroc<-prediction(predict(m2,type="response"),dfwork$AnyTip)
 par(mfrow=c(1,2))
 plot(performance(dadesroc,"err"))
