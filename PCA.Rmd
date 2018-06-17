@@ -121,8 +121,8 @@ df$f.outlierPCAd4<-factor(df$f.outlierPCAd4,labels=c("NoOutDim4"))
 summary(df$f.outlierPCAd4)
 names(df)
 
-#Finally we obtained 59 extreme outliers. 
-llvout<- c(outliers, outliers2);length(llvout)
+#Finally we obtained 121 extreme outliers. 
+llvout<- c(outliers, outliers2, outliers3, outliers4);length(llvout)
 df$f.outlierPCA<-0
 df[llvout,"f.outlierPCA"]<-1
 df$f.outlierPCA<-factor(df$f.outlierPCA,labels=c("NoOut", "YesOut"))
@@ -138,14 +138,14 @@ res.pca<-PCA(df[,vars_con_pca],ind.sup=contr_ind, quanti.sup = 13, quali.sup = 1
 
 
 barplot(res.pca$eig[,1], main="Eigenvalues", names.arg = paste("dim", 1:nrow(res.pca$eig)))
-# With the PCA transformation the PC1 covers 29.7% of the variance, PC2 - 13.9%, PCA3 - 11.6%, PCA4 - 9,3% and the rest around 5-6% or less.
+# With the PCA transformation the PC1 covers 31.6% of the variance, PC2 - 14.8%, PCA3 - 9.9%, PCA4 - 8.2% and the rest around 5-6% or less.
 kaiser <- res.pca$eig[1:7,1] #keep only EV >=1 ->first 7
-#If we use the kaiser rule we have to keep all EV greater than 1, which results in saving the first 7 dimetions and 84.3% of the variance. 
+#If we use the kaiser rule we have to keep all EV greater than 1, which results in saving the first 7 dimetions and 84.2% of the variance. 
 #facto extra
 fviz_eig(res.pca, addlabels = TRUE)
 fviz_eig(res.pca, choice = "eigenvalue",addlabels = TRUE)
-#According to the elbow rule we have to take the first 5 dimentions as the slope of the graphic shows. We are going to follow this rule, even though makes no difference. 72.1 % of the variance is saved
-elbow <- res.pca$eig[1:5,1]
+#According to the elbow rule we have to take the first 4 dimentions as the slope of the graphic shows. We are going to follow this rule, even though makes no difference. 64.5 % of the variance is saved
+elbow <- res.pca$eig[1:4,1]
 
 ```
 
