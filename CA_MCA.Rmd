@@ -25,7 +25,7 @@ lapply(requiredPackages, require, character.only = TRUE)
 
 # Useful function and Data
 #setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
-load("Taxi5000_raw_DataDefinitivev1.RData")
+load("DataPCA2.RData")
 calcQ <- function(x) {
   s.x <- summary(x)
   iqr<-s.x[5]-s.x[2]
@@ -112,7 +112,7 @@ fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 
 
 ### Eigenvalues and dominant axes analysis. How many axes we have to consider
-The two first dimensions explain 99% of the variance, so there is no need of further exploration. (Actually, only the first dim has more than 94% of the variance). 
+The two first dimensions explain 99% of the variance, so there is no need of further exploration. (Actually, only the first dim has more than 95% of the variance). 
 We can be confident that the patterns we see in the CA plot represent the patterns that we would see if we could peer into n-dimensional space.
 ```{r}
 res.ca$eig
@@ -408,9 +408,9 @@ df["285458",]
 As it fails everytime we re-execute this commands, we commented it in order to show the proper results.
 
 ```{r}
-#tt<-table(df$claHP,df$MCAhp)
-#df$MCAhp<-factor(df$MCAhp,levels=c(1,3,5,2,4,6,7),labels=c("mcaC-1","mcaC-3","mcaC-5","mcaC-2","mcaC-4","mcaC-6","mcaC-7"))
-#tt<-table(df$claHP,df$MCAhp)
+tt<-table(df$claHP,df$MCAhp); tt
+df$MCAhp<-factor(df$MCAhp,levels=c(1,3,5,2,4,6,7),labels=c("mcaC-1","mcaC-3","mcaC-5","mcaC-2","mcaC-4","mcaC-6","mcaC-7"))
+tt<-table(df$claHP,df$MCAhp)
 tt
 sum(diag(tt)/sum(tt))
 ```
