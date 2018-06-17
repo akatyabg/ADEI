@@ -754,13 +754,13 @@ summary(df$f.espeed)
 ## Multivariant Outlier Detection
 
 ```{r}
-library(mvoutlier)
-names(df)
-vars_con
-summary(df[,vars_con])
-vars_con_out<-vars_con[c(5,6,7,9)]
-mvout<-aq.plot(df[,vars_con_out])
-sum(mvout$outliers)
+# library(mvoutlier)
+# names(df)
+# vars_con
+# summary(df[,vars_con])
+# vars_con_out<-vars_con[c(5,6,7,9)]
+# mvout<-aq.plot(df[,vars_con_out])
+# sum(mvout$outliers)
 ```
 
 
