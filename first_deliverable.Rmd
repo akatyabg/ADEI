@@ -586,26 +586,6 @@ vars_res
 
 ```
 
-
-
-
-# Correlations error variable
-
-
-```{r}
-
-library(FactoMineR)
-names (df)
-summary(df$mis_ind)
-corV <- cor(df[,vars_con], df$mis_ind,  use = "complete.obs")
-corV 
- # rank 
-rank(corV) 
-
-
-```
-
-
 # Imputation
 
 ## Remove observations with NA at targets
