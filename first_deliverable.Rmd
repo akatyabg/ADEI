@@ -489,7 +489,7 @@ sort(outQuality$nx_col$n_x,decreasing = TRUE)
 outQuality$mis_col
 summary(df$out_ind)
 hist(df$out_ind)
-f.out<-factor(cut(df$out_ind,breaks=c(-1,0,1,2,3)))
+f.out<-factor(cut(df$out_ind,breaks=c(-1,0,1,2,3,4)))
 summary(f.out)
 
 
@@ -584,7 +584,7 @@ summary(df$pick_up_period)
 # Declaring vectors of data
 ```{r}
 names(df)
-vars_con<-names(df)[c(6:9, 11,12,15,16,23:25)] 
+vars_con<-names(df)[c(6:9, 11,12,15,16,24:26)] 
 vars_con
 vars_dis<-names(df)[c(1:5,13,14,17,10,26,27)]
 vars_dis
@@ -656,8 +656,6 @@ summary(df$espeed)
 
 outliers<-which(df$espeed>100.0);length(outliers) #0 outlier
 df[outliers,"espeed"]<-NA
-vars_con<-names(df)[c(6:9, 11,12,15,16,23:25,28)] 
-vars_con
 res.comp <- imputePCA(df[,vars_con], ncp=4)
 df[,"espeed"]<- res.comp$completeObs[,"espeed"]
 summary(df$espeed)
@@ -783,8 +781,8 @@ summary(df$trip_length);
 summary(df$espeed)
 vars_dis
 names(df)
-vars_con_profiling <- c(vars_con,(names(df)[c(18)]))
 #condes(df,1)
+condes(vars_con,18)
 vars_con_profiling
 condes(df[, vars_con_profiling], num.var=18)
 summary(df$espeed)
