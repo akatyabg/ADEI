@@ -92,7 +92,6 @@ man.dist.manual <- function(p1Lat, p1Lon, p2Lat, p2Lon) {
 degrees.to.radians<-function(value) {
   return(value*0.0174532925)
 }
-
 ```
 
 
@@ -216,8 +215,8 @@ UpperOutlier<-which(df$Pickup_longitude>quantil3+(iqrvar*3));length(UpperOutlier
 LowerOutlier<-which(df$Pickup_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #1 extreme LowerOutliers
 
 
-df[UpperOutlier,"Pickup_longitude"]<-NA 
-df[LowerOutlier,"Pickup_longitude"]<-NA 
+df[UpperOutlier,"Pickup_longitude"]<- NA
+df[LowerOutlier,"Pickup_longitude"]<- NA
 boxplot(df$Pickup_longitude)
 summary(df$Pickup_longitude)
 
@@ -478,16 +477,30 @@ jouts[13] = jouts[13]+length(outlier)
 
 cols <- vars_data_qual
 
-prova <- data.frame(cols, jerr, jmis, jouts)
-print(prova, row.names = FALSE)
+dqT <- data.frame(cols, jerr, jmis, jouts)
+#print 
+print(prova[order(dqT$jerr),], row.names = FALSE)
+
+# outQuality<-countX(df, 9999)
+# attributes(outQuality)
+# sort(outQuality$nx_col,decreasing = TRUE)
+# df$outQuality <- outQuality$nx_ind # new attribute missing values
+# outQuality$mis_col
+# summary(df$mis_ind)
+# hist(df$mis_ind)
+
 
 mis1<-countNA(df)
 attributes(mis1)
-rank(mis1$mis_col)
+sort(mis1$mis_col$mis_x,decreasing = TRUE)
 df$mis_ind <- mis1$mis_ind # new attribute missing values
 mis1$mis_col
 summary(df$mis_ind)
 hist(df$mis_ind)
+
+f.mis<-factor(cut(df$mis_ind,breaks=c(-1,0,1,2,3,4,5,6,7,8,9,10)))
+summary(f.mis)
+
 ```
 
 # Creating AnyTip
@@ -663,17 +676,6 @@ boxplot(df$espeed)
 
 
 # Creating factors
-
-## Factorize function:
-```{r}
-factorize<- function(x) {
-  quantile(x,seq(0,1,0.1))
-  pp<-quantile(x);pp
-  breaks<-c(unique(pp))
-  f.x<-factor(cut(x,breaks))
-  return(f.x);
-}
-```
 
 ## f.passenger
 ```{r}
