@@ -584,11 +584,11 @@ summary(df$pick_up_period)
 # Declaring vectors of data
 ```{r}
 names(df)
-vars_con<-names(df)[c(6:9, 11,12,15,16,24:26)] 
+vars_con<-names(df)[c(6:9, 11,12,15,16,24:26,29)] 
 vars_con
-vars_dis<-names(df)[c(1:5,13,14,17,10,26,27)]
+vars_dis<-names(df)[c(1,4,5,10,13,14,17,19,20,27,28,30:44)]
 vars_dis
-vars_res<-names(df)[c(18,22)]
+vars_res<-names(df)[c(18,23)]
 vars_res
 
 ```
@@ -782,16 +782,16 @@ summary(df$espeed)
 vars_dis
 names(df)
 #condes(df,1)
-condes(vars_con,18)
-vars_con_profiling
-condes(df[, vars_con_profiling], num.var=18)
-summary(df$espeed)
+vars_con_profiling <- c(vars_con,(names(df)[c(18)]))
+condes(df[, vars_con_profiling], num.var=12)
 # Binary Target AnyTip
 vars_con;vars_dis
 names(df)
-vars_con_and_dis <- names(df)[c(1,4,5,10,19,20,22,27,6,7,8,9,11,12,13,14,15,16,17,23,24,25,26)] 
+vars_con_and_dis <- c(vars_con,vars_dis) 
+vars_dis_at <- c(vars_dis, "AnyTip") 
+vars_con_catdes <- c(vars_con_and_dis,(names(df)[c(23)]))
 #if p.value is under 0.5 then we have to reject the hipothesis of no relation between variable and target
-catdes(df[,vars_con_and_dis],num.var=7)
+catdes(df[,vars_con_catdes ],num.var = 39)
 ```
 
 
