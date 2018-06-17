@@ -202,7 +202,7 @@ errors<-c(errors,which(df$Pickup_longitude==0.0));length(errors)
 jerr[1] = jerr[1]+length(errors)
 df[errors,"Pickup_longitude"]<-(-9999)
 
-ll<-which(is.na(df$Pickup_longitude));ll
+ll<-which(df$Pickup_longitude == -9999);ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
@@ -243,7 +243,7 @@ errors<-c(errors,which(df$Pickup_latitude> max_lat));length(errors)
 errors<-c(errors,which(df$Pickup_latitude==0.0));length(errors)
 df[errors,"Pickup_latitude"]<-(-9999) #17 errors
 
-ll<-which(is.na(df$Pickup_latitude));ll
+ll<-which(df$Pickup_latitude == -9999);ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
@@ -271,7 +271,7 @@ missingData<-which(is.na(df$Dropoff_longitude));length(missingData) #No missing 
 errors<-c(errors,which(df$Dropoff_longitude==0.0));length(errors) #26 errors
 df[errors,"Dropoff_longitude"]<-(-9999)
 
-ll<-which(is.na(df$Dropoff_longitude));ll
+ll<-which(df$Dropoff_longitude == -9999);ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
@@ -299,7 +299,7 @@ missingData<-which(is.na(df$Dropoff_latitude));length(missingData) #No missing D
 errors<-c(errors,which(df$Dropoff_latitude==0.0));length(errors) #35 errors
 df[errors,"Dropoff_latitude"]<-(-9999)
 
-ll<-which(is.na(df$Dropoff_latitude));ll
+ll<-which(df$Dropoff_latitude == -9999);ll
 if(length(ll)>0){
   dfaux<-df[-ll,]
 }
