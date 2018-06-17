@@ -21,7 +21,7 @@ setwd("C:/Users/Sergi/Desktop/Sergi/ADEI/") #Change
 ```{r, echo=FALSE, include=FALSE}
 rm(list=ls())
 
-requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR")
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","missMDA","mvoutlier","dplyr","caret", "ggmap","ggthemes","knitr","MVA", "ROCR", "naniar")
 missingPackages <- requiredPackages[!(requiredPackages %in% installed.packages()[,"Package"])]
 
 if(length(missingPackages)) install.packages(missingPackages)
@@ -200,7 +200,7 @@ errors<-which(df$Pickup_longitude< min_long);length(errors)
 errors<-c(errors,which(df$Pickup_longitude> max_long));length(errors)
 errors<-c(errors,which(df$Pickup_longitude==0.0));length(errors)
 jerr[1] = jerr[1]+length(errors)
-df[errors,"Pickup_longitude"]<-NA
+df[errors,"Pickup_longitude"]<-(-9999)
 
 ll<-which(is.na(df$Pickup_longitude));ll
 if(length(ll)>0){
@@ -215,8 +215,8 @@ UpperOutlier<-which(df$Pickup_longitude>quantil3+(iqrvar*3));length(UpperOutlier
 LowerOutlier<-which(df$Pickup_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #1 extreme LowerOutliers
 
 
-df[UpperOutlier,"Pickup_longitude"]<- NA
-df[LowerOutlier,"Pickup_longitude"]<- NA
+df[UpperOutlier,"Pickup_longitude"]<- 9999
+df[LowerOutlier,"Pickup_longitude"]<- 9999
 boxplot(df$Pickup_longitude)
 summary(df$Pickup_longitude)
 
@@ -241,7 +241,7 @@ max_lat <- 40.9176
 errors<-which(df$Pickup_latitude< min_lat);length(errors)
 errors<-c(errors,which(df$Pickup_latitude> max_lat));length(errors)
 errors<-c(errors,which(df$Pickup_latitude==0.0));length(errors)
-df[errors,"Pickup_latitude"]<-NA #17 errors
+df[errors,"Pickup_latitude"]<-(-9999) #17 errors
 
 ll<-which(is.na(df$Pickup_latitude));ll
 if(length(ll)>0){
@@ -254,8 +254,8 @@ quantil1<-quantile(dfaux$Pickup_latitude, .25);quantil1 #get 1st quartile
 
 UpperOutlier<-which(df$Pickup_latitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
 LowerOutlier<-which(df$Pickup_latitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
-df[UpperOutlier,"Pickup_latitude"]<-NA 
-df[LowerOutlier,"Pickup_latitude"]<-NA 
+df[UpperOutlier,"Pickup_latitude"]<-9999 
+df[LowerOutlier,"Pickup_latitude"]<-9999 
 boxplot(df$Pickup_latitude)
 summary(df$Pickup_latitude)
 
@@ -269,7 +269,7 @@ jouts[2] = jouts[2]+length(UpperOutlier)+length(LowerOutlier)
 missingData<-which(is.na(df$Dropoff_longitude));length(missingData) #No missing Data
 
 errors<-c(errors,which(df$Dropoff_longitude==0.0));length(errors) #26 errors
-df[errors,"Dropoff_longitude"]<-NA
+df[errors,"Dropoff_longitude"]<-(-9999)
 
 ll<-which(is.na(df$Dropoff_longitude));ll
 if(length(ll)>0){
@@ -282,8 +282,8 @@ quantil1<-quantile(dfaux$Dropoff_longitude, .25);quantil1 #get 1st quartile
 
 UpperOutlier<-which(df$Dropoff_longitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
 LowerOutlier<-which(df$Dropoff_longitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
-df[UpperOutlier,"Dropoff_longitude"]<-NA 
-df[LowerOutlier,"Dropoff_longitude"]<-NA 
+df[UpperOutlier,"Dropoff_longitude"]<-9999 
+df[LowerOutlier,"Dropoff_longitude"]<-9999 
 
 boxplot(df$Dropoff_longitude)
 
@@ -297,7 +297,7 @@ jouts[3] = jouts[3]+length(UpperOutlier)+length(LowerOutlier)
 missingData<-which(is.na(df$Dropoff_latitude));length(missingData) #No missing Data
 
 errors<-c(errors,which(df$Dropoff_latitude==0.0));length(errors) #35 errors
-df[errors,"Dropoff_latitude"]<-NA
+df[errors,"Dropoff_latitude"]<-(-9999)
 
 ll<-which(is.na(df$Dropoff_latitude));ll
 if(length(ll)>0){
@@ -310,8 +310,8 @@ quantil1<-quantile(dfaux$Dropoff_latitude, .25);quantil1 #get 1st quartile
 
 UpperOutlier<-which(df$Dropoff_latitude>quantil3+(iqrvar*3));length(UpperOutlier) #0 extreme UpperOutliers
 LowerOutlier<-which(df$Dropoff_latitude<quantil1-(iqrvar*3));length(LowerOutlier) #0 extreme LowerOutliers
-df[UpperOutlier,"Dropoff_latitude"]<-NA 
-df[LowerOutlier,"Dropoff_latitude"]<-NA 
+df[UpperOutlier,"Dropoff_latitude"]<-9999 
+df[LowerOutlier,"Dropoff_latitude"]<-9999 
 
 boxplot(df$Dropoff_latitude)
 
@@ -325,8 +325,8 @@ jouts[4] = jouts[4]+length(UpperOutlier)+length(LowerOutlier)
 missingData<-which(is.na(df$Passenger_count));length(missingData) #No missing Data
 errors<-which(df$Passenger_count<=0.0);length(errors) #2 errors
 outliers<-which(df$Passenger_count>6.0);length(outliers) #0 outlier
-df[errors,"Passenger_count"]<-NA
-df[outliers,"Passenger_count"]<-NA
+df[errors,"Passenger_count"]<-(-9999)
+df[outliers,"Passenger_count"]<-9999
 boxplot(df$Passenger_count)
 barplot(table(df$Passenger_count))
 
@@ -344,8 +344,8 @@ errors<-which(df$Trip_distance<=0.0);length(errors) #59 errors
 
 outliers <- which(df$Trip_distance>20.0);length(outliers) #17 outlier
 
-df[outliers,"Trip_distance"]<-NA 
-df[errors,"Trip_distance"]<-NA 
+df[outliers,"Trip_distance"]<-9999 
+df[errors,"Trip_distance"]<-(-9999) 
 boxplot(df$Trip_distance)
 hist(df$Trip_distance, col="pink")
 summary(df$Trip_distance)
@@ -365,8 +365,8 @@ missingData<-which(is.na(df$Fare_amount));length(missingData) #No missing Data
 sel<-which(df$Fare_amount<=0.0);length(sel) 
 #21 outlier
 outlier<-which(df$Fare_amount>60);length(outlier) 
-df[sel,"Fare_amount"]<-NA 
-df[outlier,"Fare_amount"]<-NA 
+df[sel,"Fare_amount"]<-(-9999)
+df[outlier,"Fare_amount"]<-9999 
 boxplot(df$Fare_amount)
 hist(df$Fare_amount, col="pink")
 summary(df$Fare_amount)
@@ -382,7 +382,7 @@ jouts[7] = jouts[7]+length(outlier)
 missingData<-which(is.na(df$Extra));length(missingData) #No missing Data
 
 sel<-which(df$Extra<0.0);length(sel) #4 error
-df[sel,"Extra"]<-NA 
+df[sel,"Extra"]<-(-9999) 
 boxplot(df$Extra)
 hist(df$Extra, col="pink")
 
@@ -395,7 +395,7 @@ jmis[8] = jmis[8]+length(missingData)
 missingData<-which(is.na(df$MTA_tax));length(missingData) #No missing Data
 
 sel<-which(df$MTA_tax<0.0);length(sel) #10 error
-df[sel,"MTA_tax"]<-NA
+df[sel,"MTA_tax"]<-(-9999)
 boxplot(df$MTA_tax)
 hist(df$MTA_tax, col="pink")
 
@@ -411,8 +411,8 @@ missingData<-which(is.na(df$Tip_amount));length(missingData) #No missing Data
 
 sel<-which(df$Tip_amount<0.0);length(sel) #1 error
 outlier<-which(df$Tip_amount>25.0);length(outlier) #8 outliers
-df[outlier,"Tip_amount"]<-NA
-df[sel,"Tip_amount"]<-NA
+df[outlier,"Tip_amount"]<-9999
+df[sel,"Tip_amount"]<-(-9999)
 boxplot(df$Tip_amount)
 hist(df$Tip_amount, col="pink")
 
@@ -428,7 +428,7 @@ We don't get rid of any row for this variable because of its own nature. We are 
 missingData<-which(is.na(df$Tolls_amount));length(missingData) #No missing Data
 
 sel<-which(df$Tolls_amount<0.0);length(sel) #0 errors
-df[sel,"Tolls_amount"]<-NA
+df[sel,"Tolls_amount"]<-(-9999)
 boxplot(df$Tolls_amount)
 hist(df$Tolls_amount, col="pink")
 summary(df$Tolls_amount)
@@ -442,7 +442,7 @@ jmis[11] = jmis[11]+length(missingData)
 missingData<-which(is.na(df$improvement_surcharge));length(missingData) #No missing Data
 
 sel<-which(df$improvement_surcharge<0.0);length(sel) #10 errors
-df[sel,"improvement_surcharge"]<-NA
+df[sel,"improvement_surcharge"]<(-9999)
 boxplot(df$improvement_surcharge)
 hist(df$improvement_surcharge, col="pink")
 
@@ -454,7 +454,7 @@ jmis[12] = jmis[12]+length(missingData)
 ```{r}
 missingData<-which(is.na(df$Total_amount));length(missingData) #No missing Data
 sel<-which(df$Total_amount<=0.0);length(sel) #23 errors
-df[sel,"Total_amount"]<-NA 
+df[sel,"Total_amount"]<-(-9999) 
 
 hist(df$Total_amount, col="pink")
 iqrvar<-IQR(dfaux$Total_amount)
@@ -463,7 +463,7 @@ severePoint<-(iqrvar*3)+quantil3; severePoint; #it's too severe, we won't use th
 outlier<- which(df$Total_amount>severePoint);length(outlier) #111 extreme outliers
 
 outlier<- which(df$Total_amount>70);length(outlier) #30 extreme outliers
-df[outlier,"Total_amount"]<-NA 
+df[outlier,"Total_amount"]<-9999 
 boxplot(df$Total_amount)
 hist(df$Total_amount, col="pink")
 
@@ -474,32 +474,39 @@ jouts[13] = jouts[13]+length(outlier)
 
 # Data Quality report
 ```{r}
-
+#Variables
 cols <- vars_data_qual
 
 dqT <- data.frame(cols, jerr, jmis, jouts)
 #print 
-print(prova[order(dqT$jerr),], row.names = FALSE)
+print(dqT[order(dqT$jerr, decreasing = TRUE),], row.names = FALSE)
 
-# outQuality<-countX(df, 9999)
-# attributes(outQuality)
-# sort(outQuality$nx_col,decreasing = TRUE)
-# df$outQuality <- outQuality$nx_ind # new attribute missing values
-# outQuality$mis_col
-# summary(df$mis_ind)
-# hist(df$mis_ind)
+#Individuals Outlier
+outQuality<-countX(df, 9999)
+attributes(outQuality)
+df$out_ind <- outQuality$nx_ind
+sort(outQuality$nx_col$n_x,decreasing = TRUE)
+outQuality$mis_col
+summary(df$out_ind)
+hist(df$out_ind)
+f.out<-factor(cut(df$out_ind,breaks=c(-1,0,1,2,3)))
+summary(f.out)
 
 
+#Individuals Error
+errQuality<-countX(df, -9999)
+attributes(errQuality)
+df$err_ind <- errQuality$nx_ind
+sort(outQuality$nx_col$n_x,decreasing = TRUE)
+outQuality$mis_col
+summary(df$err_ind)
+hist(df$err_ind)
+f.err<-factor(cut(df$err_ind,breaks=c(-1,0,1,2,3,4,5,6,7,8,9)))
+summary(f.err)
+
+#No missing Data
 mis1<-countNA(df)
-attributes(mis1)
-sort(mis1$mis_col$mis_x,decreasing = TRUE)
-df$mis_ind <- mis1$mis_ind # new attribute missing values
-mis1$mis_col
-summary(df$mis_ind)
-hist(df$mis_ind)
-
-f.mis<-factor(cut(df$mis_ind,breaks=c(-1,0,1,2,3,4,5,6,7,8,9,10)))
-summary(f.mis)
+summary(mis1$mis_ind)
 
 ```
 
@@ -591,20 +598,24 @@ vars_res
 ## Remove observations with NA at targets
 
 We also delete passenger count NA row because...
+Getting rows coded 
 
 ```{r}
+library(naniar)
+df <- replace_with_na_all(df, condition = ~.x == -9999)
+df <- replace_with_na_all(df, condition = ~.x == 9999)
 
-ll<-which(is.na(df$Passenger_count));ll
+ll<-which(is.na(df$Passenger_count));length(ll)
 if(length(ll)>0){
   df<-df[-ll,]
 }
 
-ll<-which(is.na(df$Total_amount));ll
+ll<-which(is.na(df$Total_amount));length(ll)
 if(length(ll)>0){
   df<-df[-ll,]
 }
 
-ll<-which(is.na(df$AnyTip));ll
+ll<-which(is.na(df$AnyTip));length(ll)
 if(length(ll)>0){
   df<-df[-ll,]
 }
