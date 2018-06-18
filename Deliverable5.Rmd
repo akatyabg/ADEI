@@ -191,10 +191,10 @@ summary(m11)
 vif(m11)
 
 #This seems to be also a good model
-m2<-glm(AnyTip~ Dropoff_longitude:f.espeed + Trip_distance:f.total, family="binomial",data=dfwork)
+m2<-glm(AnyTip~ Dropoff_longitude + f.espeed + Trip_distance+ f.total, family="binomial",data=dfwork)
 summary(m2)
 vif(m2)
-
+Anova(m2)
 BIC(m2)
 
 BIC(m51,m2)
@@ -208,8 +208,7 @@ We finally choose m2.
 
 ### Influent Data
 
-In the plots below two big elements can be clearly distinguished over the rest: 759257 and 199161 (in the boxplot 1844 and 512 but are the same elements).
-One of them (the first one) has almost a 7 times bigger cook distance value compared to the second and it is a clearly outlier from rstudent boxplot.
+In the plots below one big element can be clearly distinguished over the rest: 759257 (in the boxplot 1844 but is the same element).
 
 ```{r}
 # Potentially influent data (we don't see any from hatvalues analysis)
@@ -228,15 +227,14 @@ Boxplot(rstudent(m2),id.n=15)
 
 ```
 
-So we took a look at this very differentiate elements. We can observe that the most influential element (759257) it was outlier in the second dimension of PCA too.
+So we took a look at this very differentiate element. We can observe that the most influential element (759257) was outlier in the second dimension of PCA too.
 
 ```{r}
 llcoo<-which(cooks.distance(m2)>0.01);length(llcoo)
 dfwork[llcoo[1],]
-dfwork[llcoo[2],]
 ```
 
-We decide to remove only the outlier.
+We decide to remove the outlier.
 
 ```{r}
 
