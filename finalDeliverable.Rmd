@@ -1,0 +1,28 @@
+---
+title: "NEW YORK CABS DATA: CASE STUDY"
+author: "Katerina Dimitrova, Jose Romero, Sergi Munoz"
+date: "March 18, 2018"
+output: pdf_document
+---
+
+```{r,include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r,include=FALSE}
+#setwd("C://Users/Sergi/Desktop/Sergi/ADEI") #Change 
+setwd("D:/ADEI/ADEI.git/trunk") #Change
+
+```
+
+```{r test-main, child = 'first_deliverable.Rmd'}
+```
+```{r test-main, child = 'PCA.Rmd'}
+```
+```{r test-main, child = 'CA_MCA.Rmd'}
+```
+```{r test-main, child = 'Deliver4.Rmd'}
+```
+```{r test-main, child = 'Deliverable5.Rmd'}
+```
