@@ -1,0 +1,7 @@
+kind: Component
+metadata:
+  displayName: External Component
+  description: Testing pulls
+spec:
+  type: 
+    name: ui
